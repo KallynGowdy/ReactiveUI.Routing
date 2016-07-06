@@ -20,7 +20,13 @@ If you have thoughts or suggestions, raise an issue that discusses what is on yo
 
 ### Overview
 
-In these improvements, we take inspiration from MvvmCross for presenter-based view composition while providing our own solution to navigation that does not conflate the two concepts.
+In these improvements, we take inspiration from MvvmCross for presenter-based view composition while providing our own solution to navigation that does not conflate the two concepts. The solutions to each of the goals are presented below:
+
+- **G:** Cross platform logic. **S:** Utilize abstractions wherever possible, and limit platform specific logic to well defined extensibility points.
+- **G:** Strong support for page/fragment/modal navigation. **S:** Use the notion of a presenter, which is able to obtain and manage views for view models.
+- **G:** Async all the way. **S:** Use observables or tasks whenever a navigation or presentation opperation occurs.
+- **G:** Support suspend/resume. **S:** Introduce a simple view model lifecycle that allows view models to store and load their current state.
+- **G:** Minimize boilerplate code + Maximize readability. **S:** Encourage design that simplifies complex concepts and provide out of the box solutions for the most common usage patterns.
 
 ### What is navigation?
 
