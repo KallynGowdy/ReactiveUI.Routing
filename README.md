@@ -12,6 +12,8 @@ With these core ideas in mind, here are the conclusions that I have drawn.
 
 ## Proposal
 
+Note that this proposal is a work in progress, subject to change. The end goal is to create a solution that solves all of the potential issues that can then be implemented.
+
 ### Overview
 
 In these improvements, we take inspiration from MvvmCross for presenter-based view composition while providing our own solution to navigation that does not conflate the two concepts.
