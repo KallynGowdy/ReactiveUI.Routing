@@ -1,12 +1,8 @@
-## Proposal
+# Proposal
 
 Note that this proposal is a work in progress, subject to change. The end goal is to create a solution that solves all of the potential issues that can then be implemented.
 
-### Contributing
-
-If you have thoughts or suggestions, raise an issue that discusses what is on your mind. From there, we can then create a pull request that brings them into the proposal.
-
-### Overview
+## Overview
 
 In these improvements, we take inspiration from MvvmCross for presenter-based view composition while providing our own solution to navigation that does not conflate the two concepts. The solutions to each of the goals are presented below:
 
@@ -16,7 +12,7 @@ In these improvements, we take inspiration from MvvmCross for presenter-based vi
 - **G:** Support suspend/resume. **S:** Introduce a simple view model lifecycle that allows view models to store and load their current state.
 - **G:** Minimize boilerplate code + Maximize readability. **S:** Encourage design that simplifies complex concepts and provide out of the box solutions for the most common usage patterns.
 
-### What is navigation?
+## What is navigation?
 
 From Google:
 
@@ -29,7 +25,7 @@ So, when we talk about navigation, we are talking about "going" to something. Th
 
 *In particular, we know that when we navigate to something, we want to be able to navigate back.*
 
-### What is presentation?
+## What is presentation?
 
 From Google:
 
@@ -45,7 +41,7 @@ So, when we talk about presentation, we are talking about "showing" something.
 
 *When we present something, we want it to show up on screen.*
 
-### A Dilemma
+## A Dilemma
 
 With the above definitions fresh in our minds, we can see that there are two different concepts at play. Navigation, which helps us get from place to place, and presentation, which helps us show things.
 
@@ -70,7 +66,7 @@ With this new API, we need a good model of what is happening. This model is spli
 2. `PresentationState`
 3. `Router`
 
-### Navigation State
+## Navigation State
 
 The navigation state manages how view models are moved between and how the back button affects that movement. Quite simply, this object in in charge of two things:
 
@@ -106,7 +102,7 @@ interface INavigationState : IActivateViewModels
 
 The `IActivateViewModels` interface is a simple interface that signifies that an object can kick off the view model activation process.
 
-### Presentation State
+## Presentation State
 
 The presentation state manages which view models are being presented and how they are being presented.
 It in turn also has three primary functions:
@@ -127,7 +123,7 @@ interface IPresentationState
 }
 ```
 
-### Router
+## Router - [Full Article](./router.md)
 The router is in charge of managing the tight dance between `NavigationState` and `PresentationState`. In particular, it is able to resolve requests for `Show(vm)` and pipe them to either `NavigationState`, `PresentationState`, or both. In most cases, the router should obey custom rules which can be defined by a `RouterBuilder`.
 
 ```csharp

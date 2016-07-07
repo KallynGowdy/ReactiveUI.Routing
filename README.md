@@ -10,3 +10,7 @@
 
 With these core ideas in mind, here are the conclusions that I have drawn.
 See [the proposal](./docs/proposal.md)!
+
+## Contributing
+
+If you have thoughts or suggestions, raise an issue that discusses what is on your mind. From there, we can then create a pull request that brings them into the proposal.
