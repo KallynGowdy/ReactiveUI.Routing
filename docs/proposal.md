@@ -125,35 +125,3 @@ interface IPresentationState
 
 ## Router - [Full Article](./router.md)
 The router is in charge of managing the tight dance between `NavigationState` and `PresentationState`. In particular, it is able to resolve requests for `Show(vm)` and pipe them to either `NavigationState`, `PresentationState`, or both. In most cases, the router should obey custom rules which can be defined by a `RouterBuilder`.
-
-```csharp
-interface IRouter
-{
-	Task ShowAsync(Type viewModel, object vmParams);
-}
-
-interface IRouterBuilder
-{
-	IRouterBuilder When(Type vmType, Func<IRouteBuilder, IRouteBuilder> buildRoute);
-	IRouter Build();
-
-	// <extension> same as -> When(typeof(TViewModel))
-	IRouterBuilder When<TViewModel>(Func<IRouteBuilder, IRouteBuilder> buildRoute);
-	
-	// <extension> same as -> When<TViewModel(route => route.Present());
-	IRouteBuilder When<TViewModel>();
-}
-
-interface IRouteBuilder
-{
-	IRouteBuilder Present(Type viewType);
-	IRouteBuilder NavigateBack(Func<object, bool> goBackWhile);
-	IRouteBuilder Navigate();
-
-	// <extension> same as -> Present(typeof(TView))
-	IRouteBuilder Present<TView>();
-	
-    // <extension> same as -> NavigateBack(vm => vm.GetType() != typeof(TParentViewModel))
-	IRouteBuilder NavigateFrom<TParentViewModel>();
-}
-```
