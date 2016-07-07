@@ -28,3 +28,6 @@ When it comes to creating views, that is all about the presenter. But a typical 
 4. Add the view to the view tree via the view host.
 5. Activate the view.
 6. Return a disposable that undoes everything when disposed.
+
+The base presenter class implements most of this, shoveling off the really platform specific tasks to other objects. 
+In particular, it is able to implement all steps but the fourth one in the list above.

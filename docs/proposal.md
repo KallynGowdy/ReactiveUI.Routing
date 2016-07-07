@@ -66,39 +66,12 @@ With this new API, we need a good model of what is happening. This model is spli
 2. `PresentationState`
 3. `Router`
 
-## Navigation State
+## Navigation State - [Full Article](./navigation-state.md)
 
 The navigation state manages how view models are moved between and how the back button affects that movement. Quite simply, this object in in charge of two things:
 
 1. Recording transitions between view models.
 2. (Re)storing view model state.
-
-It might look something like this:
-
-```csharp
-sealed class ViewModelTransition 
-{
-	public Type Type { get; }
-	public object Params { get; }
-	    
-    public ViewTransition(
-	    Type type, 
-	    object vmParams)
-    {
-        Type = type;
-		Params = vmParams;
-    }
-}
-
-interface INavigationState : IActivateViewModels
-{
-	IReadOnlyCollection<ViewModelTransition> TransitionStack { get; }
-	Task PushAsync(ViewModelTransition transition);
-	Task PopAsync();
-	Task GroupAsync(Func<Task> grouping);
-	IObservable<ViewModelTransition> Transitioned { get; }
-}
-```
 
 The `IActivateViewModels` interface is a simple interface that signifies that an object can kick off the view model activation process.
 
