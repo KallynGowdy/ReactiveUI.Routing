@@ -6,7 +6,7 @@ Most notably, the router does things like determine which hints to give the `Pre
 ```csharp
 interface IRouter
 {
-	Task ShowAsync(Type viewModel, object vmParams);
+    Task ShowAsync(Type viewModel, object vmParams);
 }
 ```
 
@@ -22,20 +22,25 @@ static class RouterExtensions
 }
 ```
 
-The actions that a router takes are meant to be composed with a builder. A generic router builder might look like this:
+The actions that a router takes are meant to be composed with a builder. A basic router builder might look like this:
 
 ```csharp
 interface IRouterBuilder
 {
-	IRouterBuilder When(Type vmType, Func<IRouteBuilder, IRouteBuilder> buildRoute);
-	IRouter Build();
+    IRouterBuilder When(Type vmType, Func<IRouteBuilder, IRouteBuilder> buildRoute);
+    IRouter Build();
 }
 
 interface IRouteBuilder
 {
-	IRouteBuilder Present(Type viewType);
-	IRouteBuilder NavigateBack(Func<object, bool> goBackWhile);
-	IRouteBuilder Navigate();
+    // Instructs the router to tell the PresentationState to use the given
+    // view/presenter type when the route is hit.
+    IRouteBuilder Present(Type viewType);
+
+    // Instructs the router to manipulate the NavigationState
+    // when the route is hit.
+    IRouteBuilder NavigateBack(Func<object, bool> goBackWhile);
+    IRouteBuilder Navigate();
 }
 ```
 
@@ -44,17 +49,17 @@ Along with relevent extension methods:
 ```csharp
 static class RouterBuilderExtensions
 {
-	public static IRouterBuilder When<TViewModel>(this IRouterBuilder builder, Func<IRouteBuilder, IRouteBuilder> buildRoute) =>
-        builder.When(typeof(TViewModel), buildRoute);
-	public static IRouteBuilder When<TViewModel>(this IRouterBuilder builder) => 
-        builder.When<TViewModel>(null);
+    public static IRouterBuilder When<TViewModel>(this IRouterBuilder builder, Func<IRouteBuilder, IRouteBuilder> buildRoute) =>
+            builder.When(typeof(TViewModel), buildRoute);
+    public static IRouteBuilder When<TViewModel>(this IRouterBuilder builder) => 
+            builder.When<TViewModel>(null);
 }
 
 static class RouteBuilderExtensions
 {
-	public static IRouteBuilder Present<TView>(this IRouteBuilder route) =>
-        route.Present(typeof(TView)); 
-	public static IRouteBuilder NavigateFrom<TParentViewModel>(this IRouteBuilder route) =>
-        route.NavigateBack(vm => !(vm is TParentViewModel));
+    public static IRouteBuilder Present<TView>(this IRouteBuilder route) =>
+            route.Present(typeof(TView)); 
+    public static IRouteBuilder NavigateFrom<TParentViewModel>(this IRouteBuilder route) =>
+            route.NavigateBack(vm => !(vm is TParentViewModel));
 }
 ```

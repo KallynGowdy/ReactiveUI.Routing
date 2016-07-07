@@ -43,6 +43,7 @@ class AndroidShowInBrowserPresenter : IShowInBrowserPresenter
 {
 	private readonly Context context;
 	
+	// Context resolved via Dependency Injection
 	public AndroidShowInBrowserPresenter(Context context)
 	{
 		this.context = context;

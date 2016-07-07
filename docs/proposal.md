@@ -102,7 +102,7 @@ interface INavigationState : IActivateViewModels
 
 The `IActivateViewModels` interface is a simple interface that signifies that an object can kick off the view model activation process.
 
-## Presentation State
+## Presentation State - [Full Article](./presentation-state.md)
 
 The presentation state manages which view models are being presented and how they are being presented.
 It in turn also has three primary functions:
@@ -113,15 +113,6 @@ It in turn also has three primary functions:
 
 The presentation state has no thing to do with storing view model state, only view state. 
 In this respect, whenever the app is suspended, the router will need to kick off the correct view.
-
-It might look something like this:
-
-```csharp
-interface IPresentationState
-{
-	Task<IDisposable> PresentAsync(object viewModel, object hint);
-}
-```
 
 ## Router - [Full Article](./router.md)
 The router is in charge of managing the tight dance between `NavigationState` and `PresentationState`. In particular, it is able to resolve requests for `Show(vm)` and pipe them to either `NavigationState`, `PresentationState`, or both. In most cases, the router should obey custom rules which can be defined by a `RouterBuilder`.
