@@ -10,6 +10,8 @@ namespace ReactiveUI.Routing
     public class ActivatableObject<TParams> : IActivatable<TParams>
         where TParams : new()
     {
+        protected bool Initialized { get; private set; }
+
         protected virtual void InitCoreSync(TParams parameters)
         {
         }
@@ -24,6 +26,7 @@ namespace ReactiveUI.Routing
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             await InitCoreAsync(parameters);
+            Initialized = true;
         }
 
         protected virtual void DestroyCoreSync()

@@ -21,9 +21,14 @@ namespace ReactiveUI.Routing
             if(this.Presenter == null) throw new InvalidOperationException("When creating a router, a IPresenter object must either be provided or locatable via Locator.Current.GetService<IPresenter>()");
         }
 
-        public Task ShowAsync(Type viewModel, object vmParams)
+        public async Task ShowAsync(Type viewModel, object vmParams)
         {
-            throw new NotImplementedException();
+            CheckInit();
+        }
+
+        private void CheckInit()
+        {
+            if(!Initialized) throw new InvalidOperationException("The router must be initialized before use.");
         }
     }
 }

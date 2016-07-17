@@ -14,10 +14,7 @@
   "testRunner": "xunit",
   "frameworks": {
     "net451": {
-      "dependencies": {
-        "System.Runtime": "4.1.0",
-        "System.Threading.Tasks": "4.0.11"
-      }
+      "dependencies": {}
     } 
   }
 }

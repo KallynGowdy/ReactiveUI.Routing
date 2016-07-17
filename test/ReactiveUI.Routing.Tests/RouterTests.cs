@@ -32,5 +32,14 @@ namespace ReactiveUI.Routing.Tests
         {
             Assert.Throws<InvalidOperationException>(() => new Router(Substitute.For<INavigator>(), null));
         }
+
+        [Fact]
+        public async Task Test_ShowAsync_Throws_If_Router_Is_Not_Initialized()
+        {
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            {
+                await router.ShowAsync(typeof(TestViewModel), null);
+            });
+        }
     }
 }
