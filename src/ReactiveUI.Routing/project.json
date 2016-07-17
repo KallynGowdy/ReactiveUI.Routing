@@ -2,18 +2,15 @@
   "version": "1.0.0-*",
   "buildOptions": {
     "debugType": "portable",
-    "emitEntryPoint": true
+    "emitEntryPoint": false
   },
-  "dependencies": {},
+  "dependencies": {
+    "reactiveui": "6.5.0",
+    "Splat": "1.6.2"
+  },
   "frameworks": {
-    "netcoreapp1.0": {
-      "dependencies": {
-        "Microsoft.NETCore.App": {
-          "type": "platform",
-          "version": "1.0.0"
-        }
-      },
-      "imports": "dnxcore50"
+    "net451": {
+      "dependencies": {}
     }
   }
 }

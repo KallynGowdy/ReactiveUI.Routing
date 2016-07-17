@@ -2,18 +2,22 @@
   "version": "1.0.0-*",
   "buildOptions": {
     "debugType": "portable",
-    "emitEntryPoint": true
+    "emitEntryPoint": false
   },
-  "dependencies": {},
+  "dependencies": {
+    "ReactiveUI.Routing": "1.0.0-*",
+    "xunit": "2.2.0-beta2-build3300",
+    "FluentAssertions": "4.1.0",
+    "NSubstitute": "1.10.0",
+    "dotnet-test-xunit": "2.2.0-preview2-build1029"
+  },
+  "testRunner": "xunit",
   "frameworks": {
-    "netcoreapp1.0": {
+    "net451": {
       "dependencies": {
-        "Microsoft.NETCore.App": {
-          "type": "platform",
-          "version": "1.0.0"
-        }
-      },
-      "imports": "dnxcore50"
-    }
+        "System.Runtime": "4.1.0",
+        "System.Threading.Tasks": "4.0.11"
+      }
+    } 
   }
 }
