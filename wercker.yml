@@ -13,13 +13,13 @@ build:
     # http://devcenter.wercker.com/docs/steps/index.html
   steps:
     - script:
-        name: Build Source
+        name: Restore Source
         code: |
-          dotnet build src/ReactiveUI.Routing
+          dotnet restore src/ReactiveUI.Routing
     - script:
-        name: Build Tests
+        name: Restore Tests
         code: |
-          dotnet build test/ReactiveUI.Routing.Tests
+          dotnet restore test/ReactiveUI.Routing.Tests
     - script:
         name: Run Tests
         code: |
