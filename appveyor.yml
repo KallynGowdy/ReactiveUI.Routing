@@ -1,0 +1,14 @@
+version: '1.0.0-alpha{build}'
+image: Visual Studio 2015
+shallow_clone: true
+
+platform: Any CPU
+configuration: Release
+
+build:
+  parallel: true
+  project: ReactiveUI.Routing.sln
+
+test:
+  assemblies:
+    - test/ReactiveUI.Routing.Tests/bin/ReactiveUI.Routing.Tests.dll
