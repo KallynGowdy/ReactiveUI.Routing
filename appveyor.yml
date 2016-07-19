@@ -13,4 +13,4 @@ build:
 
 test:
   assemblies:
-    - test/ReactiveUI.Routing.Tests/bin/ReactiveUI.Routing.Tests.dll
+    - **/*.Tests.dll
