@@ -29,8 +29,8 @@ namespace ReactiveUI.Routing
         /// Adds the given transition to the transition stack.
         /// </summary>
         /// <param name="transition">The transition that should be added.</param>
-        /// <returns></returns>
-        Task PushAsync(TransitionParams transition);
+        /// <returns>Returns the created transition.</returns>
+        Task<Transition> PushAsync(ActivationParams transition);
 
         /// <summary>
         /// Removes the topmost transition from the transition stack and returns it.

@@ -23,7 +23,7 @@ namespace ReactiveUI.Routing.Builder
         /// Gets the list of actions that should be run against the navigator
         /// when this route is hit.
         /// </summary>
-        IEnumerable<Func<INavigator, TransitionParams, Task>> NavigationActions { get; }
+        IEnumerable<Func<INavigator, ActivationParams, Task>> NavigationActions { get; }
 
         /// <summary>
         /// Sets the type of the view model that this route handles.
@@ -52,5 +52,11 @@ namespace ReactiveUI.Routing.Builder
         /// </summary>
         /// <returns></returns>
         IRouteBuilder Navigate();
+
+        /// <summary>
+        /// Constructs a new <see cref="RouteActions"/> object from this builder.
+        /// </summary>
+        /// <returns></returns>
+        RouteActions Build();
     }
 }

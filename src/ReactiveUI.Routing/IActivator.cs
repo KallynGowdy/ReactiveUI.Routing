@@ -19,7 +19,7 @@ namespace ReactiveUI.Routing
         /// </summary>
         /// <param name="parameters">The options that should be used to activate an object.</param>
         /// <returns>Returns the newly activated object.</returns>
-        Task<object> ActivateAsync(TransitionParams parameters);
+        Task<object> ActivateAsync(ActivationParams parameters);
         /// <summary>
         /// Deactivates the given object.
         /// </summary>

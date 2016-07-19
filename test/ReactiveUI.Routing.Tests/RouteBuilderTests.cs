@@ -70,13 +70,13 @@ namespace ReactiveUI.Routing.Tests
             var parameters = new object();
             route.Navigate();
             route.SetViewModel(typeof(TestViewModel));
-            route.NavigationActions.First()(navigator, new TransitionParams()
+            route.NavigationActions.First()(navigator, new ActivationParams()
             {
                 Params = parameters,
                 Type = null
             });
 
-            navigator.Received(1).PushAsync(Arg.Is<TransitionParams>(p => p.Params == parameters && p.Type == typeof(TestViewModel)));
+            navigator.Received(1).PushAsync(Arg.Is<ActivationParams>(p => p.Params == parameters && p.Type == typeof(TestViewModel)));
         }
 
         [Fact]
@@ -106,7 +106,7 @@ namespace ReactiveUI.Routing.Tests
 
             route.NavigateBackWhile(vm => vm is TestViewModel);
 
-            route.NavigationActions.First()(navigator, new TransitionParams()
+            route.NavigationActions.First()(navigator, new ActivationParams()
             {
                 Params = new object()
             });

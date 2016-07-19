@@ -5,7 +5,7 @@ namespace ReactiveUI.Routing
     /// <summary>
     /// Defines a class that represents parameters that are needed to activate an object.
     /// </summary>
-    public sealed class TransitionParams
+    public sealed class ActivationParams
     {
         /// <summary>
         /// Gets or sets the type of object that this transition represents.

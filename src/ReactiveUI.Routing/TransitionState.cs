@@ -8,7 +8,7 @@
         /// <summary>
         /// Gets or sets the params that should be used to activate the transition.
         /// </summary>
-        public TransitionParams Params { get; set; }
+        public ActivationParams Params { get; set; }
 
         /// <summary>
         /// Gets or sets the state that was saved from the suspended transition.

@@ -44,12 +44,15 @@
     <Compile Include="InvalidReturnValueException.cs" />
     <Compile Include="IPresentationState.cs" />
     <Compile Include="IPresenter.cs" />
+    <Compile Include="IRootPresenter.cs" />
     <Compile Include="ReActivatableObject.cs" />
+    <Compile Include="RootPresenterParams.cs" />
     <Compile Include="Router.cs" />
+    <Compile Include="RouteActions.cs" />
     <Compile Include="RouterParams.cs" />
     <Compile Include="RouterState.cs" />
     <Compile Include="Transition.cs" />
-    <Compile Include="TransitionParams.cs" />
+    <Compile Include="ActivationParams.cs" />
     <Compile Include="IActivatable.cs" />
     <Compile Include="IActivator.cs" />
     <Compile Include="INavigator.cs" />

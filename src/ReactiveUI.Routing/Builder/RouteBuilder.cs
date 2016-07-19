@@ -11,7 +11,7 @@ namespace ReactiveUI.Routing.Builder
     /// </summary>
     public class RouteBuilder : IRouteBuilder
     {
-        private readonly List<Func<INavigator, TransitionParams, Task>> navigationActions = new List<Func<INavigator, TransitionParams, Task>>();
+        private readonly List<Func<INavigator, ActivationParams, Task>> navigationActions = new List<Func<INavigator, ActivationParams, Task>>();
         private readonly List<Type> presenters = new List<Type>();
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace ReactiveUI.Routing.Builder
 
         public IEnumerable<Type> Presenters => presenters;
 
-        public IEnumerable<Func<INavigator, TransitionParams, Task>> NavigationActions => navigationActions;
+        public IEnumerable<Func<INavigator, ActivationParams, Task>> NavigationActions => navigationActions;
 
         public IRouteBuilder SetViewModel(Type viewModelType)
         {
@@ -50,12 +50,17 @@ namespace ReactiveUI.Routing.Builder
 
         public IRouteBuilder Navigate()
         {
-            navigationActions.Add(async (navigator, parameters) => await navigator.PushAsync(new TransitionParams()
+            navigationActions.Add(async (navigator, parameters) => await navigator.PushAsync(new ActivationParams()
             {
                 Type = ViewModelType,
                 Params = parameters.Params
             }));
             return this;
+        }
+
+        public RouteActions Build()
+        {
+            throw new NotImplementedException();
         }
     }
 }
