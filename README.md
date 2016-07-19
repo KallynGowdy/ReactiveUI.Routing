@@ -1,6 +1,10 @@
 
 # ReactiveUI.Routing
 
+    Master
+
+[![Build status](https://ci.appveyor.com/api/projects/status/72dyimy7kn47gr30/branch/master?svg=true)](https://ci.appveyor.com/project/KallynGowdy/reactiveui-routing/branch/master)
+
 ## Goals
 - Cross platform logic.
 - Strong support for page/fragment/modal navigation.
