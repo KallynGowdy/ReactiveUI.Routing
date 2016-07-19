@@ -5,8 +5,10 @@ shallow_clone: true
 platform: Any CPU
 configuration: Release
 
+before_build:
+  - nuget restore
+
 build:
-  parallel: true
   project: ReactiveUI.Routing.sln
 
 test:
