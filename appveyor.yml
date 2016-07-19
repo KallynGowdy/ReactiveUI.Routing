@@ -13,4 +13,4 @@ build:
 
 test:
   assemblies:
-    - **\*.Tests.dll
+    - '**\*.Tests.dll'
