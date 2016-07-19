@@ -3,14 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ReactiveUI.Routing", "src\ReactiveUI.Routing\ReactiveUI.Routing.xproj", "{42D00619-68A0-4D1D-957C-0D8964C5BC03}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Routing", "src\ReactiveUI.Routing\ReactiveUI.Routing.csproj", "{7CF2AE8E-4920-41C9-B3B2-BE83EC3DAA7F}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ReactiveUI.Routing.Tests", "test\ReactiveUI.Routing.Tests\ReactiveUI.Routing.Tests.xproj", "{5F757ABE-F909-482A-AFCA-ED831E4CBC42}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{42C85E81-14AA-4913-85A3-A9516826CC5E}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Routing.Tests", "test\ReactiveUI.Routing.Tests\ReactiveUI.Routing.Tests.csproj", "{0152817C-764C-4539-84D9-F2051E4A4C3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,14 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{42D00619-68A0-4D1D-957C-0D8964C5BC03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42D00619-68A0-4D1D-957C-0D8964C5BC03}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42D00619-68A0-4D1D-957C-0D8964C5BC03}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42D00619-68A0-4D1D-957C-0D8964C5BC03}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5F757ABE-F909-482A-AFCA-ED831E4CBC42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5F757ABE-F909-482A-AFCA-ED831E4CBC42}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5F757ABE-F909-482A-AFCA-ED831E4CBC42}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5F757ABE-F909-482A-AFCA-ED831E4CBC42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CF2AE8E-4920-41C9-B3B2-BE83EC3DAA7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CF2AE8E-4920-41C9-B3B2-BE83EC3DAA7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CF2AE8E-4920-41C9-B3B2-BE83EC3DAA7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CF2AE8E-4920-41C9-B3B2-BE83EC3DAA7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0152817C-764C-4539-84D9-F2051E4A4C3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0152817C-764C-4539-84D9-F2051E4A4C3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0152817C-764C-4539-84D9-F2051E4A4C3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0152817C-764C-4539-84D9-F2051E4A4C3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
