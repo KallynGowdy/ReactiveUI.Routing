@@ -9,8 +9,27 @@ namespace ReactiveUI.Routing
     /// <summary>
     /// Defines an interface that represents objects that can be activated.
     /// </summary>
+    public interface IActivatable
+    {
+        /// <summary>
+        /// Runs initialization logic for the view model.
+        /// </summary>
+        /// <param name="parameters">The parameters that are needed to initialize this view model. Should never be null.</param>
+        /// <returns></returns>
+        Task InitAsync(object parameters);
+
+        /// <summary>
+        /// Runs logic that is needed to cleanup this view model.
+        /// </summary>
+        /// <returns></returns>
+        Task DestroyAsync();
+    }
+
+    /// <summary>
+    /// Defines a generic interface that represents objects that can be activated.
+    /// </summary>
     /// <typeparam name="TParams">The type of the parameter object that the object accepts.</typeparam>
-    public interface IActivatable<in TParams>
+    public interface IActivatable<in TParams> : IActivatable
         where TParams : new()
     {
         /// <summary>
@@ -19,11 +38,5 @@ namespace ReactiveUI.Routing
         /// <param name="parameters">The parameters that are needed to initialize this view model. Should never be null.</param>
         /// <returns></returns>
         Task InitAsync(TParams parameters);
-
-        /// <summary>
-        /// Runs logic that is needed to cleanup this view model.
-        /// </summary>
-        /// <returns></returns>
-        Task DestroyAsync();
     }
 }

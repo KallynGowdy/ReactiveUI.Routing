@@ -9,6 +9,7 @@ namespace ReactiveUI.Routing
     /// </summary>
     public sealed class RouteActions
     {
-        public Func<INavigator, ActivationParams, Task> NavigationAction { get; set; }
+        public Func<INavigator, Transition, Task> NavigationAction { get; set; }
+        public Type[] Presenters { get; set; }
     }
 }

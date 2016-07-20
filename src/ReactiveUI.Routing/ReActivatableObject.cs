@@ -32,6 +32,11 @@ namespace ReactiveUI.Routing
             return state;
         }
 
+        Task IReActivatable.ResumeAsync(object storedState)
+        {
+            return ResumeAsync((TState) storedState);
+        }
+
         protected virtual void ResumeCoreSync(TState storedState)
         {
         }
@@ -46,6 +51,11 @@ namespace ReactiveUI.Routing
         {
             if (storedState == null) throw new ArgumentNullException(nameof(storedState));
             await ResumeCoreAsync(storedState);
+        }
+
+        async Task<object> IReActivatable.SuspendAsync()
+        {
+            return await SuspendAsync();
         }
     }
 }

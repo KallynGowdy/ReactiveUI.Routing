@@ -12,7 +12,6 @@ namespace ReactiveUI.Routing.Builder
     public class RouterBuilder : IRouterBuilder
     {
         private readonly Func<INavigator> navigatorFactory;
-        private readonly Func<IRootPresenter> presenterFactory;
         private readonly List<IRouteBuilder> builtRoutes = new List<IRouteBuilder>();
         public IEnumerable<IRouteBuilder> BuiltRoutes => builtRoutes;
 
@@ -20,10 +19,9 @@ namespace ReactiveUI.Routing.Builder
         {
         }
 
-        public RouterBuilder(Func<INavigator> navigatorFactory, Func<IRootPresenter> presenterFactory)
+        public RouterBuilder(Func<INavigator> navigatorFactory)
         {
             this.navigatorFactory = navigatorFactory;
-            this.presenterFactory = presenterFactory;
         }
 
         public IRouterBuilder When(Func<IRouteBuilder, IRouteBuilder> buildRoute)
@@ -38,16 +36,11 @@ namespace ReactiveUI.Routing.Builder
         public IRouter Build()
         {
             INavigator navigator = null;
-            IRootPresenter presenter = null;
             if (navigatorFactory != null)
             {
                 navigator = navigatorFactory();
             }
-            if (presenterFactory != null)
-            {
-                presenter = presenterFactory();
-            }
-            return new Router(navigator, presenter);
+            return new Router(navigator);
         }
     }
 }

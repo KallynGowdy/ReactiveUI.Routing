@@ -9,11 +9,6 @@ namespace ReactiveUI.Routing
     public sealed class RouterParams
     {
         /// <summary>
-        /// Gets or sets the parameters that should be passed to the presenter during initialization.
-        /// </summary>
-        public RootPresenterParams PresenterParams { get; set; }
-
-        /// <summary>
         /// Gets or sets the map of view model types to the actions that should be taken on them.
         /// </summary>
         public Dictionary<Type, RouteActions> ViewModelMap { get; set; }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -10,17 +11,22 @@ using Xunit;
 
 namespace ReactiveUI.Routing.Tests
 {
-    public class TestViewModel
+    public class TestViewModel : ActivatableObject<TestParams>
     {
+        public new bool Initialized => base.Initialized;
     }
 
-    public class TestPresenterType
+    public class TestPresenterType : IPresenter
     {
+        public Task<IDisposable> PresentAsync(object viewModel, object hint)
+        {
+            return Task.FromResult<IDisposable>(new BooleanDisposable());
+        }
     }
 
     public class RouteBuilderTests
     {
-        IRouteBuilder route;
+        RouteBuilder route;
 
         public RouteBuilderTests()
         {
@@ -67,16 +73,10 @@ namespace ReactiveUI.Routing.Tests
         public void Test_Navigate_Adds_Func_That_Calls_Push_Async_On_Given_Navigator()
         {
             var navigator = Substitute.For<INavigator>();
-            var parameters = new object();
             route.Navigate();
             route.SetViewModel(typeof(TestViewModel));
-            route.NavigationActions.First()(navigator, new ActivationParams()
-            {
-                Params = parameters,
-                Type = null
-            });
-
-            navigator.Received(1).PushAsync(Arg.Is<ActivationParams>(p => p.Params == parameters && p.Type == typeof(TestViewModel)));
+            route.NavigationActions.First()(navigator, new Transition());
+            navigator.Received(1).PushAsync(Arg.Any<Transition>());
         }
 
         [Fact]
@@ -106,10 +106,7 @@ namespace ReactiveUI.Routing.Tests
 
             route.NavigateBackWhile(vm => vm is TestViewModel);
 
-            route.NavigationActions.First()(navigator, new ActivationParams()
-            {
-                Params = new object()
-            });
+            route.NavigationActions.First()(navigator, new Transition());
 
             navigator.Received(2).PopAsync();
         }

@@ -15,17 +15,6 @@ namespace ReactiveUI.Routing.Builder
         Type ViewModelType { get; }
 
         /// <summary>
-        /// Gets the list of presenters that should be used to present the view model for this route.
-        /// </summary>
-        IEnumerable<Type> Presenters { get; }
-
-        /// <summary>
-        /// Gets the list of actions that should be run against the navigator
-        /// when this route is hit.
-        /// </summary>
-        IEnumerable<Func<INavigator, ActivationParams, Task>> NavigationActions { get; }
-
-        /// <summary>
         /// Sets the type of the view model that this route handles.
         /// </summary>
         /// <param name="viewModelType"></param>

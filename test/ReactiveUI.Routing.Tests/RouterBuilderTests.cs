@@ -16,7 +16,7 @@ namespace ReactiveUI.Routing.Tests
 
         public RouterBuilderTests()
         {
-            this.builder = new RouterBuilder(() => Substitute.For<INavigator>(), () => Substitute.For<IRootPresenter>());
+            this.builder = new RouterBuilder(() => Substitute.For<INavigator>());
         }
 
         [Fact]

@@ -6,34 +6,27 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
+using Splat;
 using Xunit;
 #pragma warning disable 4014
 
 namespace ReactiveUI.Routing.Tests
 {
-    public class RouterTests
+    public class RouterTests : LocatorTest
     {
         private readonly INavigator navigator;
-        private readonly IRootPresenter presenter;
         private readonly Router router;
 
         public RouterTests()
         {
             navigator = Substitute.For<INavigator>();
-            presenter = Substitute.For<IRootPresenter>();
-            router = new Router(navigator, presenter);
+            router = new Router(navigator);
         }
 
         [Fact]
         public void Test_Ctor_Throws_Exception_When_No_Navigator_Is_Available()
         {
-            Assert.Throws<InvalidOperationException>(() => new Router(null, Substitute.For<IRootPresenter>()));
-        }
-
-        [Fact]
-        public void Test_Ctor_Throws_Exception_When_No_Presenter_Is_Available()
-        {
-            Assert.Throws<InvalidOperationException>(() => new Router(Substitute.For<INavigator>(), null));
+            Assert.Throws<InvalidOperationException>(() => new Router(null));
         }
 
         [Fact]
@@ -82,19 +75,9 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public async Task Test_InitAsync_Pipes_PresenterParams_To_Presenter()
-        {
-            var parameters = new RouterParams()
-            {
-                PresenterParams = new RootPresenterParams()
-            };
-            await router.InitAsync(parameters);
-            presenter.Received(1).InitAsync(parameters.PresenterParams);
-        }
-
-        [Fact]
         public async Task Test_ShowAsync_Pipes_Transition_To_Navigator_If_Router_Actions_Specify_Navigate()
         {
+            Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
             var initParams = new RouterParams()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
@@ -110,12 +93,35 @@ namespace ReactiveUI.Routing.Tests
             };
 
             await router.InitAsync(initParams);
-            await router.ShowAsync(typeof(TestViewModel), Unit.Default);
+            await router.ShowAsync(typeof(TestViewModel), new TestParams());
 
             navigator.Received(1)
-                .PushAsync(Arg.Is<ActivationParams>(t =>
-                    Equals(t.Params, Unit.Default) &&
-                    t.Type == typeof(TestViewModel)));
+                .PushAsync(Arg.Is<Transition>(t => t.ViewModel is TestViewModel));
+        }
+
+        [Fact]
+        public async Task Test_ShowAsync_Does_Not_Pipe_Transition_To_Navigator_If_Router_Actions_Specify_Navigate()
+        {
+            Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
+            var initParams = new RouterParams()
+            {
+                ViewModelMap = new Dictionary<Type, RouteActions>()
+                {
+                    {
+                        typeof(TestViewModel),
+                        new RouteActions()
+                        {
+                            NavigationAction = null
+                        }
+                    }
+                }
+            };
+
+            await router.InitAsync(initParams);
+            await router.ShowAsync(typeof(TestViewModel), new TestParams());
+
+            navigator.DidNotReceive()
+                .PushAsync(Arg.Any<Transition>());
         }
 
         [Fact]
@@ -129,8 +135,35 @@ namespace ReactiveUI.Routing.Tests
             await router.InitAsync(initParams);
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                await router.ShowAsync(typeof(TestViewModel), Unit.Default);
+                await router.ShowAsync(typeof(TestViewModel), new TestParams());
             });
+        }
+
+        [Fact]
+        public async Task Test_ShowAsync_Creates_Presenter_If_Router_Actions_Specify_Present()
+        {
+            Func<TestPresenterType> presenterConstructor = Substitute.For<Func<TestPresenterType>>();
+            presenterConstructor().Returns(new TestPresenterType());
+            Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
+            Locator.CurrentMutable.Register(presenterConstructor, typeof(TestPresenterType));
+            var initParams = new RouterParams()
+            {
+                ViewModelMap = new Dictionary<Type, RouteActions>()
+                {
+                    {
+                        typeof(TestViewModel),
+                        new RouteActions()
+                        {
+                            Presenters = new [] { typeof(TestPresenterType) }
+                        }
+                    }
+                }
+            };
+
+            await router.InitAsync(initParams);
+            await router.ShowAsync(typeof(TestViewModel), new TestParams());
+
+            presenterConstructor.Received(1)();
         }
     }
 }

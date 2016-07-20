@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reactive;
 using System.Threading.Tasks;
 using Splat;
@@ -8,19 +9,22 @@ namespace ReactiveUI.Routing
     public class Router : ReActivatableObject<RouterParams, RouterState>, IRouter
     {
         public INavigator Navigator { get; }
-        public IRootPresenter Presenter { get; }
         private RouterParams Params { get; set; }
+        private IActivator Activator { get; }
 
-        public Router(): this(null, null)
+        public Router() : this(null, null)
         {
         }
 
-        public Router(INavigator navigator, IRootPresenter presenter)
+        public Router(INavigator navigator) : this(navigator, null)
+        {
+        }
+
+        public Router(INavigator navigator, IActivator activator)
         {
             this.Navigator = navigator ?? Locator.Current.GetService<INavigator>();
-            this.Presenter = presenter ?? Locator.Current.GetService<IRootPresenter>();
+            this.Activator = activator ?? Locator.Current.GetService<IActivator>() ?? new LocatorActivator();
             if (this.Navigator == null) throw new InvalidOperationException("When creating a router, a INavigator object must either be provided or locatable via Locator.Current.GetService<INavigator>()");
-            if(this.Presenter == null) throw new InvalidOperationException("When creating a router, a IPresenter object must either be provided or locatable via Locator.Current.GetService<IPresenter>()");
         }
 
         protected override async Task InitCoreAsync(RouterParams parameters)
@@ -28,7 +32,6 @@ namespace ReactiveUI.Routing
             await base.InitCoreAsync(parameters);
             Params = parameters;
             await Navigator.InitAsync(Unit.Default);
-            await Presenter.InitAsync(parameters.PresenterParams);
         }
 
         protected override async Task ResumeCoreAsync(RouterState storedState)
@@ -54,7 +57,49 @@ namespace ReactiveUI.Routing
         {
             CheckInit();
             var actions = GetActionsForViewModelType(viewModel);
-            await actions.NavigationAction(Navigator, BuildTransitionParams(viewModel, vmParams));
+            var transition = await BuildTransitionAsync(viewModel, vmParams);
+            await Navigate(actions, transition);
+            await PresentAsync(actions, transition);
+        }
+
+        private async Task Navigate(RouteActions actions, Transition transition)
+        {
+            if (actions.NavigationAction != null)
+            {
+                await actions.NavigationAction(Navigator, transition);
+            }
+        }
+
+        private async Task PresentAsync(RouteActions actions, Transition transition)
+        {
+            if (actions.Presenters == null) return;
+            foreach (var presenter in actions.Presenters)
+            {
+                await PresentAsync(presenter, transition);
+            }
+        }
+
+        private async Task<IDisposable> PresentAsync(Type presenter, Transition transition)
+        {
+            var p = await BuildPresenterAsync(presenter);
+            return await p.PresentAsync(transition.ViewModel, null);
+        }
+
+        private async Task<IPresenter> BuildPresenterAsync(Type presenter)
+        {
+            return (IPresenter)await Activator.ActivateAsync(new ActivationParams()
+            {
+                Type = presenter,
+                Params = Unit.Default
+            });
+        }
+
+        private async Task<Transition> BuildTransitionAsync(Type viewModel, object vmParams)
+        {
+            var activationParams = BuildTransitionParams(viewModel, vmParams);
+            var transition = new Transition();
+            await transition.InitAsync(activationParams);
+            return transition;
         }
 
         private ActivationParams BuildTransitionParams(Type viewModel, object vmParams)
@@ -81,7 +126,7 @@ namespace ReactiveUI.Routing
 
         private void CheckInit()
         {
-            if(!Initialized) throw new InvalidOperationException("The router must be initialized before use.");
+            if (!Initialized) throw new InvalidOperationException("The router must be initialized before use.");
         }
     }
 }
