@@ -1,14 +1,10 @@
-using System;
-using System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-using ReactiveUI.Cocoa;
-using ReactiveUI;
-using Starter.Core.ViewModels;
-using Akavache;
 using System.Reactive.Linq;
+using Akavache;
+using MonoTouch.UIKit;
+using ReactiveUI;
+using ShareNavigation.ViewModels;
 
-namespace Starter.Views
+namespace ShareNavigation.Views
 {
     public partial class TestViewController : ReactiveViewController, IViewFor<TestViewModel>
     {

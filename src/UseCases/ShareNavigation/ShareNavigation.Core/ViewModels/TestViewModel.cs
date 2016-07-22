@@ -1,8 +1,8 @@
 using System;
-using ReactiveUI;
 using System.Runtime.Serialization;
+using ReactiveUI;
 
-namespace Starter.Core.ViewModels
+namespace ShareNavigation.ViewModels
 {
     [DataContract]
     public class TestViewModel : ReactiveObject

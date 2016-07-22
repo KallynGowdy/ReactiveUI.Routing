@@ -3,7 +3,7 @@ using Android.App;
 using Android.Runtime;
 using ReactiveUI;
 
-namespace Starter
+namespace ShareNavigation
 {
     [Application]
     public class AndroidApplication : Application

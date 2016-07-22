@@ -1,17 +1,13 @@
 using System;
-using Android.App;
-using Android.Content;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using Android.OS;
-using ReactiveUI;
-using System.Reactive;
 using System.Reactive.Linq;
-using Starter.Core.ViewModels;
 using Akavache;
+using Android.App;
+using Android.OS;
+using Android.Widget;
+using ReactiveUI;
+using ShareNavigation.ViewModels;
 
-namespace Starter.Views
+namespace ShareNavigation.Views
 {
     [Activity (Label = "Starter-Android", MainLauncher = true)]
     public class TestActivity : ReactiveActivity<TestViewModel>
@@ -25,21 +21,15 @@ namespace Starter.Views
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
 
-            myButton.Events().Click.Subscribe(_ => myButton.Text = string.Format("{0} clicks!", count++));
+            MyButton.Events().Click.Subscribe(_ => MyButton.Text = string.Format("{0} clicks!", count++));
 
             this.OneWayBind(ViewModel, x => x.TheGuid, x => x.TheGuid.Text);
 
-            ViewModel = await BlobCache.LocalMachine.GetOrCreateObject("TestViewModel", () => {
-                return new TestViewModel();
-            });
+            ViewModel = await BlobCache.LocalMachine.GetOrCreateObject("TestViewModel", () => new TestViewModel());
         }
 
-        public TextView TheGuid {
-            get { return this.GetControl<TextView>(); }
-        }
+        public TextView TheGuid => this.GetControl<TextView>();
 
-        public Button myButton { 
-            get { return this.GetControl<Button>(); }
-        }
+        public Button MyButton => this.GetControl<Button>();
     }
 }

@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 
-namespace Starter
+namespace ShareNavigation
 {
     public class Application
     {
@@ -13,7 +9,7 @@ namespace Starter
         {
             // if you want to use a different Application Delegate class from "AppDelegate"
             // you can specify it here.
-            UIApplication.Main(args, null, "AppDelegate");
+            UIApplication.Main(args, null, nameof(AppDelegate));
         }
     }
 }
