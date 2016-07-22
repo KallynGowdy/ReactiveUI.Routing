@@ -11,7 +11,7 @@ namespace ReactiveUI.Routing.Builder
     /// </summary>
     public static class RouteBuilderExtensions
     {
-        public static IRouteBuilder Present<TPresenter>(this IRouteBuilder route) =>
+        public static IRouteBuilder Present<TPresenter>(this IRouteBuilder route) where TPresenter : IPresenter =>
             route.Present(typeof(TPresenter));
 
         public static IRouteBuilder NavigateFrom<TParentViewModel>(this IRouteBuilder route) =>

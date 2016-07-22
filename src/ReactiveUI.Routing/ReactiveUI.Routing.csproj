@@ -52,6 +52,7 @@
     <Compile Include="RootPresenterParams.cs" />
     <Compile Include="Router.cs" />
     <Compile Include="RouteActions.cs" />
+    <Compile Include="RouterExtensions.cs" />
     <Compile Include="RouterParams.cs" />
     <Compile Include="RouterState.cs" />
     <Compile Include="Transition.cs" />
