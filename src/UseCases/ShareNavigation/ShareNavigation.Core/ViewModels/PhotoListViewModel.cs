@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace ShareNavigation.ViewModels
 {
-    public class TestViewModel
+    public class PhotoListViewModel
     {
-        public string TheGuid { get; set; }
     }
 }

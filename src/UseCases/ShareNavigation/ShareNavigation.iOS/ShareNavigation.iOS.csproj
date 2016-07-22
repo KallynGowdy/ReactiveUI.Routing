@@ -10,7 +10,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>ShareNavigation</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>ShareNavigation.iOS</AssemblyName>
+    <AssemblyName>ShareNavigationiOS</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -141,7 +141,6 @@
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="Info.plist" />
     <None Include="packages.config" />
   </ItemGroup>
@@ -158,12 +157,16 @@
     <InterfaceDefinition Include="Views\TestViewController_iPhone.xib" />
     <InterfaceDefinition Include="Views\TestViewController_iPad.xib" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
-  <Import Project="..\packages\Xamarin.Forms.1.2.3.6257\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.1.2.3.6257\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10\Xamarin.Forms.targets')" />
   <ItemGroup>
+    <ProjectReference Include="..\..\..\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
+      <Project>{7cf2ae8e-4920-41c9-b3b2-be83ec3daa7f}</Project>
+      <Name>ReactiveUI.Routing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ShareNavigation.Core\ShareNavigation.Core.csproj">
-      <Project>{B5EB1AF2-8FC7-4338-B652-323CB083B09F}</Project>
-      <Name>Starter-Core</Name>
+      <Project>{b5eb1af2-8fc7-4338-b652-323cb083b09f}</Project>
+      <Name>ShareNavigation.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
+  <Import Project="..\packages\Xamarin.Forms.1.2.3.6257\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.1.2.3.6257\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10\Xamarin.Forms.targets')" />
 </Project>
