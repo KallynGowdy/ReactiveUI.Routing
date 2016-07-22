@@ -13,7 +13,7 @@ namespace ShareNavigation
     {
         // class-level declarations
         UIWindow window;
-        TestViewController viewController;
+        PhotoListViewController viewController;
 		AutoSuspendHelper suspendHelper;
 
 		public AppDelegate()
@@ -32,7 +32,7 @@ namespace ShareNavigation
         {
             window = new UIWindow(UIScreen.MainScreen.Bounds);
 
-            viewController = new TestViewController();
+            viewController = new PhotoListViewController();
             window.RootViewController = viewController;
             window.MakeKeyAndVisible();
             

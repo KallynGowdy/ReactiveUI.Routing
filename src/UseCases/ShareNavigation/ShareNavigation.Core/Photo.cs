@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShareNavigation.ViewModels
+namespace ShareNavigation
 {
-    public class TestViewModel
+    public class Photo
     {
-        public string TheGuid { get; set; }
+        public string PhotoUrl { get; set; }
     }
 }

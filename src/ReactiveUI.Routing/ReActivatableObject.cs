@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +17,15 @@ namespace ReactiveUI.Routing
         where TParams : new()
         where TState : new()
     {
+        private readonly BehaviorSubject<TState> resumed;
+
+        public ReActivatableObject()
+        {
+            this.resumed = new BehaviorSubject<TState>(default(TState));
+        }
+
+        protected IObservable<TState> Resumed => resumed.Where(s => s != null);
+
         protected virtual TState SuspendCoreSync()
         {
             return new TState();
@@ -51,6 +62,7 @@ namespace ReactiveUI.Routing
         {
             if (storedState == null) throw new ArgumentNullException(nameof(storedState));
             await ResumeCoreAsync(storedState);
+            resumed.OnNext(storedState);
         }
 
         async Task<object> IReActivatable.SuspendAsync()

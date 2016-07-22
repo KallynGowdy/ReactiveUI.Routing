@@ -100,7 +100,7 @@
     <Compile Include="AkavacheSqliteLinkerOverride.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Views\TestActivity.cs" />
+    <Compile Include="Views\PhotoListActivity.cs" />
     <Compile Include="AndroidApplication.cs" />
   </ItemGroup>
   <ItemGroup>

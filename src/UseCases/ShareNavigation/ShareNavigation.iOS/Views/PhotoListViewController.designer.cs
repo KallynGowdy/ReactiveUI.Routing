@@ -10,7 +10,7 @@ using MonoTouch.Foundation;
 namespace ShareNavigation.Views
 {
 	[Register ("TestViewController")]
-	partial class TestViewController
+	partial class PhotoListViewController
 	{
 		[Outlet]
 		MonoTouch.UIKit.UILabel TheGuid { get; set; }

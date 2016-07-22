@@ -36,9 +36,11 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Photo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IPhotosService.cs" />
+    <Compile Include="Services\PhotosService.cs" />
     <Compile Include="ViewModels\PhotoListViewModel.cs" />
-    <Compile Include="ViewModels\TestViewModel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

@@ -148,9 +148,9 @@
     <Compile Include="AkavacheSqliteLinkerOverride.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="Views\TestViewController.cs" />
-    <Compile Include="Views\TestViewController.designer.cs">
-      <DependentUpon>TestViewController.cs</DependentUpon>
+    <Compile Include="Views\PhotoListViewController.cs" />
+    <Compile Include="Views\PhotoListViewController.designer.cs">
+      <DependentUpon>PhotoListViewController.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
