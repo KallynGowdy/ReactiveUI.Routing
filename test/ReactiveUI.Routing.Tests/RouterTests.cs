@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -164,6 +165,65 @@ namespace ReactiveUI.Routing.Tests
             await router.ShowAsync(typeof(TestViewModel), new TestParams());
 
             presenterConstructor.Received(1)();
+        }
+
+        [Fact]
+        public async Task Test_ShowAsync_Calls_PresentAsync_On_Created_Presenter()
+        {
+            IPresenter presenter = Substitute.For<IPresenter>();
+            IDisposable disposable = new BooleanDisposable();
+            presenter.PresentAsync(Arg.Any<object>(), Arg.Any<object>()).Returns(disposable);
+            Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
+            Locator.CurrentMutable.Register(() => presenter, typeof(TestPresenterType));
+            var initParams = new RouterParams()
+            {
+                ViewModelMap = new Dictionary<Type, RouteActions>()
+                {
+                    {
+                        typeof(TestViewModel),
+                        new RouteActions()
+                        {
+                            Presenters = new [] { typeof(TestPresenterType) }
+                        }
+                    }
+                }
+            };
+
+            await router.InitAsync(initParams);
+            await router.ShowAsync(typeof(TestViewModel), new TestParams());
+
+            presenter.Received(1).PresentAsync(Arg.Any<object>(), Arg.Any<object>());
+        }
+
+        [Fact(Skip = "Not Implemented")]
+        public async Task Test_HideAsync_Disposes_Of_ViewModel_Presenters()
+        {
+            var presenter = Substitute.For<IPresenter>();
+            var disposable = new BooleanDisposable();
+            presenter.PresentAsync(Arg.Any<object>(), Arg.Any<object>()).Returns(disposable);
+            Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
+            Locator.CurrentMutable.Register(() => presenter, typeof(TestPresenterType));
+            var initParams = new RouterParams()
+            {
+                ViewModelMap = new Dictionary<Type, RouteActions>()
+                {
+                    {
+                        typeof(TestViewModel),
+                        new RouteActions()
+                        {
+                            Presenters = new [] { typeof(TestPresenterType) }
+                        }
+                    }
+                }
+            };
+
+            await router.InitAsync(initParams);
+            await router.ShowAsync(typeof(TestViewModel), new TestParams());
+
+            var vm = (TestViewModel)presenter.ReceivedCalls().First().GetArguments().First();
+            await router.HideAsync(vm);
+
+            disposable.IsDisposed.Should().BeTrue();
         }
     }
 }

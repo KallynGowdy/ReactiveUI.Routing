@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Routing", "src\R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Routing.Tests", "test\ReactiveUI.Routing.Tests\ReactiveUI.Routing.Tests.csproj", "{0152817C-764C-4539-84D9-F2051E4A4C3B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UseCases", "UseCases", "{46291BE6-9F24-41EE-BA1A-63A9350EE906}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ShareNavigation", "ShareNavigation", "{4F9550C1-6141-4BD1-ACDE-0389487142B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4F9550C1-6141-4BD1-ACDE-0389487142B8} = {46291BE6-9F24-41EE-BA1A-63A9350EE906}
 	EndGlobalSection
 EndGlobal

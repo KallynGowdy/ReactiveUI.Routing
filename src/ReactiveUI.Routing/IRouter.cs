@@ -19,5 +19,12 @@ namespace ReactiveUI.Routing
         /// <param name="vmParams">The parameters that should be passed to the view model during setup.</param>
         /// <returns></returns>
         Task ShowAsync(Type viewModel, object vmParams);
+
+        /// <summary>
+        /// Attempts to destruct and hide the given view model.
+        /// </summary>
+        /// <param name="viewModel">The object that is currently being shown.</param>
+        /// <returns></returns>
+        Task HideAsync(object viewModel);
     }
 }

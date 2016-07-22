@@ -62,6 +62,11 @@ namespace ReactiveUI.Routing
             await PresentAsync(actions, transition);
         }
 
+        public Task HideAsync(object viewModel)
+        {
+            throw new NotImplementedException();
+        }
+
         private async Task Navigate(RouteActions actions, Transition transition)
         {
             if (actions.NavigationAction != null)
