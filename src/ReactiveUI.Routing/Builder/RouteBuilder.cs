@@ -56,7 +56,17 @@ namespace ReactiveUI.Routing.Builder
 
         public RouteActions Build()
         {
-            throw new NotImplementedException();
+            return new RouteActions()
+            {
+                NavigationAction = async (navigator, transition) =>
+                {
+                    foreach (var action in NavigationActions)
+                    {
+                        await action(navigator, transition);
+                    }
+                },
+                Presenters = Presenters.ToArray()
+            };
         }
     }
 }

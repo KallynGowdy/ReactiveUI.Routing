@@ -25,7 +25,6 @@ namespace ReactiveUI.Routing
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             var result = await ActivateCoreAsync(parameters);
-            if (result == null) throw new InvalidReturnValueException($"{nameof(ActivateCoreAsync)} must not return a null value. It must either return a new object or throw an exception.");
             return result;
         }
 

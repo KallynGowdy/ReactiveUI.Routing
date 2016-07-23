@@ -21,7 +21,7 @@ namespace ShareNavigation.Tests
         }
 
         [Scenario]
-        public async Task Showing_PhotoListViewModel(
+        public void Showing_PhotoListViewModel(
             IRouter router,
             INavigator navigator,
             IPhotoListPresenter presenter)
@@ -44,17 +44,42 @@ namespace ShareNavigation.Tests
                     navigator.Received(1).PushAsync(Arg.Is<Transition>(t => t.ViewModel is PhotoListViewModel));
                 });
             "And the presenter should have recieved a present call"
-                .x(() => presenter.Received(1).PresentAsync(Arg.Any<object>(), Unit.Default));
+                .x(() => presenter.Received(1).PresentAsync(Arg.Any<object>(), Arg.Any<object>()));
         }
 
         [Scenario]
-        public async Task Showing_PhotoViewModel_From_ShareViewModel(
-            IRouter router, 
-            INavigator navigator, 
-            PhotoListViewModel photoListViewModel, 
-            ShareViewModel shareViewModel, 
-            IPhotosService photosService, 
-            PhotoViewModel.Params parameters)
+        public void Showing_ShareViewModel(
+            IRouter router,
+            INavigator navigator,
+            ISharePresenter presenter)
+        {
+            "Given a navigator"
+                .x(() => navigator = Substitute.For<INavigator>());
+            "And a IRouter"
+                .x(async () => router = await new RouterConfig().BuildRouterAsync(navigator));
+            "And a ShareViewModel registration"
+                .x(() => Resolver.Register(() => new ShareViewModel(router), typeof(ShareViewModel)));
+            "And a presenter for the view model"
+                .x(() => presenter = Substitute.For<ISharePresenter>());
+            "That is registered"
+                .x(() => Resolver.Register(() => presenter, typeof(ISharePresenter)));
+            "When I show the ShareViewModel"
+                .x(async () => await router.ShowAsync<ShareViewModel>());
+            "Then the navigator should have recieved a push call"
+                .x(() => navigator.Received(1).PushAsync(Arg.Is<Transition>(t => t.ViewModel is ShareViewModel)));
+            "And the presenter should have recieved a present call"
+                .x(() => presenter.Received(1).PresentAsync(Arg.Any<object>(), Arg.Any<object>()));
+        }
+
+        [Scenario]
+        public void Showing_PhotoViewModel_From_ShareViewModel(
+            IRouter router,
+            INavigator navigator,
+            PhotoListViewModel photoListViewModel,
+            ShareViewModel shareViewModel,
+            IPhotosService photosService,
+            PhotoViewModel.Params parameters,
+            IPhotoPresenter presenter)
         {
             "Given a navigator"
                 .x(() => navigator = Substitute.For<INavigator>());
@@ -70,16 +95,34 @@ namespace ShareNavigation.Tests
                 .x(() => navigator.Peek().Returns(new Transition()
                 {
                     ViewModel = shareViewModel
+                }, new Transition()
+                {
+                    ViewModel = photoListViewModel
                 }));
             "And the PhotoViewModel Parameters"
-                .x(() => parameters = new PhotoViewModel.Params());
+                .x(() => parameters = new PhotoViewModel.Params()
+                {
+                    Photo = new Photo()
+                    {
+                        PhotoUrl = "Url"
+                    }
+                });
+            "And a PhotoViewModel registration"
+                .x(() => Resolver.Register(() => new PhotoViewModel(), typeof(PhotoViewModel)));
+            "And a presenter for the view model"
+                .x(() => presenter = Substitute.For<IPhotoPresenter>());
+            "That is registered"
+                .x(() => Resolver.Register(() => presenter, typeof(IPhotoPresenter)));
             "When I Show the PhotoViewModel"
                 .x(async () => await router.ShowAsync<PhotoViewModel, PhotoViewModel.Params>(parameters));
             "Then I Should have navigated to the PhotoViewModel"
                 .x(() =>
                 {
+                    navigator.Received(1).PopAsync();
                     navigator.Received().PushAsync(Arg.Is<Transition>(t => t.ViewModel is PhotoViewModel));
                 });
+            "And the PhotoViewModel presenter should have recieved a present call"
+                .x(() => presenter.Received(1).PresentAsync(Arg.Any<object>(), Arg.Any<object>()));
         }
     }
 }

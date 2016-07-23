@@ -36,8 +36,10 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Presenters\IPhotoPresenter.cs" />
     <Compile Include="Photo.cs" />
     <Compile Include="Presenters\IPhotoListPresenter.cs" />
+    <Compile Include="Presenters\ISharePresenter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouterConfig.cs" />
     <Compile Include="Services\IPhotosService.cs" />

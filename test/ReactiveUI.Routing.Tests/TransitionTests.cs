@@ -34,7 +34,7 @@ namespace ReactiveUI.Routing.Tests
         [Fact]
         public async Task Test_Throws_When_View_Model_Is_Not_Registered()
         {
-            await Assert.ThrowsAsync<InvalidReturnValueException>(async () =>
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 await transition.InitAsync(new ActivationParams()
                 {

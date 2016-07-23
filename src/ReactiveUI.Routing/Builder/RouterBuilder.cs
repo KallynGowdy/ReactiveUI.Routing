@@ -41,7 +41,10 @@ namespace ReactiveUI.Routing.Builder
                 navigator = navigatorFactory();
             }
             var router = new Router(navigator);
-
+            await router.InitAsync(new RouterParams()
+            {
+                ViewModelMap = BuiltRoutes.ToDictionary(r => r.ViewModelType, r => r.Build())
+            });
             return router;
         }
     }

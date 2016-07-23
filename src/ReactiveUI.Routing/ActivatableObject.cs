@@ -13,19 +13,19 @@ namespace ReactiveUI.Routing
         where TParams : new()
     {
         private bool initialized;
-        private readonly BehaviorSubject<TParams> activated;
+        private readonly BehaviorSubject<TParams> onActivated;
 
-        protected bool Initialized
+        public bool Initialized
         {
             get { return initialized; }
             private set { this.RaiseAndSetIfChanged(ref initialized, value); }
         }
 
-        public IObservable<TParams> Activated => activated.Where(p => p != null);
+        public IObservable<TParams> OnActivated => onActivated.Where(p => p != null);
 
         public ActivatableObject()
         {
-            activated = new BehaviorSubject<TParams>(default(TParams));
+            onActivated = new BehaviorSubject<TParams>(default(TParams));
         }
 
         protected virtual void InitCoreSync(TParams parameters)
@@ -43,7 +43,7 @@ namespace ReactiveUI.Routing
             InitCoreSync(parameters);
             await InitCoreAsync(parameters);
             Initialized = true;
-            activated.OnNext(parameters);
+            onActivated.OnNext(parameters);
         }
 
         protected virtual void DestroyCoreSync()

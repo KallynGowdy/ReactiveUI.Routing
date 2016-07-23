@@ -31,7 +31,7 @@ namespace ReactiveUI.Routing
             await base.InitCoreAsync(parameters);
             ActivationParams = parameters;
             var vm = await Activator.ActivateAsync(ActivationParams);
-            if (vm == null) throw new InvalidOperationException($"Cannot initialize transition. The returned value from Locator.Current.GetService({ActivationParams.Type}) was null, which means that the view model could not be instantiated.");
+            if (vm == null) throw new InvalidOperationException($"Cannot initialize transition. The returned value from the Locator.Current.GetService({ActivationParams.Type}) was null, which means that the view model could not be instantiated.");
             ViewModel = vm;
         }
 

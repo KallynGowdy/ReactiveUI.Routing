@@ -21,7 +21,7 @@ namespace ShareNavigation.ViewModels
 
         public PhotoViewModel(IRouter router = null) : base(router)
         {
-            photoUrl = Activated.Select(p => p.Photo.PhotoUrl).ToProperty(this, vm => vm.PhotoUrl);
+            photoUrl = OnActivated.Select(p => p.Photo.PhotoUrl).ToProperty(this, vm => vm.PhotoUrl);
         }
     }
 }

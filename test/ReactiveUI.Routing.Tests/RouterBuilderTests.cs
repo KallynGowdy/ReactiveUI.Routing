@@ -57,10 +57,17 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public void Test_Build_Returns_A_Router()
+        public async Task Test_Build_Returns_A_Router()
         {
-            var router = builder.BuildAsync();
+            var router = await builder.BuildAsync();
             router.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task Test_BuildAsync_Initializes_Router()
+        {
+            var router = (ActivatableObject<RouterParams>) await builder.BuildAsync();
+            router.Initialized.Should().BeTrue();
         }
     }
 }

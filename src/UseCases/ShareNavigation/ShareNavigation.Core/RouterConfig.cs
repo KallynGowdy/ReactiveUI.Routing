@@ -15,7 +15,10 @@ namespace ShareNavigation
         public async Task<IRouter> BuildRouterAsync(INavigator navigator = null)
         {
             var builder = navigator != null ? new RouterBuilder(() => navigator) : new RouterBuilder();
-            builder.When<PhotoListViewModel>(route => route.Navigate().Present<IPhotoListPresenter>());
+            builder
+                .When<PhotoListViewModel>(route => route.Navigate().Present<IPhotoListPresenter>())
+                .When<ShareViewModel>(route => route.Navigate().Present<ISharePresenter>())
+                .When<PhotoViewModel>(route => route.NavigateFrom<PhotoListViewModel>().Navigate().Present<IPhotoPresenter>());
             return await builder.BuildAsync();
         }
     }
