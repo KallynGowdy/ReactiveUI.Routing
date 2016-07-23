@@ -33,14 +33,16 @@ namespace ReactiveUI.Routing.Builder
             return this;
         }
 
-        public IRouter Build()
+        public async Task<IRouter> BuildAsync()
         {
             INavigator navigator = null;
             if (navigatorFactory != null)
             {
                 navigator = navigatorFactory();
             }
-            return new Router(navigator);
+            var router = new Router(navigator);
+
+            return router;
         }
     }
 }

@@ -59,7 +59,7 @@ namespace ReactiveUI.Routing.Tests
         [Fact]
         public void Test_Build_Returns_A_Router()
         {
-            var router = builder.Build();
+            var router = builder.BuildAsync();
             router.Should().NotBeNull();
         }
     }

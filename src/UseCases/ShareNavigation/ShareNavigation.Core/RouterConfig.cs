@@ -12,11 +12,11 @@ namespace ShareNavigation
 {
     public class RouterConfig
     {
-        public IRouter BuildRouter()
+        public async Task<IRouter> BuildRouterAsync(INavigator navigator = null)
         {
-            var builder = new RouterBuilder();
+            var builder = navigator != null ? new RouterBuilder(() => navigator) : new RouterBuilder();
             builder.When<PhotoListViewModel>(route => route.Navigate().Present<IPhotoListPresenter>());
-            return builder.Build();
+            return await builder.BuildAsync();
         }
     }
 }
