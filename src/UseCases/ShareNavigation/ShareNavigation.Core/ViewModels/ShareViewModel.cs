@@ -32,7 +32,8 @@ namespace ShareNavigation.ViewModels
             : base(router)
         {
             Service = service ?? Locator.Current.GetService<IPhotosService>();
-            Share = ReactiveCommand.CreateAsyncTask(async o =>
+            var canShare = this.WhenAny(vm => vm.PhotoUrl, url => !string.IsNullOrEmpty(url.Value));
+            Share = ReactiveCommand.CreateAsyncTask(canShare, async o =>
             {
                 var photo = new Photo
                 {

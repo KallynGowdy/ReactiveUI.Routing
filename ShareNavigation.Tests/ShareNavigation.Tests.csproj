@@ -110,9 +110,11 @@
   <ItemGroup>
     <Compile Include="LocatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RouterTests.cs" />
     <Compile Include="ViewModels\PhotoListViewModelTests.cs" />
     <Compile Include="ViewModels\PhotoViewModelTests.cs" />
     <Compile Include="ViewModels\RoutedViewModelTests.cs" />
+    <Compile Include="ViewModels\ShareViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
