@@ -12,7 +12,7 @@ using Splat;
 
 namespace ShareNavigation.ViewModels
 {
-    public class PhotoListViewModel : ReActivatableObject<Unit, PhotoListViewModel.State>
+    public class PhotoListViewModel : RoutedViewModel<Unit, PhotoListViewModel.State>
     {
         private readonly ObservableAsPropertyHelper<Photo[]> loadedPhotos;
 
@@ -22,14 +22,13 @@ namespace ShareNavigation.ViewModels
         }
 
         public IPhotosService Service { get; }
-        public IRouter Router { get; }
         public ReactiveCommand<Photo[]> LoadPhotos { get; }
         public ReactiveCommand<Unit> Share { get; }
         public Photo[] LoadedPhotos => loadedPhotos.Value;
 
         public PhotoListViewModel(IRouter router = null, IPhotosService service = null)
+            : base(router)
         {
-            Router = router ?? Locator.Current.GetService<IRouter>();
             Service = service ?? Locator.Current.GetService<IPhotosService>();
             LoadPhotos = ReactiveCommand.CreateAsyncTask(async o => await Service.GetPhotosAsync());
             Share = ReactiveCommand.CreateAsyncTask(async o => await Router.ShowAsync<ShareViewModel>());

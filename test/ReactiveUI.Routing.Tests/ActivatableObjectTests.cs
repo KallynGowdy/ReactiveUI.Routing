@@ -50,5 +50,34 @@ namespace ReactiveUI.Routing.Tests
             await obj.InitAsync(new TestParams());
             obj.Initialized.Should().BeTrue();
         }
+
+        [Fact]
+        public async Task Test_Activated_Resolves_After_Init_Is_Called()
+        {
+            var obj = new TestActivatableObject();
+            var first = new TestParams();
+            var second = new TestParams();
+            List<TestParams> recievedParams = new List<TestParams>();
+            obj.Activated.Subscribe(p => recievedParams.Add(p));
+            await obj.InitAsync(first);
+            await obj.InitAsync(second);
+
+            Assert.Collection(recievedParams,
+                p => p.Should().Be(first),
+                p => p.Should().Be(second));
+        }
+
+        [Fact]
+        public async Task Test_Activated_Resolves_With_Most_Recent_Value()
+        {
+            var obj = new TestActivatableObject();
+            var first = new TestParams();
+            List<TestParams> recievedParams = new List<TestParams>();
+            await obj.InitAsync(first);
+            obj.Activated.Subscribe(p => recievedParams.Add(p));
+
+            Assert.Collection(recievedParams,
+                p => p.Should().Be(first));
+        }
     }
 }

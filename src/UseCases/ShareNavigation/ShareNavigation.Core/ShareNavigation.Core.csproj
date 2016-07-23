@@ -43,6 +43,8 @@
     <Compile Include="Services\IPhotosService.cs" />
     <Compile Include="Services\PhotosService.cs" />
     <Compile Include="ViewModels\PhotoListViewModel.cs" />
+    <Compile Include="ViewModels\PhotoViewModel.cs" />
+    <Compile Include="ViewModels\RoutedViewModel.cs" />
     <Compile Include="ViewModels\ShareViewModel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
