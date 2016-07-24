@@ -195,7 +195,33 @@ namespace ReactiveUI.Routing.Tests
             presenter.Received(1).PresentAsync(Arg.Any<object>(), Arg.Any<object>());
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact]
+        public async Task Test_InitAsync_Navigates_To_DefaultViewModel()
+        {
+            Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
+            var action = Substitute.For<Func<INavigator, Transition, Task>>();
+            var initParams = new RouterParams()
+            {
+                ViewModelMap = new Dictionary<Type, RouteActions>()
+                {
+                    {
+                        typeof(TestViewModel),
+                        new RouteActions()
+                        {
+                            NavigationAction = action
+                        }
+                    }
+                },
+                DefaultViewModelType = typeof(TestViewModel),
+                DefaultParameters = new TestParams()
+            };
+
+            await router.InitAsync(initParams);
+
+            action.Received(1)(navigator, Arg.Is<Transition>(t => t.ViewModel is TestViewModel));
+        }
+
+        [Fact(Skip = "Not Implemented/Under Review")]
         public async Task Test_HideAsync_Disposes_Of_ViewModel_Presenters()
         {
             var presenter = Substitute.For<IPresenter>();

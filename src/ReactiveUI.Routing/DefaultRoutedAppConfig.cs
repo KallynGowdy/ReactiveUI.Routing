@@ -22,7 +22,8 @@ namespace ReactiveUI.Routing
         public virtual async Task<IRouter> BuildRouterAsync()
         {
             var builder = new RouterBuilder();
-            return await builder.BuildAsync();
+            var routerParams = builder.Build();
+            return await Router.InitWithParamsAsync(routerParams);
         }
     }
 }

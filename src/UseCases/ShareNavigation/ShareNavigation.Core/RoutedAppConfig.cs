@@ -21,13 +21,14 @@ namespace ShareNavigation
         public override async Task<IRouter> BuildRouterAsync()
         {
             var builder = new RouterBuilder();
-            return await builder
+            var routerParams = builder
                 .Default<PhotoListViewModel>()
                 .When<PhotoListViewModel>(route => route.Navigate().Present<IPhotoListPresenter>())
                 .When<ShareViewModel>(route => route.Navigate().Present<ISharePresenter>())
                 .When<PhotoViewModel>(
                     route => route.NavigateFrom<PhotoListViewModel>().Navigate().Present<IPhotoPresenter>())
-                .BuildAsync();
+                .Build();
+            return await Router.InitWithParamsAsync(routerParams);
         }
     }
 }

@@ -59,17 +59,10 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public async Task Test_BuildAsync_Returns_A_Router()
+        public void Test_Build_Returns_RouterParams()
         {
-            var router = await builder.BuildAsync();
-            router.Should().NotBeNull();
-        }
-
-        [Fact]
-        public async Task Test_BuildAsync_Initializes_Router()
-        {
-            var router = (ActivatableObject<RouterParams>)await builder.BuildAsync();
-            router.Initialized.Should().BeTrue();
+            var routerParams = builder.Build();
+            routerParams.Should().NotBeNull();
         }
 
         [Fact]
@@ -80,13 +73,12 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public async Task Test_BuildAsync_Sets_Default_Route_Actions()
+        public void Test_Build_Sets_Default_Route_Actions()
         {
             var p = new TestParams();
-            var router = (ActivatableObject<RouterParams>)await builder
+            var parameters = builder
                 .Default(route => route.SetViewModel(typeof(TestViewModel)), p)
-                .BuildAsync();
-            var parameters = await router.OnActivated.FirstAsync();
+                .Build();
 
             parameters.DefaultViewModelType.Should().Be(typeof(TestViewModel));
             parameters.DefaultParameters.Should().Be(p);

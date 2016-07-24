@@ -35,6 +35,10 @@ namespace ReactiveUI.Routing
             await base.InitCoreAsync(parameters);
             Params = parameters;
             await Navigator.InitAsync(Unit.Default);
+            if (Params.DefaultViewModelType != null && Params.DefaultParameters != null)
+            {
+                await ShowCoreAsync(Params.DefaultViewModelType, Params.DefaultParameters);
+            }
         }
 
         protected override async Task ResumeCoreAsync(RouterState storedState)
@@ -56,13 +60,18 @@ namespace ReactiveUI.Routing
             await Navigator.DestroyAsync();
         }
 
-        public async Task ShowAsync(Type viewModel, object vmParams)
+        protected async Task ShowCoreAsync(Type viewModel, object vmParams)
         {
-            CheckInit();
             var actions = GetActionsForViewModelType(viewModel);
             var transition = await BuildTransitionAsync(viewModel, vmParams);
             await Navigate(actions, transition);
             await PresentAsync(actions, transition);
+        }
+
+        public async Task ShowAsync(Type viewModel, object vmParams)
+        {
+            CheckInit();
+            await ShowCoreAsync(viewModel, vmParams);
         }
 
         public Task HideAsync(object viewModel)
@@ -135,6 +144,13 @@ namespace ReactiveUI.Routing
         private void CheckInit()
         {
             if (!Initialized) throw new InvalidOperationException("The router must be initialized before use.");
+        }
+
+        public static async Task<IRouter> InitWithParamsAsync(RouterParams routerParams)
+        {
+            var router = new Router();
+            await router.InitAsync(routerParams);
+            return router;
         }
     }
 }

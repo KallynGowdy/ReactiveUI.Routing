@@ -49,21 +49,14 @@ namespace ReactiveUI.Routing.Builder
             return this;
         }
 
-        public async Task<IRouter> BuildAsync()
+        public RouterParams Build()
         {
-            INavigator navigator = null;
-            if (navigatorFactory != null)
-            {
-                navigator = navigatorFactory();
-            }
-            var router = new Router(navigator);
-            await router.InitAsync(new RouterParams()
+            return new RouterParams()
             {
                 ViewModelMap = BuiltRoutes.Select(r => r.Build()).ToDictionary(a => a.ViewModelType),
                 DefaultViewModelType = DefaultRoute?.ViewModelType,
                 DefaultParameters = DefaultParameters
-            });
-            return router;
+            };
         }
     }
 }
