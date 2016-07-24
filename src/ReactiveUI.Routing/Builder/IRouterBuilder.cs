@@ -14,6 +14,7 @@ namespace ReactiveUI.Routing.Builder
     {
         IEnumerable<IRouteBuilder> BuiltRoutes { get; }
         IRouterBuilder When(Func<IRouteBuilder, IRouteBuilder> buildRoute);
+        IRouterBuilder Default(Func<IRouteBuilder, IRouteBuilder> buildRoute, object parameters);
         Task<IRouter> BuildAsync();
     }
 }

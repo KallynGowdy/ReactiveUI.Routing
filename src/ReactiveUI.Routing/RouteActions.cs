@@ -18,5 +18,6 @@ namespace ReactiveUI.Routing
         /// Gets or sets the array of presenter types that should be used to present the view model.
         /// </summary>
         public Type[] Presenters { get; set; }
+        public Type ViewModelType { get; set; }
     }
 }

@@ -12,5 +12,7 @@ namespace ReactiveUI.Routing
         /// Gets or sets the map of view model types to the actions that should be taken on them.
         /// </summary>
         public Dictionary<Type, RouteActions> ViewModelMap { get; set; }
+        public object DefaultParameters { get; set; }
+        public Type DefaultViewModelType { get; set; }
     }
 }

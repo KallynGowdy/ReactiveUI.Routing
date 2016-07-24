@@ -65,7 +65,8 @@ namespace ReactiveUI.Routing.Builder
                         await action(navigator, transition);
                     }
                 },
-                Presenters = Presenters.ToArray()
+                Presenters = Presenters.ToArray(),
+                ViewModelType = ViewModelType
             };
         }
     }

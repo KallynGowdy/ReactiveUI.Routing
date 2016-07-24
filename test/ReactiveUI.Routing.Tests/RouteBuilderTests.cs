@@ -185,7 +185,7 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public async Task Test_Build_Creates_RouteActions_With_Presenters()
+        public void Test_Build_Creates_RouteActions_With_Presenters()
         {
             Route.SetViewModel(typeof(TestViewModel))
                 .Present<TestPresenterType>()
@@ -199,12 +199,20 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public async Task Test_Build_Creates_RouteActions_With_Empty_Presenters()
+        public void Test_Build_Creates_RouteActions_With_Empty_Presenters()
         {
             Route.SetViewModel(typeof(TestViewModel));
 
             var actions = Route.Build();
             actions.Presenters.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void Test_Build_Creates_RouteActions_With_ViewModel()
+        {
+            Route.SetViewModel(typeof(TestViewModel));
+            var actions = Route.Build();
+            actions.ViewModelType.Should().Be(typeof(TestViewModel));
         }
     }
 }

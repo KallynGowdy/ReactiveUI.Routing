@@ -22,6 +22,7 @@ namespace ShareNavigation
         {
             var builder = new RouterBuilder();
             return await builder
+                .Default<PhotoListViewModel>()
                 .When<PhotoListViewModel>(route => route.Navigate().Present<IPhotoListPresenter>())
                 .When<ShareViewModel>(route => route.Navigate().Present<ISharePresenter>())
                 .When<PhotoViewModel>(
