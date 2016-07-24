@@ -12,7 +12,7 @@ namespace ShareNavigation
         private IRoutedAppHost host;
         public AndroidApplication(IntPtr handle, JniHandleOwnership transfer) : base(handle,transfer)
         {
-            host = new RoutedAndroidHost(this, new RoutedAppConfig());
+            host = new RoutedAppHost(new AndroidAppConfig(this));
         }
 
         public override void OnCreate()

@@ -15,6 +15,7 @@ namespace ReactiveUI.Routing
     {
         public virtual void RegisterDependencies(IMutableDependencyResolver resolver)
         {
+            resolver.Register(() => new DefaultViewTypeLocator(), typeof(IViewTypeLocator));
             resolver.Register(() => new LocatorActivator(), typeof(IActivator));
         }
 

@@ -44,12 +44,14 @@
     <Compile Include="Builder\RouteBuilderExtensions.cs" />
     <Compile Include="Builder\RouterBuilderExtensions.cs" />
     <Compile Include="DefaultRoutedAppConfig.cs" />
+    <Compile Include="DefaultViewTypeLocator.cs" />
     <Compile Include="IRoutedAppConfig.cs" />
     <Compile Include="IRoutedAppHost.cs" />
     <Compile Include="InvalidReturnValueException.cs" />
     <Compile Include="IPresentationState.cs" />
     <Compile Include="IPresenter.cs" />
     <Compile Include="IRootPresenter.cs" />
+    <Compile Include="IViewTypeLocator.cs" />
     <Compile Include="LocatorActivator.cs" />
     <Compile Include="Presenter.cs" />
     <Compile Include="ReActivatableObject.cs" />
