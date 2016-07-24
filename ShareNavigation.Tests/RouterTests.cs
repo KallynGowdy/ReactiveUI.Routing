@@ -9,6 +9,7 @@ using ReactiveUI.Routing;
 using ShareNavigation.Presenters;
 using ShareNavigation.Services;
 using ShareNavigation.ViewModels;
+using Splat;
 using Xbehave;
 using Xunit;
 
@@ -28,14 +29,16 @@ namespace ShareNavigation.Tests
         {
             "Given a INavigator"
                 .x(() => navigator = Substitute.For<INavigator>());
+            "That is registered"
+                .x(() => Resolver.RegisterConstant(navigator, typeof(INavigator)));
             "And a IRouter"
-                .x(async () => router = await new RouterConfig().BuildRouterAsync(navigator));
+                .x(async () => router = await new RoutedAppConfig().BuildRouterAsync());
             "And a PhotoListViewModel registration"
                 .x(() => Resolver.Register(() => new PhotoListViewModel(), typeof(PhotoListViewModel)));
             "And a presenter for the view model"
                 .x(() => presenter = Substitute.For<IPhotoListPresenter>());
             "That is registered"
-                .x(() => Resolver.Register(() => presenter, typeof(IPhotoListPresenter)));
+                .x(() => Resolver.RegisterConstant(presenter, typeof(IPhotoListPresenter)));
             "When I show PhotoListViewModel"
                 .x(async () => await router.ShowAsync<PhotoListViewModel>());
             "Then the navigator should have recieved a push call"
@@ -55,8 +58,10 @@ namespace ShareNavigation.Tests
         {
             "Given a navigator"
                 .x(() => navigator = Substitute.For<INavigator>());
+            "That is registered"
+                .x(() => Resolver.RegisterConstant(navigator, typeof(INavigator)));
             "And a IRouter"
-                .x(async () => router = await new RouterConfig().BuildRouterAsync(navigator));
+                .x(async () => router = await new RoutedAppConfig().BuildRouterAsync());
             "And a ShareViewModel registration"
                 .x(() => Resolver.Register(() => new ShareViewModel(router), typeof(ShareViewModel)));
             "And a presenter for the view model"
@@ -83,8 +88,10 @@ namespace ShareNavigation.Tests
         {
             "Given a navigator"
                 .x(() => navigator = Substitute.For<INavigator>());
-            "Given a IRouter"
-                .x(async () => router = await new RouterConfig().BuildRouterAsync(navigator));
+            "That is registered"
+                .x(() => Resolver.RegisterConstant(navigator, typeof(INavigator)));
+            "And a IRouter"
+                .x(async () => router = await new RoutedAppConfig().BuildRouterAsync());
             "And a IPhotosService"
                 .x(() => photosService = Substitute.For<IPhotosService>());
             "And a PhotoListViewModel"

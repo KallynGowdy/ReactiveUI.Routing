@@ -6,11 +6,14 @@ using Splat;
 
 namespace ReactiveUI.Routing
 {
+    /// <summary>
+    /// Defines a class that represents a typical router.
+    /// </summary>
     public class Router : ReActivatableObject<RouterParams, RouterState>, IRouter
     {
-        public INavigator Navigator { get; }
-        private RouterParams Params { get; set; }
+        private INavigator Navigator { get; }
         private IActivator Activator { get; }
+        private RouterParams Params { get; set; }
 
         public Router() : this(null, null)
         {
