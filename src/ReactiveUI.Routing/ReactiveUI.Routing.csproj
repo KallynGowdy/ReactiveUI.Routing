@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ActivatableObject.cs" />
+    <Compile Include="ActivatorExtensions.cs" />
     <Compile Include="BaseActivator.cs" />
     <Compile Include="Builder\IRouteBuilder.cs" />
     <Compile Include="Builder\IRouterBuilder.cs" />

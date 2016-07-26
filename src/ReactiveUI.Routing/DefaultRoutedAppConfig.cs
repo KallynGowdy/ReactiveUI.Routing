@@ -11,19 +11,27 @@ namespace ReactiveUI.Routing
     /// <summary>
     /// Defines a class that represents a default configuration for routed applications.
     /// </summary>
-    public class DefaultRoutedAppConfig : IRoutedAppConfig
+    public abstract class DefaultRoutedAppConfig : IRoutedAppConfig
     {
         public virtual void RegisterDependencies(IMutableDependencyResolver resolver)
         {
+            if (resolver == null) throw new ArgumentNullException(nameof(resolver));
             resolver.Register(() => new DefaultViewTypeLocator(), typeof(IViewTypeLocator));
             resolver.Register(() => new LocatorActivator(), typeof(IActivator));
+            resolver.Register(() => new Router(), typeof(IRouter));
+            resolver.Register(BuildRouterParamsSafe, typeof(RouterParams));
         }
 
-        public virtual async Task<IRouter> BuildRouterAsync()
+        private RouterParams BuildRouterParamsSafe()
         {
-            var builder = new RouterBuilder();
-            var routerParams = builder.Build();
-            return await Router.InitWithParamsAsync(routerParams);
+            var parameters = BuildRouterParams();
+            if (parameters == null)
+            {
+                throw new InvalidReturnValueException($"{nameof(BuildRouterParams)} must return a non-null value, as it is a required dependency registration.");
+            }
+            return parameters;
         }
+
+        protected abstract RouterParams BuildRouterParams();
     }
 }

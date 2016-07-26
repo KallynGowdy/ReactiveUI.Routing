@@ -102,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivatableObjectTests.cs" />
+    <Compile Include="DefaultRoutedAppConfigTests.cs" />
     <Compile Include="DefaultViewTypeLocatorTests.cs" />
     <Compile Include="LocatorTest.cs" />
     <Compile Include="OtherTestPresenterType.cs" />

@@ -9,6 +9,5 @@ namespace ReactiveUI.Routing
     public interface IRoutedAppConfig
     {
         void RegisterDependencies(IMutableDependencyResolver resolver);
-        Task<IRouter> BuildRouterAsync();
     }
 }

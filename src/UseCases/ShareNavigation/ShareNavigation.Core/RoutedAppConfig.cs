@@ -18,17 +18,15 @@ namespace ShareNavigation
             base.RegisterDependencies(resolver);
         }
 
-        public override async Task<IRouter> BuildRouterAsync()
+        protected override RouterParams BuildRouterParams()
         {
-            var builder = new RouterBuilder();
-            var routerParams = builder
+            return new RouterBuilder()
                 .Default<PhotoListViewModel>()
                 .When<PhotoListViewModel>(route => route.Navigate().Present<IPhotoListPresenter>())
                 .When<ShareViewModel>(route => route.Navigate().Present<ISharePresenter>())
                 .When<PhotoViewModel>(
                     route => route.NavigateFrom<PhotoListViewModel>().Navigate().Present<IPhotoPresenter>())
                 .Build();
-            return await Router.InitWithParamsAsync(routerParams);
         }
     }
 }

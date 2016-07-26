@@ -22,10 +22,7 @@ namespace ShareNavigation.Tests
         }
 
         [Scenario]
-        public void Showing_PhotoListViewModel(
-            IRouter router,
-            INavigator navigator,
-            IPhotoListPresenter presenter)
+        public void Showing_PhotoListViewModel(IRouter router, INavigator navigator, IPhotoListPresenter presenter, IActivator activator)
         {
             "Given a INavigator"
                 .x(() => navigator = Substitute.For<INavigator>());
@@ -37,8 +34,12 @@ namespace ShareNavigation.Tests
                 .x(() => presenter = Substitute.For<IPhotoListPresenter>());
             "That is registered"
                 .x(() => Resolver.RegisterConstant(presenter, typeof(IPhotoListPresenter)));
+            "And a routed app config"
+                .x(() => new RoutedAppConfig().RegisterDependencies(Resolver));
+            "And a IActivator"
+                .x(() => activator = Resolver.GetService<IActivator>());
             "When the router is initialized"
-                .x(async () => router = await new RoutedAppConfig().BuildRouterAsync());
+                .x(async () => router = await activator.ActivateAsync<IRouter, RouterParams>(Resolver.GetService<RouterParams>()));
             "Then the navigator should have recieved a push call"
                 .x(() =>
                 {
@@ -52,7 +53,8 @@ namespace ShareNavigation.Tests
         public void Showing_ShareViewModel(
             IRouter router,
             INavigator navigator,
-            ISharePresenter presenter)
+            ISharePresenter presenter,
+            IActivator activator)
         {
             "Given a navigator"
                 .x(() => navigator = Substitute.For<INavigator>());
@@ -70,8 +72,12 @@ namespace ShareNavigation.Tests
                 .x(() => presenter = Substitute.For<ISharePresenter>());
             "That is registered"
                 .x(() => Resolver.Register(() => presenter, typeof(ISharePresenter)));
+            "And a RoutedAppConfig"
+                .x(() => new RoutedAppConfig().RegisterDependencies(Resolver));
+            "And a IActivator"
+                .x(() => activator = Resolver.GetService<IActivator>());
             "And a IRouter"
-                .x(async () => router = await new RoutedAppConfig().BuildRouterAsync());
+                .x(async () => router = await activator.ActivateAsync<IRouter, RouterParams>(Resolver.GetService<RouterParams>()));
             "When I show the ShareViewModel"
                 .x(async () => await router.ShowAsync<ShareViewModel>());
             "Then the navigator should have recieved a push call"
@@ -81,14 +87,7 @@ namespace ShareNavigation.Tests
         }
 
         [Scenario]
-        public void Showing_PhotoViewModel_From_ShareViewModel(
-            IRouter router,
-            INavigator navigator,
-            PhotoListViewModel photoListViewModel,
-            ShareViewModel shareViewModel,
-            IPhotosService photosService,
-            PhotoViewModel.Params parameters,
-            IPhotoPresenter presenter)
+        public void Showing_PhotoViewModel_From_ShareViewModel(IRouter router, INavigator navigator, PhotoListViewModel photoListViewModel, ShareViewModel shareViewModel, IPhotosService photosService, PhotoViewModel.Params parameters, IPhotoPresenter presenter, IActivator activator)
         {
             "Given a navigator"
                 .x(() => navigator = Substitute.For<INavigator>());
@@ -129,8 +128,12 @@ namespace ShareNavigation.Tests
                 .x(() => presenter = Substitute.For<IPhotoPresenter>());
             "That is registered"
                 .x(() => Resolver.Register(() => presenter, typeof(IPhotoPresenter)));
+            "And a RoutedAppConfig"
+                .x(() => new RoutedAppConfig().RegisterDependencies(Resolver));
+            "And a IActivator"
+                .x(() => activator = Resolver.GetService<IActivator>());
             "And a IRouter"
-                .x(async () => router = await new RoutedAppConfig().BuildRouterAsync());
+                .x(async () => router = await activator.ActivateAsync<IRouter, RouterParams>(Resolver.GetService<RouterParams>()));
             "When I Show the PhotoViewModel"
                 .x(async () => await router.ShowAsync<PhotoViewModel, PhotoViewModel.Params>(parameters));
             "Then I Should have navigated to the PhotoViewModel"
