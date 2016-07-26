@@ -7,7 +7,7 @@ namespace ReactiveUI.Routing
     /// <summary>
     /// Defines a class that represents a built transition.
     /// </summary>
-    public sealed class Transition : ReActivatableObject<ActivationParams, TransitionState>
+    public sealed class Transition : ReActivatableObject<ActivationParams, ObjectState>
     {
         public Transition() : this(null)
         {

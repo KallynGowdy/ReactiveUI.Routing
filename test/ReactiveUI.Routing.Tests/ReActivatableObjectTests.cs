@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using NSubstitute;
 using Xunit;
 
 namespace ReactiveUI.Routing.Tests
@@ -40,14 +41,23 @@ namespace ReactiveUI.Routing.Tests
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await ReObj.ResumeAsync(null);
+                await ReObj.ResumeAsync(null, Substitute.For<IReActivator>());
+            });
+        }
+
+        [Fact]
+        public async Task Test_ResumeAsync_Throws_If_Given_Null_IReActivator()
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await ReObj.ResumeAsync(new TestState(), null);
             });
         }
 
         [Fact]
         public async Task Test_ResumeAsync_Does_Not_Throw_If_Given_Non_Null_State()
         {
-            await ReObj.ResumeAsync(new TestState());
+            await ReObj.ResumeAsync(new TestState(), Substitute.For<IReActivator>());
         }
 
         [Fact]
@@ -85,8 +95,8 @@ namespace ReactiveUI.Routing.Tests
             List<TestState> resumedStates = new List<TestState>(2);
             obj.Resumed.Subscribe(state => resumedStates.Add(state));
 
-            await obj.ResumeAsync(first);
-            await obj.ResumeAsync(second);
+            await obj.ResumeAsync(first, Substitute.For<IReActivator>());
+            await obj.ResumeAsync(second, Substitute.For<IReActivator>());
 
             Assert.Collection(resumedStates,
                 s => s.Should().Be(first),
@@ -100,7 +110,7 @@ namespace ReactiveUI.Routing.Tests
             var first = new TestState();
             List<TestState> resumedStates = new List<TestState>(2);
             Action subscribe = () => obj.Resumed.Subscribe(state => resumedStates.Add(state));
-            await obj.ResumeAsync(first);
+            await obj.ResumeAsync(first, Substitute.For<IReActivator>());
 
             subscribe();
             subscribe();

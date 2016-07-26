@@ -51,21 +51,21 @@ namespace ReactiveUI.Routing.Tests
         {
             var state = new RouterState()
             {
-                NavigationState = new NavigationState()
+                NavigatorState = new NavigatorState()
             };
-            await router.ResumeAsync(state);
-            navigator.Received(1).ResumeAsync(state.NavigationState);
+            await router.ResumeAsync(state, Substitute.For<IReActivator>());
+            navigator.Received(1).ResumeAsync(state.NavigatorState, Arg.Any<IReActivator>());
         }
 
         [Fact]
         public async Task Test_SuspendAsync_Suspends_Navigator()
         {
-            var navigationState = new NavigationState();
+            var navigationState = new NavigatorState();
             navigator.SuspendAsync().Returns(navigationState);
 
             var state = await router.SuspendAsync();
 
-            state.NavigationState.Should().Be(navigationState);
+            state.NavigatorState.Should().Be(navigationState);
         }
 
         [Fact]

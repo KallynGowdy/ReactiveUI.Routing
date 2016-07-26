@@ -22,8 +22,9 @@ namespace ReactiveUI.Routing
         /// Resumes the view model state by restoring the stored state.
         /// </summary>
         /// <param name="storedState">The state that was previously stored.</param>
+        /// <param name="reActivator">The object that can reactivate dependent child objects of this object.</param>
         /// <returns></returns>
-        Task ResumeAsync(object storedState);
+        Task ResumeAsync(object storedState, IReActivator reActivator);
     }
 
     /// <summary>
@@ -44,7 +45,8 @@ namespace ReactiveUI.Routing
         /// Resumes the view model state by restoring the stored state.
         /// </summary>
         /// <param name="storedState">The state that was previously stored.</param>
+        /// <param name="reActivator">The object that can reactivate dependent child objects of this object.</param>
         /// <returns></returns>
-        Task ResumeAsync(TState storedState);
+        Task ResumeAsync(TState storedState, IReActivator reActivator);
     }
 }

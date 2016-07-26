@@ -43,25 +43,26 @@ namespace ReactiveUI.Routing
             return state;
         }
 
-        Task IReActivatable.ResumeAsync(object storedState)
+        Task IReActivatable.ResumeAsync(object storedState, IReActivator reActivator)
         {
-            return ResumeAsync((TState) storedState);
+            return ResumeAsync((TState) storedState, reActivator);
         }
 
         protected virtual void ResumeCoreSync(TState storedState)
         {
         }
 
-        protected virtual Task ResumeCoreAsync(TState storedState)
+        protected virtual Task ResumeCoreAsync(TState storedState, IReActivator reActivator)
         {
             ResumeCoreSync(storedState);
             return Task.FromResult(0);
         }
 
-        public async Task ResumeAsync(TState storedState)
+        public async Task ResumeAsync(TState storedState, IReActivator reActivator)
         {
             if (storedState == null) throw new ArgumentNullException(nameof(storedState));
-            await ResumeCoreAsync(storedState);
+            if (reActivator == null) throw new ArgumentNullException(nameof(reActivator));
+            await ResumeCoreAsync(storedState, reActivator);
             resumed.OnNext(storedState);
         }
 

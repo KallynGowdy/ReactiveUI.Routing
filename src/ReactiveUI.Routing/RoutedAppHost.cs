@@ -29,11 +29,19 @@ namespace ReactiveUI.Routing
         public virtual async Task StartAsync()
         {
             Config.RegisterDependencies(Locator.CurrentMutable);
-            var routerParams = Locator.Current.GetService<RouterParams>();
-            if (routerParams == null)
+            var routerParams = GetService<RouterParams>();
+            var activator = GetService<IActivator>();
+            await activator.ActivateAsync<IRouter, RouterParams>(routerParams);
+        }
+
+        private T GetService<T>()
+        {
+            var service = Locator.Current.GetService<T>();
+            if (service == null)
             {
-                throw new InvalidOperationException($"The {typeof(IRoutedAppConfig)} must register a {typeof(RouterParams)} service.");
+                throw new InvalidOperationException($"The {nameof(IRoutedAppConfig)} must register a {nameof(T)} service so that the router can be started.");
             }
+            return service;
         }
     }
 }

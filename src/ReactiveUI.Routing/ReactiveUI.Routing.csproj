@@ -54,6 +54,7 @@
     <Compile Include="IRootPresenter.cs" />
     <Compile Include="IViewTypeLocator.cs" />
     <Compile Include="LocatorActivator.cs" />
+    <Compile Include="Navigator.cs" />
     <Compile Include="Presenter.cs" />
     <Compile Include="ReActivatableObject.cs" />
     <Compile Include="RootPresenterParams.cs" />
@@ -71,9 +72,9 @@
     <Compile Include="IReActivatable.cs" />
     <Compile Include="IRouter.cs" />
     <Compile Include="IReActivator.cs" />
-    <Compile Include="NavigationState.cs" />
+    <Compile Include="NavigatorState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TransitionState.cs" />
+    <Compile Include="ObjectState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />

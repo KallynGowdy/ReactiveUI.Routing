@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using ReactiveUI.Routing.Builder;
 using Splat;
 
@@ -17,6 +15,7 @@ namespace ReactiveUI.Routing
         {
             if (resolver == null) throw new ArgumentNullException(nameof(resolver));
             resolver.Register(() => new DefaultViewTypeLocator(), typeof(IViewTypeLocator));
+            resolver.Register(() => new Navigator(), typeof(INavigator));
             resolver.Register(() => new LocatorActivator(), typeof(IActivator));
             resolver.Register(() => new Router(), typeof(IRouter));
             resolver.Register(BuildRouterParamsSafe, typeof(RouterParams));

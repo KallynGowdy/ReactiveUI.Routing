@@ -9,7 +9,7 @@ using ShareNavigation.ViewModels;
 
 namespace ShareNavigation.Views
 {
-    [Activity(Label = "Starter-Android")]
+    [Activity(Label = "Starter-Android", MainLauncher = true)]
     public class PhotoListActivity : ReactiveActivity<PhotoListActivity>
     {
         int count = 1;

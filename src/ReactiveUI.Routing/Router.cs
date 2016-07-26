@@ -27,7 +27,7 @@ namespace ReactiveUI.Routing
         {
             this.Navigator = navigator ?? Locator.Current.GetService<INavigator>();
             this.Activator = activator ?? Locator.Current.GetService<IActivator>() ?? new LocatorActivator();
-            if (this.Navigator == null) throw new InvalidOperationException("When creating a router, a INavigator object must either be provided or locatable via Locator.Current.GetService<INavigator>()");
+            if (this.Navigator == null) throw new InvalidOperationException($"When creating a router, a {nameof(INavigator)} object must either be provided or locatable via Locator.Current.GetService<{nameof(INavigator)}>()");
         }
 
         protected override async Task InitCoreAsync(RouterParams parameters)
@@ -41,16 +41,16 @@ namespace ReactiveUI.Routing
             }
         }
 
-        protected override async Task ResumeCoreAsync(RouterState storedState)
+        protected override async Task ResumeCoreAsync(RouterState storedState, IReActivator reActivator)
         {
-            await base.ResumeCoreAsync(storedState);
-            await Navigator.ResumeAsync(storedState.NavigationState);
+            await base.ResumeCoreAsync(storedState, reActivator);
+            await Navigator.ResumeAsync(storedState.NavigatorState, reActivator);
         }
 
         protected override async Task<RouterState> SuspendCoreAsync()
         {
             var state = await base.SuspendCoreAsync();
-            state.NavigationState = await Navigator.SuspendAsync();
+            state.NavigatorState = await Navigator.SuspendAsync();
             return state;
         }
 
