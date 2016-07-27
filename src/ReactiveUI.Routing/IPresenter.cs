@@ -34,6 +34,6 @@ namespace ReactiveUI.Routing
         /// <param name="viewModel">The view model that should be displayed.</param>
         /// <param name="hint">The optional object that can communicate to the presenter how the view model should be displayed.</param>
         /// <returns></returns>
-        new Task<IDisposable> PresentAsync(TViewModel viewModel, object hint);
+        Task<IDisposable> PresentAsync(TViewModel viewModel, object hint);
     }
 }

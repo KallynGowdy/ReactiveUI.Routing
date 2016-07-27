@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -40,7 +41,7 @@ namespace ShareNavigation
         public class Callbacks : Object, Application.IActivityLifecycleCallbacks
         {
             private readonly BehaviorSubject<Activity> activityCreated = new BehaviorSubject<Activity>(null);
-            public IObservable<Activity> ActivityCreated => activityCreated;
+            public IObservable<Activity> ActivityCreated => activityCreated.Where(a => a != null);
 
             public void OnActivityCreated(Activity activity, Bundle savedInstanceState)
             {
@@ -74,25 +75,39 @@ namespace ShareNavigation
 
         private Callbacks ActivityCallbacks { get; }
 
-        public AndroidActivityPresenter(Application context, IViewTypeLocator viewLocator = null) : base(context, viewLocator)
+        public AndroidActivityPresenter(Application application = null, Context context = null, IViewTypeLocator viewLocator = null)
+            : base(application, context, viewLocator)
         {
             ActivityCallbacks = new Callbacks();
-            Context.RegisterActivityLifecycleCallbacks(ActivityCallbacks);
+            Application.RegisterActivityLifecycleCallbacks(ActivityCallbacks);
         }
 
         public override async Task<IDisposable> PresentAsync(object viewModel, object hint)
         {
-            var viewType = ViewLocator.ResolveViewType(viewModel.GetType());
+            var viewModelType = viewModel.GetType();
+            var viewType = ViewLocator.ResolveViewType(viewModelType);
             if (viewType != null)
             {
-                Context.StartActivity(viewType);
-                var activity = await ActivityCallbacks.ActivityCreated
-                    .FirstAsync(a => a.GetType() == viewType);
-                return new ScheduledDisposable(RxApp.MainThreadScheduler, new FuncDisposable(() => activity?.Finish()));
+                return Observable.Create<Activity>(o =>
+                {
+                    Activity activity = null;
+                    var sub = ActivityCallbacks.ActivityCreated
+                        .FirstAsync(a => a.GetType() == viewType)
+                        .Do(a => activity = a)
+                        .Cast<IViewFor>()
+                        .Do(a => a.ViewModel = viewModel)
+                        .Subscribe(a => { }, onError: o.OnError);
+                    Context.StartActivity(viewType);
+
+                    return new ScheduledDisposable(RxApp.MainThreadScheduler,
+                        new CompositeDisposable(
+                            sub,
+                            new FuncDisposable(() => activity?.Finish())));
+                }).Subscribe();
             }
             else
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException($"Could not resolve activity for {viewModelType}. Make sure that a IViewFor<{viewModelType}> exists in the current assembly.");
             }
         }
     }

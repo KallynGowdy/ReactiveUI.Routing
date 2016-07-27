@@ -33,7 +33,7 @@ namespace ShareNavigation.ViewModels
             LoadPhotos = ReactiveCommand.CreateAsyncTask(async o => await Service.GetPhotosAsync());
             Share = ReactiveCommand.CreateAsyncTask(async o => await Router.ShowAsync<ShareViewModel>());
             loadedPhotos = Observable.Merge(Resumed.Select(state => state?.LoadedPhotos), LoadPhotos)
-                .ToProperty(this, vm => vm.LoadedPhotos);
+                .ToProperty(this, vm => vm.LoadedPhotos, new Photo[0]);
         }
 
         protected override State SuspendCoreSync()

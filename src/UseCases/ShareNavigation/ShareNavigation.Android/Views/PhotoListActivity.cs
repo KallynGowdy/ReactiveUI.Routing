@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reactive.Linq;
 using Akavache;
 using Android.App;
@@ -9,23 +10,26 @@ using ShareNavigation.ViewModels;
 
 namespace ShareNavigation.Views
 {
-    [Activity(Label = "Starter-Android", MainLauncher = true)]
-    public class PhotoListActivity : ReactiveActivity<PhotoListActivity>
+    [Activity(Label = "Starter-Android")]
+    public class PhotoListActivity : ReactiveActivity<PhotoListViewModel>
     {
-        int count = 1;
 
         protected override async void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-            // Set our view from the "main" layout resource
-            SetContentView(Resource.Layout.Main);
+            SetContentView(Resource.Layout.PhotoList);
             this.WhenActivated(d =>
             {
-                // Bindings
-                d(MyButton.Events().Click.Subscribe(_ => MyButton.Text = string.Format("{0} clicks!", count++)));
+                d(ViewModel.WhenAnyValue(vm => vm.LoadedPhotos)
+                    .Select(photos => new PhotoListItemAdapter(this, photos))
+                    .BindTo(this, view => view.PhotosList.Adapter));
+                d(this.BindCommand(ViewModel, vm => vm.Share, view => view.ShareButton, nameof(Button.Click)));
+                ViewModel.LoadPhotos.Execute(null);
             });
         }
 
-        public Button MyButton => this.GetControl<Button>();
+        private ListView PhotosList => this.GetControl<ListView>();
+        private Button ShareButton => this.GetControl<Button>();
+
     }
 }

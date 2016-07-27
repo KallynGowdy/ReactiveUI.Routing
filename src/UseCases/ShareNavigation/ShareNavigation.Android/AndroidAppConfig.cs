@@ -10,24 +10,28 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using ReactiveUI.Routing;
+using ShareNavigation.Views;
 using Splat;
 
 namespace ShareNavigation
 {
     public class AndroidAppConfig : RoutedAppConfig
     {
-        private readonly Application appContext;
+        private readonly Application application;
+        private readonly Context mainActivityContext;
 
-        public AndroidAppConfig(Application appContext)
+        public AndroidAppConfig(Application application, Context mainActivityContext)
         {
-            this.appContext = appContext;
+            this.application = application;
+            this.mainActivityContext = mainActivityContext;
         }
 
         public override void RegisterDependencies(IMutableDependencyResolver resolver)
         {
             base.RegisterDependencies(resolver);
-            resolver.RegisterConstant(appContext, typeof(Application));
-            resolver.Register(() => new AndroidActivityPresenter(appContext), typeof(IPresenter));
+            resolver.RegisterConstant(application, typeof(Application));
+            resolver.RegisterConstant(mainActivityContext, typeof(Context));
+            resolver.Register(() => new AndroidActivityPresenter(), typeof(IPresenter));
         }
     }
 }

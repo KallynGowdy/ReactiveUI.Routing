@@ -14,7 +14,9 @@ namespace ReactiveUI.Routing
     {
         protected override object InstantiateObject(ActivationParams parameters)
         {
-            return Locator.Current.GetService(parameters.Type);
+            var obj = Locator.Current.GetService(parameters.Type);
+            if(obj == null) throw new InvalidOperationException($"Could not resolve an object of type: {parameters.Type} because Locator.Current.GetService({parameters.Type}) returned null. Make sure you have registered a factory for the type using Locator.CurrentMutable.Register(factory, {parameters.Type})");
+            return obj;
         }
     }
 }

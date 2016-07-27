@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using ReactiveUI.Routing.Tests.AlternateAssembly.ViewModels;
 using Xunit;
 
 namespace ReactiveUI.Routing.Tests
@@ -41,12 +42,16 @@ namespace ReactiveUI.Routing.Tests
         {
         }
 
+        public class ViewType3 : BaseViewType<TestAlternateViewModel>
+        {
+        }
+
         public DefaultViewTypeLocatorTests()
         {
             Locator = new DefaultViewTypeLocator();
         }
 
-        public DefaultViewTypeLocator Locator { get; }
+        public DefaultViewTypeLocator Locator { get; set; }
 
         [Fact]
         public void Test_Finds_View_Type_That_Implements_IViewFor_ViewModelType()
@@ -60,6 +65,21 @@ namespace ReactiveUI.Routing.Tests
         {
             var viewType = Locator.ResolveViewType(typeof(ViewModelType2));
             viewType.Should().Be<ViewType2>();
+        }
+
+        [Fact]
+        public void Test_Finds_View_Type_For_ViewModel_In_Different_Assembly()
+        {
+            Locator = new DefaultViewTypeLocator(typeof(ViewType1).Assembly);
+            var viewType = Locator.ResolveViewType(typeof(TestAlternateViewModel));
+            viewType.Should().Be<ViewType3>();
+        }
+
+        [Fact]
+        public void Test_Returns_Null_For_Unknown_ViewModel_Types()
+        {
+            var viewType = Locator.ResolveViewType(typeof(TestViewModel));
+            viewType.Should().BeNull();
         }
     }
 }

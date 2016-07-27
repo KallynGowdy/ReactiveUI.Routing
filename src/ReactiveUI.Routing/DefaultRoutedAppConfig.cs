@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using ReactiveUI.Routing.Builder;
 using Splat;
@@ -11,13 +12,15 @@ namespace ReactiveUI.Routing
     /// </summary>
     public abstract class DefaultRoutedAppConfig : IRoutedAppConfig
     {
+        private readonly Lazy<IRouter> Router = new Lazy<IRouter>(() => new Router());
+
         public virtual void RegisterDependencies(IMutableDependencyResolver resolver)
         {
             if (resolver == null) throw new ArgumentNullException(nameof(resolver));
-            resolver.Register(() => new DefaultViewTypeLocator(), typeof(IViewTypeLocator));
+            resolver.Register(() => new DefaultViewTypeLocator(GetType().GetTypeInfo().Assembly), typeof(IViewTypeLocator));
             resolver.Register(() => new Navigator(), typeof(INavigator));
             resolver.Register(() => new LocatorActivator(), typeof(IActivator));
-            resolver.Register(() => new Router(), typeof(IRouter));
+            resolver.Register(() => Router.Value, typeof(IRouter));
             resolver.Register(BuildRouterParamsSafe, typeof(RouterParams));
         }
 

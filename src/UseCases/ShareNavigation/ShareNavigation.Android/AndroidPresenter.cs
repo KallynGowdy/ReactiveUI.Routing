@@ -21,12 +21,14 @@ namespace ShareNavigation
     public abstract class AndroidPresenter : IPresenter
     {
         protected IViewTypeLocator ViewLocator { get; }
-        protected Application Context { get; }
+        protected Application Application { get; }
+        protected Context Context { get; }
 
-        protected AndroidPresenter(Application context, IViewTypeLocator viewLocator = null)
+        protected AndroidPresenter(Application application = null, Context context = null, IViewTypeLocator viewLocator = null)
         {
             ViewLocator = viewLocator ?? Locator.Current.GetService<IViewTypeLocator>();
-            this.Context = context ?? Locator.Current.GetService<Application>();
+            Application = application ?? Locator.Current.GetService<Application>();
+            Context = context ?? Locator.Current.GetService<Context>();
         }
 
         public abstract Task<IDisposable> PresentAsync(object viewModel, object hint);

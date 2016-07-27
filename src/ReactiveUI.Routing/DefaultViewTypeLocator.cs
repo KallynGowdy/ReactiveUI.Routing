@@ -10,14 +10,27 @@ namespace ReactiveUI.Routing
 {
     public class DefaultViewTypeLocator : IViewTypeLocator
     {
-        public DefaultViewTypeLocator()
+        private readonly Assembly[] searchableAssemblies;
+
+        public DefaultViewTypeLocator() : this(null)
         {
+        }
+
+        public DefaultViewTypeLocator(params Assembly[] assemblies)
+        {
+            searchableAssemblies = assemblies ?? new Assembly[0];
         }
 
         public Type ResolveViewType(Type vmType)
         {
-            return vmType.GetTypeInfo().Assembly.DefinedTypes.FirstOrDefault(t =>
-                t.ImplementedInterfaces.Select(i => i.GetTypeInfo()).Any(i => 
+            return FindViewTypeFromAssembly(vmType, vmType.GetTypeInfo().Assembly) ??
+                searchableAssemblies.Select(a => FindViewTypeFromAssembly(vmType, a)).FirstOrDefault(t => t != null);
+        }
+
+        private Type FindViewTypeFromAssembly(Type vmType, Assembly assembly)
+        {
+            return assembly.DefinedTypes.FirstOrDefault(t =>
+                t.ImplementedInterfaces.Select(i => i.GetTypeInfo()).Any(i =>
                     i.IsGenericType &&
                     i.GetGenericTypeDefinition() == typeof(IViewFor<>) &&
                     MatchesViewModelType(i, vmType)))?.AsType();

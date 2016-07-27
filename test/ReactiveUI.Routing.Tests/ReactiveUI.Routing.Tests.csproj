@@ -125,6 +125,10 @@
       <Project>{7cf2ae8e-4920-41c9-b3b2-be83ec3daa7f}</Project>
       <Name>ReactiveUI.Routing</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\UselessProjects\ReactiveUI.Routing.Tests.AlternateAssembly\ReactiveUI.Routing.Tests.AlternateAssembly.csproj">
+      <Project>{87b812a3-14fe-42fb-a904-9d04d3a553e8}</Project>
+      <Name>ReactiveUI.Routing.Tests.AlternateAssembly</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

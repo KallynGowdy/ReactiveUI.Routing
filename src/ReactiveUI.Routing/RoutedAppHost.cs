@@ -31,7 +31,7 @@ namespace ReactiveUI.Routing
             Config.RegisterDependencies(Locator.CurrentMutable);
             var routerParams = GetService<RouterParams>();
             var activator = GetService<IActivator>();
-            await activator.ActivateAsync<IRouter, RouterParams>(routerParams);
+            var router = await activator.ActivateAsync<IRouter, RouterParams>(routerParams);
         }
 
         private T GetService<T>()
