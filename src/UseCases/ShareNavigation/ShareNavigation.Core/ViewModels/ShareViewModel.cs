@@ -40,10 +40,10 @@ namespace ShareNavigation.ViewModels
                     PhotoUrl = PhotoUrl
                 };
                 await Service.SharePhotoAsync(photo);
-                await Router.ShowAsync(typeof(PhotoViewModel), new PhotoViewModel.Params
+                await Router.DispatchAsync(RouterActions.ShowViewModel(typeof(PhotoViewModel), new PhotoViewModel.Params
                 {
                     Photo = photo
-                });
+                }));
             });
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -35,7 +36,7 @@ namespace ReactiveUI.Routing.Tests
         {
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                await router.ShowAsync(typeof(TestViewModel), null);
+                await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), null));
             });
         }
 
@@ -94,7 +95,7 @@ namespace ReactiveUI.Routing.Tests
             };
 
             await router.InitAsync(initParams);
-            await router.ShowAsync(typeof(TestViewModel), new TestParams());
+            await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
 
             navigator.Received(1)
                 .PushAsync(Arg.Is<Transition>(t => t.ViewModel is TestViewModel));
@@ -119,7 +120,7 @@ namespace ReactiveUI.Routing.Tests
             };
 
             await router.InitAsync(initParams);
-            await router.ShowAsync(typeof(TestViewModel), new TestParams());
+            await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
 
             navigator.DidNotReceive()
                 .PushAsync(Arg.Any<Transition>());
@@ -136,7 +137,7 @@ namespace ReactiveUI.Routing.Tests
             await router.InitAsync(initParams);
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                await router.ShowAsync(typeof(TestViewModel), new TestParams());
+                await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
             });
         }
 
@@ -162,7 +163,7 @@ namespace ReactiveUI.Routing.Tests
             };
 
             await router.InitAsync(initParams);
-            await router.ShowAsync(typeof(TestViewModel), new TestParams());
+            await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
 
             presenterConstructor.Received(1)();
         }
@@ -171,10 +172,9 @@ namespace ReactiveUI.Routing.Tests
         public async Task Test_ShowAsync_Calls_PresentAsync_On_Created_Presenter()
         {
             IPresenter presenter = Substitute.For<IPresenter>();
-            IDisposable disposable = new BooleanDisposable();
-            presenter.PresentAsync(Arg.Any<object>(), Arg.Any<object>()).Returns(disposable);
             Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
             Locator.CurrentMutable.Register(() => presenter, typeof(TestPresenterType));
+            var subject = new Subject<Transition>();
             var initParams = new RouterParams()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
@@ -188,9 +188,14 @@ namespace ReactiveUI.Routing.Tests
                     }
                 }
             };
+            navigator.PushAsync(Arg.Any<Transition>()).Returns(ci =>
+            {
+                subject.OnNext(ci.Arg<Transition>());
+                return Task.FromResult(0);
+            });
 
             await router.InitAsync(initParams);
-            await router.ShowAsync(typeof(TestViewModel), new TestParams());
+            await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
 
             presenter.Received(1).PresentAsync(Arg.Any<object>(), Arg.Any<object>());
         }
@@ -221,14 +226,9 @@ namespace ReactiveUI.Routing.Tests
             action.Received(1)(navigator, Arg.Is<Transition>(t => t.ViewModel is TestViewModel));
         }
 
-        [Fact(Skip = "Not Implemented/Under Review")]
-        public async Task Test_HideAsync_Disposes_Of_ViewModel_Presenters()
+        [Fact]
+        public async Task Test_SuspendAsync_Returns_Navigator_State()
         {
-            var presenter = Substitute.For<IPresenter>();
-            var disposable = new BooleanDisposable();
-            presenter.PresentAsync(Arg.Any<object>(), Arg.Any<object>()).Returns(disposable);
-            Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
-            Locator.CurrentMutable.Register(() => presenter, typeof(TestPresenterType));
             var initParams = new RouterParams()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
@@ -237,17 +237,108 @@ namespace ReactiveUI.Routing.Tests
                         typeof(TestViewModel),
                         new RouteActions()
                         {
-                            Presenters = new [] { typeof(TestPresenterType) }
+                            NavigationAction = (nav, transition) => nav.PushAsync(transition)
                         }
                     }
                 }
             };
 
+            var state = new NavigatorState();
+            navigator.SuspendAsync().Returns(state);
             await router.InitAsync(initParams);
-            await router.ShowAsync(typeof(TestViewModel), new TestParams());
+            var stored = await router.SuspendAsync();
 
-            var vm = (TestViewModel)presenter.ReceivedCalls().First().GetArguments().First();
-            await router.HideAsync(vm);
+            stored.NavigatorState.Should().Be(state);
+        }
+
+        [Fact]
+        public async Task Test_Router_Presents_Transition_Resolved_From_OnTransition()
+        {
+            IPresenter presenter = Substitute.For<IPresenter>();
+            Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
+            Locator.CurrentMutable.Register(() => presenter, typeof(TestPresenterType));
+            var subject = new Subject<TransitionEvent>();
+            var viewModel = new TestViewModel();
+            var initParams = new RouterParams()
+            {
+                ViewModelMap = new Dictionary<Type, RouteActions>()
+                {
+                    {
+                        typeof(TestViewModel),
+                        new RouteActions()
+                        {
+                            NavigationAction = (nav, transition) => nav.PushAsync(transition),
+                            Presenters = new Type[]
+                            {
+                                typeof(TestPresenterType)
+                            }
+                        }
+                    }
+                }
+            };
+            navigator.OnTransition.Returns(subject);
+            await router.InitAsync(initParams);
+
+            subject.OnNext(new TransitionEvent()
+            {
+                Current = new Transition()
+                {
+                    ViewModel = viewModel
+                }
+            });
+
+            presenter.Received(1).PresentAsync(viewModel, null);
+        }
+
+        [Fact]
+        public async Task Test_Router_Disposes_Of_Presenters_After_Transition()
+        {
+            IPresenter presenter = Substitute.For<IPresenter>();
+            var disposable = new BooleanDisposable();
+            presenter.PresentAsync(Arg.Any<object>(), Arg.Any<object>()).Returns(disposable);
+            Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
+            Locator.CurrentMutable.Register(() => presenter, typeof(TestPresenterType));
+            var subject = new Subject<TransitionEvent>();
+            var viewModel = new TestViewModel();
+            var trans = new Transition()
+            {
+                ViewModel = viewModel
+            };
+            var initParams = new RouterParams()
+            {
+                ViewModelMap = new Dictionary<Type, RouteActions>()
+                {
+                    {
+                        typeof(TestViewModel),
+                        new RouteActions()
+                        {
+                            NavigationAction = (nav, transition) => nav.PushAsync(transition),
+                            Presenters = new Type[]
+                            {
+                                typeof(TestPresenterType)
+                            }
+                        }
+                    }
+                }
+            };
+            navigator.OnTransition.Returns(subject);
+            await router.InitAsync(initParams);
+
+            subject.OnNext(new TransitionEvent()
+            {
+                Current = trans
+            });
+
+            disposable.IsDisposed.Should().BeFalse();
+
+            subject.OnNext(new TransitionEvent()
+            {
+                Current = new Transition()
+                {
+                    ViewModel = new TestViewModel()
+                },
+                Previous = trans
+            });
 
             disposable.IsDisposed.Should().BeTrue();
         }

@@ -18,7 +18,7 @@ namespace ShareNavigation.Views
     [Activity(Label = "Share!")]
     public class PhotoActivity : ReactiveActivity<PhotoViewModel>
     {
-        protected override async void OnCreate(Bundle bundle)
+        protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.PhotoListItem);

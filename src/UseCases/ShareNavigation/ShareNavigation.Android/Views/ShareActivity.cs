@@ -17,7 +17,7 @@ namespace ShareNavigation.Views
     [Activity(Label = "Share!")]
     public class ShareActivity : ReactiveActivity<ShareViewModel>
     {
-        protected override async void OnCreate(Bundle bundle)
+        protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.Share);

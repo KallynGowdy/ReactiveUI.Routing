@@ -56,15 +56,12 @@ namespace ReactiveUI.Routing.Tests
         {
             var obj = new TestActivatableObject();
             var first = new TestParams();
-            var second = new TestParams();
             List<TestParams> recievedParams = new List<TestParams>();
             obj.OnActivated.Subscribe(p => recievedParams.Add(p));
             await obj.InitAsync(first);
-            await obj.InitAsync(second);
 
             Assert.Collection(recievedParams,
-                p => p.Should().Be(first),
-                p => p.Should().Be(second));
+                p => p.Should().Be(first));
         }
 
         [Fact]

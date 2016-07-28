@@ -19,6 +19,8 @@ namespace ReactiveUI.Routing.Tests
         {
             originalResolver = Locator.CurrentMutable;
             Locator.Current = Resolver = new ModernDependencyResolver();
+            Resolver.InitializeSplat();
+            Resolver.InitializeReactiveUI();
         }
 
         public void Dispose()

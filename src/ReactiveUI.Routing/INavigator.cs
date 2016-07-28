@@ -23,7 +23,7 @@ namespace ReactiveUI.Routing
         /// Gets the observable that represents the asynchronous stream
         /// of transitions.
         /// </summary>
-        IObservable<Transition> OnTransition { get; }
+        IObservable<TransitionEvent> OnTransition { get; }
 
         /// <summary>
         /// Adds the given transition to the transition stack.

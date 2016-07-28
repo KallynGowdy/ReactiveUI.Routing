@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
+using ReactiveUI.Routing;
+using ReactiveUI.Routing.Actions;
 using ShareNavigation.Services;
 using ShareNavigation.ViewModels;
 using Xunit;
@@ -38,7 +40,9 @@ namespace ShareNavigation.Tests.ViewModels
         {
             await ViewModel.Share.ExecuteAsync();
 
-            Router.Received(1).ShowAsync(typeof(ShareViewModel), Unit.Default);
+            Router.Received(1).DispatchAsync(Arg.Is<ShowViewModelAction>(a =>
+                a.ActivationParams.Type == typeof(ShareViewModel) &&
+                Equals(a.ActivationParams.Params, Unit.Default)));
         }
 
     }

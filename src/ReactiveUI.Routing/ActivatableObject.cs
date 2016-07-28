@@ -21,7 +21,10 @@ namespace ReactiveUI.Routing
             private set { this.RaiseAndSetIfChanged(ref initialized, value); }
         }
 
-        public IObservable<TParams> OnActivated => onActivated.Where(p => p != null);
+        public IObservable<TParams> OnActivated => onActivated
+            .Where(p => p != null)
+            .Concat(Observable.Return(onActivated.Value))
+            .FirstAsync();
 
         public ActivatableObject()
         {
@@ -44,6 +47,7 @@ namespace ReactiveUI.Routing
             await InitCoreAsync(parameters);
             Initialized = true;
             onActivated.OnNext(parameters);
+            onActivated.OnCompleted();
         }
 
         protected virtual void DestroyCoreSync()

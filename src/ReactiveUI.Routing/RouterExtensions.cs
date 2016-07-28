@@ -23,7 +23,7 @@ namespace ReactiveUI.Routing
             {
                 parameters = new TState();
             }
-            return router.ShowAsync(typeof(TViewModel), parameters);
+            return router.DispatchAsync(RouterActions.ShowViewModel(typeof(TViewModel), parameters));
         }
     }
 }

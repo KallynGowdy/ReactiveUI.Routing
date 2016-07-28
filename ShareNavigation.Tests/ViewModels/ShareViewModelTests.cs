@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
+using ReactiveUI.Routing;
+using ReactiveUI.Routing.Actions;
 using ShareNavigation.Services;
 using ShareNavigation.ViewModels;
 using Xunit;
@@ -17,7 +19,7 @@ namespace ShareNavigation.Tests.ViewModels
 {
     public class ShareViewModelTests : RoutedViewModelTests<Unit, ShareViewModel.State>
     {
-        public ShareViewModel ViewModel => (ShareViewModel) RoutedViewModel;
+        public ShareViewModel ViewModel => (ShareViewModel)RoutedViewModel;
         public IPhotosService Service { get; }
         public ShareViewModelTests()
         {
@@ -30,7 +32,9 @@ namespace ShareNavigation.Tests.ViewModels
         {
             ViewModel.PhotoUrl = "URL";
             await ViewModel.Share.ExecuteAsync();
-            Router.Received(1).ShowAsync(typeof(PhotoViewModel), Arg.Is<PhotoViewModel.Params>(p => p.Photo.PhotoUrl == "URL"));
+            Router.Received(1).DispatchAsync(Arg.Is<ShowViewModelAction>(
+                a => a.ActivationParams.Type == typeof(PhotoViewModel) &&
+                ((PhotoViewModel.Params)a.ActivationParams.Params).Photo.PhotoUrl == "URL"));
         }
 
         [Fact]

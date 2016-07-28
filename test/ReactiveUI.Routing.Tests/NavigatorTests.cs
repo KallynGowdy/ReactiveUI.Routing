@@ -24,14 +24,13 @@ namespace ReactiveUI.Routing.Tests
         public async Task Test_PushAsync_Notifyies_Subscribers_To_OnTransition()
         {
             var trans = new Transition();
-            List<Transition> transitions = new List<Transition>();
+            List<TransitionEvent> transitions = new List<TransitionEvent>();
             Navigator.OnTransition.Subscribe(t => transitions.Add(t));
 
             await Navigator.PushAsync(trans);
 
             Assert.Collection(transitions,
-                t => t.Should().BeNull(),
-                t => t.Should().Be(trans));
+                t => t.Current.Should().Be(trans));
         }
 
         [Fact]
@@ -63,12 +62,12 @@ namespace ReactiveUI.Routing.Tests
             var trans2 = new Transition();
             await Navigator.PushAsync(trans);
             await Navigator.PushAsync(trans2);
-            var transitions = new List<Transition>();
-            Navigator.OnTransition.Skip(1).Subscribe(t => transitions.Add(t));
+            var transitions = new List<TransitionEvent>();
+            Navigator.OnTransition.Subscribe(t => transitions.Add(t));
             await Navigator.PopAsync();
             
             Assert.Collection(transitions,
-                t => t.Should().Be(trans));
+                t => t.Current.Should().Be(trans));
         }
 
         [Fact]

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
+using ReactiveUI.Routing.Actions;
 using Splat;
 
 namespace ReactiveUI.Routing
@@ -11,9 +14,11 @@ namespace ReactiveUI.Routing
     /// </summary>
     public class Router : ReActivatableObject<RouterParams, RouterState>, IRouter
     {
+        private readonly ObservableAsPropertyHelper<RouterParams> parameters;
         private INavigator Navigator { get; }
         private IActivator Activator { get; }
-        private RouterParams Params { get; set; }
+        private RouterParams Params => parameters.Value;
+        private readonly Dictionary<Transition, List<IDisposable>> presenters = new Dictionary<Transition, List<IDisposable>>();
 
         public Router() : this(null, null)
         {
@@ -28,16 +33,36 @@ namespace ReactiveUI.Routing
             this.Navigator = navigator ?? Locator.Current.GetService<INavigator>();
             this.Activator = activator ?? Locator.Current.GetService<IActivator>() ?? new LocatorActivator();
             if (this.Navigator == null) throw new InvalidOperationException($"When creating a router, a {nameof(INavigator)} object must either be provided or locatable via Locator.Current.GetService<{nameof(INavigator)}>()");
+
+            parameters = this.OnActivated.ToProperty(this, r => r.Params);
+            var whenParams = this.WhenAnyValue(vm => vm.Params)
+                .Where(p => p != null);
+
+            whenParams
+                .Do(async p => await Navigator.InitAsync(Unit.Default))
+                .SelectMany(p => Navigator.OnTransition)
+                .Do(transition => DisposePresenters(transition.Previous))
+                .Do(async transition => await PresentTransitionAsync(transition.Current))
+                .Subscribe();
+            whenParams
+                .Where(p => p.DefaultViewModelType != null && p.DefaultParameters != null)
+                .Do(async p => await ShowCoreAsync(p.DefaultViewModelType, p.DefaultParameters))
+                .Subscribe();
         }
 
-        protected override async Task InitCoreAsync(RouterParams parameters)
+        private void DisposePresenters(Transition removed)
         {
-            await base.InitCoreAsync(parameters);
-            Params = parameters;
-            await Navigator.InitAsync(Unit.Default);
-            if (Params.DefaultViewModelType != null && Params.DefaultParameters != null)
+            if (removed != null)
             {
-                await ShowCoreAsync(Params.DefaultViewModelType, Params.DefaultParameters);
+                List<IDisposable> disposables;
+                if (presenters.TryGetValue(removed, out disposables))
+                {
+                    foreach (var d in disposables)
+                    {
+                        d.Dispose();
+                    }
+                    presenters.Remove(removed);
+                }
             }
         }
 
@@ -62,21 +87,41 @@ namespace ReactiveUI.Routing
 
         protected async Task ShowCoreAsync(Type viewModel, object vmParams)
         {
-            var actions = GetActionsForViewModelType(viewModel);
             var transition = await BuildTransitionAsync(viewModel, vmParams);
-            await Navigate(actions, transition);
-            await PresentAsync(actions, transition);
+            var routeActions = GetActionsForViewModelType(viewModel);
+            await Navigate(routeActions, transition);
+            await PresentAsync(routeActions, transition);
         }
 
-        public async Task ShowAsync(Type viewModel, object vmParams)
+        protected async Task ShowAsync(Type viewModel, object vmParams)
         {
             CheckInit();
             await ShowCoreAsync(viewModel, vmParams);
         }
 
-        public Task HideAsync(object viewModel)
+        protected async Task PresentTransitionAsync(Transition transition)
         {
-            throw new NotImplementedException();
+            var routeActions = GetActionsForViewModelType(transition.ViewModel.GetType());
+            await PresentAsync(routeActions, transition);
+        }
+
+        public async Task DispatchAsync(IRouterAction action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+            await When<ShowViewModelAction>(action, async showViewModelAction =>
+            {
+                await ShowAsync(showViewModelAction.ActivationParams.Type, showViewModelAction.ActivationParams.Params);
+            });
+        }
+
+        protected async Task When<T>(IRouterAction action, Func<T, Task> operation)
+            where T : class, IRouterAction
+        {
+            var convertedAction = action as T;
+            if (convertedAction != null)
+            {
+                await operation(convertedAction);
+            }
         }
 
         private async Task Navigate(RouteActions actions, Transition transition)
@@ -90,9 +135,16 @@ namespace ReactiveUI.Routing
         private async Task PresentAsync(RouteActions actions, Transition transition)
         {
             if (actions.Presenters == null) return;
-            foreach (var presenter in actions.Presenters)
+            var disposables =
+                await Task.WhenAll(actions.Presenters.Select(async p => await PresentAsync(p, transition)).ToArray());
+            List<IDisposable> list;
+            if (presenters.TryGetValue(transition, out list))
             {
-                await PresentAsync(presenter, transition);
+                list.AddRange(disposables);
+            }
+            else
+            {
+                presenters.Add(transition, disposables.ToList());
             }
         }
 

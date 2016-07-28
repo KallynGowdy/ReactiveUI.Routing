@@ -11,13 +11,17 @@ namespace ReactiveUI.Routing
     public class Navigator : ReActivatableObject<Unit, NavigatorState>, INavigator
     {
         private List<Transition> Transitions { get; } = new List<Transition>();
-        private BehaviorSubject<Transition> Subject { get; } = new BehaviorSubject<Transition>(null);
+        private Subject<TransitionEvent> Subject { get; } = new Subject<TransitionEvent>();
         public IReadOnlyCollection<Transition> TransitionStack => Transitions;
-        public IObservable<Transition> OnTransition => Subject;
+        public IObservable<TransitionEvent> OnTransition => Subject.Where(e => e != null);
 
         private void Notify()
         {
-            Subject.OnNext(Peek());
+            Subject.OnNext(new TransitionEvent()
+            {
+                Current = Peek(),
+                Previous = Transitions.ElementAtOrDefault(Transitions.Count - 2)
+            });
         }
 
         public Task PushAsync(Transition transition)
