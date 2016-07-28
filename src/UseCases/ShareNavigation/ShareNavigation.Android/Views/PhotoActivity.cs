@@ -26,7 +26,8 @@ namespace ShareNavigation.Views
             {
                 d(ViewModel.WhenAnyValue(vm => vm.PhotoUrl)
                     .Where(p => !string.IsNullOrEmpty(p))
-                    .Select(PhotoListItemAdapter.GetImageBitmapFromUrl)
+                    .SelectMany(PhotoListItemAdapter.GetImageBitmapFromUrl)
+                    .ObserveOn(RxApp.MainThreadScheduler)
                     .Do(b => Photo.SetImageBitmap(b))
                     .Subscribe());
             });

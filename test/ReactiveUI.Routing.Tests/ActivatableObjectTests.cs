@@ -63,18 +63,5 @@ namespace ReactiveUI.Routing.Tests
             Assert.Collection(recievedParams,
                 p => p.Should().Be(first));
         }
-
-        [Fact]
-        public async Task Test_Activated_Resolves_With_Most_Recent_Value()
-        {
-            var obj = new TestActivatableObject();
-            var first = new TestParams();
-            List<TestParams> recievedParams = new List<TestParams>();
-            await obj.InitAsync(first);
-            obj.OnActivated.Subscribe(p => recievedParams.Add(p));
-
-            Assert.Collection(recievedParams,
-                p => p.Should().Be(first));
-        }
     }
 }

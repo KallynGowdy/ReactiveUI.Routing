@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Akavache;
 using Android.App;
 using Android.OS;
@@ -19,9 +20,7 @@ namespace ShareNavigation.Views
             SetContentView(Resource.Layout.PhotoList);
             this.WhenActivated(d =>
             {
-                d(ViewModel.WhenAnyValue(vm => vm.LoadedPhotos)
-                    .Select(photos => new PhotoListItemAdapter(this, photos))
-                    .BindTo(this, view => view.PhotosList.Adapter));
+                PhotosList.Adapter = new PhotoListItemAdapter(this, ViewModel);
                 d(this.BindCommand(ViewModel, vm => vm.Share, view => view.ShareButton, nameof(Button.Click)));
                 ViewModel.LoadPhotos.Execute(null);
             });

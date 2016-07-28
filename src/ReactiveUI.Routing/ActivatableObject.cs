@@ -22,9 +22,7 @@ namespace ReactiveUI.Routing
         }
 
         public IObservable<TParams> OnActivated => onActivated
-            .Where(p => p != null)
-            .Concat(Observable.Return(onActivated.Value))
-            .FirstAsync();
+            .Where(p => p != null);
 
         public ActivatableObject()
         {
@@ -47,7 +45,6 @@ namespace ReactiveUI.Routing
             await InitCoreAsync(parameters);
             Initialized = true;
             onActivated.OnNext(parameters);
-            onActivated.OnCompleted();
         }
 
         protected virtual void DestroyCoreSync()

@@ -6,7 +6,7 @@ namespace ShareNavigation.Services
 {
     public class PhotosService : IPhotosService
     {
-        List<Photo> photos = new List<Photo>()
+        private static readonly List<Photo> photos = new List<Photo>()
         {
             new Photo()
             {
