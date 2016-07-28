@@ -32,7 +32,7 @@ namespace ShareNavigation.Views
             return position;
         }
 
-        private Bitmap GetImageBitmapFromUrl(string url)
+        public static Bitmap GetImageBitmapFromUrl(string url)
         {
             Bitmap imageBitmap = null;
 

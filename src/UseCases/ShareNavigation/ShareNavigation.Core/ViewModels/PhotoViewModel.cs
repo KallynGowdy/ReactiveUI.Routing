@@ -6,7 +6,7 @@ namespace ShareNavigation.ViewModels
 {
     public class PhotoViewModel : RoutedViewModel<PhotoViewModel.Params, PhotoViewModel.State>
     {
-        private ObservableAsPropertyHelper<string> photoUrl;
+        private readonly ObservableAsPropertyHelper<string> photoUrl;
 
         public class State
         {
