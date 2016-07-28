@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
+using ReactiveUI.Routing.Actions;
 using Splat;
 using Xunit;
 #pragma warning disable 4014
@@ -36,7 +37,7 @@ namespace ReactiveUI.Routing.Tests
         {
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), null));
+                await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
             });
         }
 
@@ -88,7 +89,7 @@ namespace ReactiveUI.Routing.Tests
                         typeof(TestViewModel),
                         new RouteActions()
                         {
-                            NavigationAction = (nav, p) => nav.PushAsync(p)
+                            Actions = new [] { RouteActions.Navigate() }
                         }
                     }
                 }
@@ -112,9 +113,6 @@ namespace ReactiveUI.Routing.Tests
                     {
                         typeof(TestViewModel),
                         new RouteActions()
-                        {
-                            NavigationAction = null
-                        }
                     }
                 }
             };
@@ -156,7 +154,10 @@ namespace ReactiveUI.Routing.Tests
                         typeof(TestViewModel),
                         new RouteActions()
                         {
-                            Presenters = new [] { typeof(TestPresenterType) }
+                            Actions = new IRouteAction[]
+                            {
+                                RouteActions.Present(typeof(TestPresenterType))
+                            }
                         }
                     }
                 }
@@ -183,7 +184,10 @@ namespace ReactiveUI.Routing.Tests
                         typeof(TestViewModel),
                         new RouteActions()
                         {
-                            Presenters = new [] { typeof(TestPresenterType) }
+                            Actions = new IRouteAction[]
+                            {
+                                RouteActions.Present(typeof(TestPresenterType))
+                            }
                         }
                     }
                 }
@@ -204,7 +208,6 @@ namespace ReactiveUI.Routing.Tests
         public async Task Test_InitAsync_Navigates_To_DefaultViewModel()
         {
             Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
-            var action = Substitute.For<Func<INavigator, Transition, Task>>();
             var initParams = new RouterParams()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
@@ -213,7 +216,10 @@ namespace ReactiveUI.Routing.Tests
                         typeof(TestViewModel),
                         new RouteActions()
                         {
-                            NavigationAction = action
+                            Actions = new[]
+                            {
+                                RouteActions.Navigate()
+                            }
                         }
                     }
                 },
@@ -223,7 +229,7 @@ namespace ReactiveUI.Routing.Tests
 
             await router.InitAsync(initParams);
 
-            action.Received(1)(navigator, Arg.Is<Transition>(t => t.ViewModel is TestViewModel));
+            navigator.Received(1).PushAsync(Arg.Is<Transition>(t => t.ViewModel is TestViewModel));
         }
 
         [Fact]
@@ -237,7 +243,10 @@ namespace ReactiveUI.Routing.Tests
                         typeof(TestViewModel),
                         new RouteActions()
                         {
-                            NavigationAction = (nav, transition) => nav.PushAsync(transition)
+                            Actions = new IRouteAction[]
+                            {
+                                RouteActions.Navigate()
+                            }
                         }
                     }
                 }
@@ -267,10 +276,10 @@ namespace ReactiveUI.Routing.Tests
                         typeof(TestViewModel),
                         new RouteActions()
                         {
-                            NavigationAction = (nav, transition) => nav.PushAsync(transition),
-                            Presenters = new Type[]
+                            Actions = new IRouteAction[]
                             {
-                                typeof(TestPresenterType)
+                                RouteActions.Navigate(),
+                                RouteActions.Present(typeof(TestPresenterType))
                             }
                         }
                     }
@@ -316,10 +325,10 @@ namespace ReactiveUI.Routing.Tests
                         typeof(TestViewModel),
                         new RouteActions()
                         {
-                            NavigationAction = (nav, transition) => nav.PushAsync(transition),
-                            Presenters = new Type[]
+                            Actions = new IRouteAction[]
                             {
-                                typeof(TestPresenterType)
+                                RouteActions.Navigate(),
+                                RouteActions.Present(typeof(TestPresenterType))
                             }
                         }
                     }
@@ -361,7 +370,10 @@ namespace ReactiveUI.Routing.Tests
                         typeof(TestViewModel),
                         new RouteActions()
                         {
-                            NavigationAction = (nav, transition) => nav.PushAsync(transition)
+                            Actions = new IRouteAction[]
+                            {
+                                RouteActions.Navigate()
+                            }
                         }
                     }
                 }

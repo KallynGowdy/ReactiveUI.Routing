@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
+using ReactiveUI.Routing.Actions;
 using ReactiveUI.Routing.Builder;
 using Xunit;
 #pragma warning disable 4014
@@ -32,8 +33,6 @@ namespace ReactiveUI.Routing.Tests
         public RouteBuilderTests()
         {
             Route = new RouteBuilder();
-            Route.NavigationActions.Should().BeEmpty();
-            Route.Presenters.Should().BeEmpty();
             Route.ViewModelType.Should().BeNull();
         }
 
@@ -58,130 +57,44 @@ namespace ReactiveUI.Routing.Tests
         {
             Route.SetViewModel(typeof(TestViewModel))
                 .Present(typeof(TestPresenterType));
-            Assert.Collection(Route.Presenters,
-                p => p.Should().Be(typeof(TestPresenterType)));
+            Assert.Collection(Route.Build().Actions,
+                p => p.As<PresentRouteAction>().PresenterType.Should().Be<TestPresenterType>());
         }
 
         [Fact]
-        public void Test_Navigate_Adds_Func_To_NavigationActions()
+        public void Test_NavigateBackWhile_Adds_NavigateBackWhileRouteAction()
         {
-            Route.Navigate();
-            Assert.Collection(Route.NavigationActions,
-                action => action.Should().NotBeNull());
+            Route.NavigateBackWhile(vm => vm.ViewModel is TestViewModel);
+            var actions = Route.Build();
+
+            Assert.Collection(actions.Actions,
+                a => a.As<NavigateBackWhileRouteAction>()
+                .GoBackWhile.Should().NotBeNull());
         }
 
         [Fact]
-        public void Test_Navigate_Adds_Func_That_Calls_Push_Async_On_Given_Navigator()
-        {
-            var navigator = Substitute.For<INavigator>();
-            Route.Navigate();
-            Route.SetViewModel(typeof(TestViewModel));
-            Route.NavigationActions.First()(navigator, new Transition());
-            navigator.Received(1).PushAsync(Arg.Any<Transition>());
-        }
-
-        [Fact]
-        public void Test_NavigateBackWhile_Adds_Func_To_NavigationActions()
-        {
-            Route.NavigateBackWhile(vm => true);
-            Assert.Collection(Route.NavigationActions,
-                action => action.Should().NotBeNull());
-        }
-
-        [Fact]
-        public async Task Test_NavigateBackWhile_Adds_Func_That_Pops_All_Transitions_That_Do_Not_Match_Predicate()
-        {
-            var viewModels = new[]
-            {
-                new TestViewModel(),
-                new TestViewModel(),
-                new object(),
-            };
-            var transitions = viewModels.Select(vm => new Transition()
-            {
-                ViewModel = vm
-            }).ToArray();
-            var navigator = Substitute.For<INavigator>();
-            navigator.Peek().Returns(transitions.First(), transitions.Skip(1).ToArray());
-            navigator.PopAsync().Returns(transitions.First(), transitions.Skip(1).ToArray());
-
-            Route.NavigateBackWhile(vm => vm is TestViewModel);
-
-            await Route.NavigationActions.First()(navigator, new Transition());
-
-            navigator.Received(2).PopAsync();
-        }
-
-        [Fact]
-        public async Task Test_NavigateBackWhile_Adds_Func_That_Pops_Until_No_More_Transitions_Are_Available()
-        {
-            var viewModels = new[]
-            {
-                new TestViewModel(),
-                new TestViewModel()
-            };
-            var transitions = viewModels.Select(vm => new Transition()
-            {
-                ViewModel = vm
-            }).Concat(new Transition[] { null }).ToArray();
-            var navigator = Substitute.For<INavigator>();
-            navigator.Peek().Returns(transitions.First(), transitions.Skip(1).ToArray());
-            navigator.PopAsync().Returns(transitions.First(), transitions.Skip(1).ToArray());
-
-            Route.NavigateBackWhile(vm => vm is TestViewModel);
-
-            await Route.NavigationActions.First()(navigator, new Transition());
-
-            navigator.Received(2).PopAsync();
-        }
-
-        [Fact]
-        public async Task Test_Build_Creates_RouteActions_With_NavigationAction()
+        public void Test_Build_Creates_RouteActions_With_NavigationRouteAction()
         {
             Route.SetViewModel(typeof(TestViewModel))
                 .Navigate();
-            var navigator = Substitute.For<INavigator>();
             var actions = Route.Build();
-            var transition = new Transition()
-            {
-                ViewModel = new TestViewModel()
-            };
-            await actions.NavigationAction(navigator, transition);
 
-
-            navigator.Received(1).PushAsync(transition);
+            Assert.Collection(actions.Actions,
+                a => a.Should().BeOfType<NavigateRouteAction>());
         }
 
         [Fact]
-        public async Task Test_Build_Creates_RouteActions_With_NavigationAction_For_Multiple_Actions()
+        public void Test_Build_Creates_RouteActions_With_NavigationAction_For_Multiple_Actions()
         {
-            var viewModels = new[]
-            {
-                new TestViewModel(),
-                new TestViewModel(),
-                new object(),
-            };
-            var transitions = viewModels.Select(vm => new Transition()
-            {
-                ViewModel = vm
-            }).ToArray();
-            var navigator = Substitute.For<INavigator>();
-            navigator.Peek().Returns(transitions.First(), transitions.Skip(1).ToArray());
-            navigator.PopAsync().Returns(transitions.First(), transitions.Skip(1).ToArray());
-            var transition = new Transition()
-            {
-                ViewModel = new TestViewModel()
-            };
             Route
                 .SetViewModel(typeof(TestViewModel))
-                .NavigateBackWhile(vm => vm is TestViewModel)
+                .NavigateBackWhile(vm => vm.ViewModel is TestViewModel)
                 .Navigate();
 
             var actions = Route.Build();
-            await actions.NavigationAction(navigator, transition);
-
-            navigator.Received(2).PopAsync();
-            navigator.Received(1).PushAsync(transition);
+            Assert.Collection(actions.Actions,
+                a => a.Should().BeOfType<NavigateBackWhileRouteAction>(),
+                a => a.Should().BeOfType<NavigateRouteAction>());
         }
 
         [Fact]
@@ -193,18 +106,18 @@ namespace ReactiveUI.Routing.Tests
 
             var actions = Route.Build();
 
-            Assert.Collection(actions.Presenters,
-                p => p.Should().Be(typeof(TestPresenterType)),
-                p => p.Should().Be(typeof(OtherTestPresenterType)));
+            Assert.Collection(actions.Actions,
+                p => p.As<PresentRouteAction>().PresenterType.Should().Be<TestPresenterType>(),
+                p => p.As<PresentRouteAction>().PresenterType.Should().Be<OtherTestPresenterType>());
         }
 
         [Fact]
-        public void Test_Build_Creates_RouteActions_With_Empty_Presenters()
+        public void Test_Build_Creates_RouteActions_With_Empty_Actions()
         {
             Route.SetViewModel(typeof(TestViewModel));
 
             var actions = Route.Build();
-            actions.Presenters.Should().BeEmpty();
+            actions.Actions.Should().BeEmpty();
         }
 
         [Fact]

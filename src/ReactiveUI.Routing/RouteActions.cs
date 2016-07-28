@@ -14,16 +14,34 @@ namespace ReactiveUI.Routing
         /// <summary>
         /// Gets or sets the array of actions that the router should perform.
         /// </summary>
-        [Obsolete("Not implemented")]
-        public IRouterAction[] Actions { get; set; }
+        public IRouteAction[] Actions { get; set; }
+
         /// <summary>
-        /// Gets or sets the navigation action that should be run when the route is hit.
+        /// Gets or sets the type of the view model that these actions are for.
         /// </summary>
-        public Func<INavigator, Transition, Task> NavigationAction { get; set; }
-        /// <summary>
-        /// Gets or sets the array of presenter types that should be used to present the view model.
-        /// </summary>
-        public Type[] Presenters { get; set; }
         public Type ViewModelType { get; set; }
+
+        public static PresentRouteAction Present(Type presenterType, object hint = null)
+        {
+            if (presenterType == null) throw new ArgumentNullException(nameof(presenterType));
+            return new PresentRouteAction()
+            {
+                PresenterType = presenterType,
+                Hint = hint
+            };
+        }
+
+        public static NavigateRouteAction Navigate()
+        {
+            return new NavigateRouteAction();
+        }
+
+        public static IRouteAction NavigateBackWhile(Func<Transition, bool> goBackWhile)
+        {
+            return new NavigateBackWhileRouteAction()
+            {
+                GoBackWhile = goBackWhile
+            };
+        }
     }
 }

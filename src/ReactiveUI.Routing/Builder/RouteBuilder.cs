@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ReactiveUI.Routing.Actions;
 
 namespace ReactiveUI.Routing.Builder
 {
@@ -11,17 +12,12 @@ namespace ReactiveUI.Routing.Builder
     /// </summary>
     public class RouteBuilder : IRouteBuilder
     {
-        private readonly List<Func<INavigator, Transition, Task>> navigationActions = new List<Func<INavigator, Transition, Task>>();
-        private readonly List<Type> presenters = new List<Type>();
+        private readonly List<IRouteAction> actions = new List<IRouteAction>();
 
         /// <summary>
         /// Gets the type of the view model.
         /// </summary>
         public Type ViewModelType { get; private set; }
-
-        public IEnumerable<Type> Presenters => presenters;
-
-        public IEnumerable<Func<INavigator, Transition, Task>> NavigationActions => navigationActions;
 
         public IRouteBuilder SetViewModel(Type viewModelType)
         {
@@ -31,26 +27,20 @@ namespace ReactiveUI.Routing.Builder
 
         public IRouteBuilder Present(Type presenterType)
         {
-            presenters.Add(presenterType);
+            actions.Add(RouteActions.Present(presenterType));
             return this;
         }
 
-        public IRouteBuilder NavigateBackWhile(Func<object, bool> goBackWhile)
+        public IRouteBuilder NavigateBackWhile(Func<Transition, bool> goBackWhile)
         {
             if (goBackWhile == null) throw new ArgumentNullException(nameof(goBackWhile));
-            navigationActions.Add(async (navigator, parameters) =>
-            {
-                for (var top = navigator.Peek(); top != null && goBackWhile(top.ViewModel); top = navigator.Peek())
-                {
-                    await navigator.PopAsync();
-                }
-            });
+            actions.Add(RouteActions.NavigateBackWhile(goBackWhile));
             return this;
         }
 
         public IRouteBuilder Navigate()
         {
-            navigationActions.Add(async (navigator, transition) => await navigator.PushAsync(transition));
+            actions.Add(RouteActions.Navigate());
             return this;
         }
 
@@ -58,14 +48,7 @@ namespace ReactiveUI.Routing.Builder
         {
             return new RouteActions()
             {
-                NavigationAction = async (navigator, transition) =>
-                {
-                    foreach (var action in NavigationActions)
-                    {
-                        await action(navigator, transition);
-                    }
-                },
-                Presenters = Presenters.ToArray(),
+                Actions = actions.ToArray(),
                 ViewModelType = ViewModelType
             };
         }

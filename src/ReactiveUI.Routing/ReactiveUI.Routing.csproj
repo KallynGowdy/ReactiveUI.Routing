@@ -35,8 +35,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Actions\IRouteAction.cs" />
     <Compile Include="Actions\NavigateBackAction.cs" />
-    <Compile Include="Actions\PresentAction.cs" />
+    <Compile Include="Actions\NavigateBackWhileRouteAction.cs" />
+    <Compile Include="Actions\NavigateRouteAction.cs" />
+    <Compile Include="Actions\PresentRouteAction.cs" />
     <Compile Include="Actions\ShowViewModelAction.cs" />
     <Compile Include="ActivatableObject.cs" />
     <Compile Include="ActivatorExtensions.cs" />

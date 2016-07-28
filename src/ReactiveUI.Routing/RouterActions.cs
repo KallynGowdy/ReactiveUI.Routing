@@ -11,6 +11,8 @@ namespace ReactiveUI.Routing
     {
         public static ShowViewModelAction ShowViewModel(Type viewModel, object parameters)
         {
+            if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             return new ShowViewModelAction()
             {
                 ActivationParams = new ActivationParams()

@@ -42,7 +42,7 @@ namespace ReactiveUI.Routing
                 .Do(async p => await Navigator.InitAsync(Unit.Default))
                 .SelectMany(p => Navigator.OnTransition)
                 .Do(transition => DisposePresenters(transition.Removed))
-                .Do(async transition => await PresentTransitionAsync(transition.Current))
+                .Do(async transition => await HandleTransitionAsync(transition.Current))
                 .Subscribe();
             whenParams
                 .Where(p => p.DefaultViewModelType != null && p.DefaultParameters != null)
@@ -89,8 +89,7 @@ namespace ReactiveUI.Routing
         {
             var transition = await BuildTransitionAsync(viewModel, vmParams);
             var routeActions = GetActionsForViewModelType(viewModel);
-            await Navigate(routeActions, transition);
-            await PresentAsync(routeActions, transition);
+            await HandleRouteActionsAsync(routeActions, transition);
         }
 
         protected async Task ShowAsync(Type viewModel, object vmParams)
@@ -99,10 +98,10 @@ namespace ReactiveUI.Routing
             await ShowCoreAsync(viewModel, vmParams);
         }
 
-        protected async Task PresentTransitionAsync(Transition transition)
+        protected async Task HandleTransitionAsync(Transition transition)
         {
             var routeActions = GetActionsForViewModelType(transition.ViewModel.GetType());
-            await PresentAsync(routeActions, transition);
+            await HandleRouteActionsAsync(routeActions, transition);
         }
 
         public async Task DispatchAsync(IRouterAction action)
@@ -128,34 +127,57 @@ namespace ReactiveUI.Routing
             }
         }
 
-        private async Task Navigate(RouteActions actions, Transition transition)
+        protected async Task WhenAction<T>(IRouteAction action, Func<T, Task> operation)
+            where T : class, IRouteAction
         {
-            if (actions.NavigationAction != null)
+            var convertedAction = action as T;
+            if (convertedAction != null)
             {
-                await actions.NavigationAction(Navigator, transition);
+                await operation(convertedAction);
             }
         }
 
-        private async Task PresentAsync(RouteActions actions, Transition transition)
+        private async Task HandleRouteActionsAsync(RouteActions actions, Transition transition)
         {
-            if (actions.Presenters == null) return;
-            var disposables =
-                await Task.WhenAll(actions.Presenters.Select(async p => await PresentAsync(p, transition)).ToArray());
+            if (actions.Actions != null && !presenters.ContainsKey(transition))
+            {
+                foreach (var action in actions.Actions)
+                {
+                    await HandleRouteActionAsync(action, transition);
+                }
+            }
+        }
+        
+        private async Task HandleRouteActionAsync(IRouteAction action, Transition transition)
+        {
+            await WhenAction<NavigateRouteAction>(action, async n =>
+            {
+                await Navigator.PushAsync(transition);
+            });
+            await WhenAction<PresentRouteAction>(action, async p =>
+            {
+                await PresentAsync(p, transition);
+            });
+        }
+
+        private async Task PresentAsync(PresentRouteAction presenter, Transition transition)
+        {
+            var p = await BuildPresenterAsync(presenter.PresenterType);
+            var d = await p.PresentAsync(transition.ViewModel, presenter.Hint);
+            AddDisposable(transition, d);
+        }
+
+        private void AddDisposable(Transition transition, IDisposable disposable)
+        {
             List<IDisposable> list;
             if (presenters.TryGetValue(transition, out list))
             {
-                list.AddRange(disposables);
+                list.Add(disposable);
             }
             else
             {
-                presenters.Add(transition, disposables.ToList());
+                presenters.Add(transition, new List<IDisposable> { disposable });
             }
-        }
-
-        private async Task<IDisposable> PresentAsync(Type presenter, Transition transition)
-        {
-            var p = await BuildPresenterAsync(presenter);
-            return await p.PresentAsync(transition.ViewModel, null);
         }
 
         private async Task<IPresenter> BuildPresenterAsync(Type presenter)
