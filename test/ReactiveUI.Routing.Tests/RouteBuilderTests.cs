@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using ReactiveUI.Routing.Actions;
@@ -13,19 +10,6 @@ using Xunit;
 
 namespace ReactiveUI.Routing.Tests
 {
-    public class TestViewModel : ActivatableObject<TestParams>
-    {
-        public new bool Initialized => base.Initialized;
-    }
-
-    public class TestPresenterType : IPresenter
-    {
-        public Task<IDisposable> PresentAsync(object viewModel, object hint)
-        {
-            return Task.FromResult<IDisposable>(new BooleanDisposable());
-        }
-    }
-
     public class RouteBuilderTests
     {
         public RouteBuilder Route { get; }

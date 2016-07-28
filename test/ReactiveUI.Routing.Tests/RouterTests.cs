@@ -385,6 +385,42 @@ namespace ReactiveUI.Routing.Tests
 
             navigator.Received(1).PopAsync();
         }
+
+        [Fact]
+        public async Task Test_NavigateBackWhileAction_Causes_Rotuer_To_Navigate_Backwards_While_The_Func_Is_True()
+        {
+            Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
+            var initParams = new RouterParams()
+            {
+                ViewModelMap = new Dictionary<Type, RouteActions>()
+                {
+                    {
+                        typeof(TestViewModel),
+                        new RouteActions()
+                        {
+                            Actions = new[]
+                            {
+                                RouteActions.NavigateBackWhile(transition => transition.ViewModel is TestViewModel),
+                                RouteActions.Navigate()
+                            }
+                        }
+                    }
+                }
+            };
+            navigator.TransitionStack.Count.Returns(1, 0);
+            navigator.Peek().Returns(new Transition()
+            {
+                ViewModel = new TestViewModel()
+            }, new Transition()
+            {
+                
+            });
+            await router.InitAsync(initParams);
+            await router.ShowAsync<TestViewModel, TestParams>();
+            await router.ShowAsync<TestViewModel, TestParams>();
+
+            navigator.Received(1).PopAsync();
+        }
     }
 }
 #pragma warning restore 4014

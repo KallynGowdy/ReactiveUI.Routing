@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using ReactiveUI.Routing.Actions;
 using Splat;
@@ -100,8 +101,11 @@ namespace ReactiveUI.Routing
 
         protected async Task HandleTransitionAsync(Transition transition)
         {
-            var routeActions = GetActionsForViewModelType(transition.ViewModel.GetType());
-            await HandleRouteActionsAsync(routeActions, transition);
+            if (Navigator.Peek() != transition)
+            {
+                var routeActions = GetActionsForViewModelType(transition.ViewModel.GetType());
+                await HandleRouteActionsAsync(routeActions, transition);
+            }
         }
 
         public async Task DispatchAsync(IRouterAction action)
@@ -157,6 +161,13 @@ namespace ReactiveUI.Routing
             await WhenAction<PresentRouteAction>(action, async p =>
             {
                 await PresentAsync(p, transition);
+            });
+            await WhenAction<NavigateBackWhileRouteAction>(action, async n =>
+            {
+                while(Navigator.TransitionStack.Count > 0 && n.GoBackWhile(Navigator.Peek()))
+                {
+                    await Navigator.PopAsync();
+                }
             });
         }
 

@@ -114,7 +114,9 @@
     <Compile Include="RouterBuilderTests.cs" />
     <Compile Include="RouterTests.cs" />
     <Compile Include="TestParams.cs" />
+    <Compile Include="TestPresenterType.cs" />
     <Compile Include="TestState.cs" />
+    <Compile Include="TestViewModel.cs" />
     <Compile Include="TransitionTests.cs" />
   </ItemGroup>
   <ItemGroup>

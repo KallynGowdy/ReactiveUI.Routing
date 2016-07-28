@@ -1,4 +1,5 @@
 ﻿using System;
+using ReactiveUI;
 using Splat;
 
 namespace ShareNavigation.Tests
@@ -15,6 +16,8 @@ namespace ShareNavigation.Tests
         {
             originalResolver = Locator.CurrentMutable;
             Locator.Current = Resolver = new ModernDependencyResolver();
+            Resolver.InitializeSplat();
+            Resolver.InitializeReactiveUI();
         }
 
         public void Dispose()

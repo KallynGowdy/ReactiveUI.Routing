@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NSubstitute;
 using ReactiveUI.Routing;
 using ShareNavigation.Services;
@@ -26,11 +27,9 @@ namespace ShareNavigation.Tests
             "Given a routed app config"
                 .x(() => new RoutedAppConfig().RegisterDependencies(Resolver));
             "And a INavigator"
-                .x(() => navigator = Substitute.For<INavigator>());
+                .x(() => navigator = Resolver.GetService<INavigator>());
             "That is registered"
                 .x(() => Resolver.RegisterConstant(navigator, typeof(INavigator)));
-            "And a PhotoListViewModel registration"
-                .x(() => Resolver.Register(() => new PhotoListViewModel(), typeof(PhotoListViewModel)));
             "And a presenter for the view model"
                 .x(() => presenter = Substitute.For<IPresenter>());
             "That is registered"
@@ -42,7 +41,8 @@ namespace ShareNavigation.Tests
             "Then the navigator should have recieved a push call"
                 .x(() =>
                 {
-                    navigator.Received().PushAsync(Arg.Is<Transition>(t => t.ViewModel is PhotoListViewModel));
+                    Assert.Collection(navigator.TransitionStack,
+                        t => t.ViewModel.Should().BeOfType<PhotoListViewModel>());
                 });
             "And the presenter should have recieved a present call"
                 .x(() => presenter.Received(1).PresentAsync(Arg.Any<object>(), Arg.Any<object>()));
@@ -58,17 +58,9 @@ namespace ShareNavigation.Tests
             "Given a RoutedAppConfig"
                 .x(() => new RoutedAppConfig().RegisterDependencies(Resolver));
             "And a navigator"
-                .x(() => navigator = Substitute.For<INavigator>());
+                .x(() => navigator = Resolver.GetService<INavigator>());
             "That is registered"
                 .x(() => Resolver.RegisterConstant(navigator, typeof(INavigator)));
-            "And a PhotoListViewModel"
-                .x(() =>
-                {
-                    Resolver.Register(() => new PhotoListViewModel(), typeof(PhotoListViewModel));
-                    Resolver.Register(() => Substitute.For<IPresenter>(), typeof(IPresenter));
-                });
-            "And a ShareViewModel"
-                .x(() => Resolver.Register(() => new ShareViewModel(router), typeof(ShareViewModel)));
             "And a presenter for the view model"
                 .x(() => presenter = Substitute.For<IPresenter>());
             "That is registered"
@@ -80,7 +72,12 @@ namespace ShareNavigation.Tests
             "When I show the ShareViewModel"
                 .x(async () => await router.ShowAsync<ShareViewModel>());
             "Then the navigator should have recieved a push call"
-                .x(() => navigator.Received(1).PushAsync(Arg.Is<Transition>(t => t.ViewModel is ShareViewModel)));
+                .x(() =>
+                {
+                    Assert.Collection(navigator.TransitionStack,
+                        t => t.ViewModel.Should().BeOfType<PhotoListViewModel>(),
+                        t => t.ViewModel.Should().BeOfType<ShareViewModel>());
+                });
             "And the presenter should have recieved a present call"
                 .x(() => presenter.Received().PresentAsync(Arg.Any<object>(), Arg.Any<object>()));
         }
@@ -91,30 +88,11 @@ namespace ShareNavigation.Tests
             "Given a RoutedAppConfig"
                 .x(() => new RoutedAppConfig().RegisterDependencies(Resolver));
             "And a navigator"
-                .x(() => navigator = Substitute.For<INavigator>());
+                .x(() => navigator = Resolver.GetService<INavigator>());
             "That is registered"
                 .x(() => Resolver.RegisterConstant(navigator, typeof(INavigator)));
             "And a IPhotosService"
                 .x(() => photosService = Substitute.For<IPhotosService>());
-            "And a PhotoListViewModel"
-                .x(() =>
-                {
-                    photoListViewModel = new PhotoListViewModel();
-                    Resolver.Register(() => photoListViewModel, typeof(PhotoListViewModel));
-                    Resolver.Register(() => Substitute.For<IPresenter>(), typeof(IPresenter));
-                });
-            "That is registered"
-                .x(() => Resolver.RegisterConstant(photoListViewModel, typeof(PhotoListViewModel)));
-            "And a ShareViewModel"
-                .x(() => shareViewModel = new ShareViewModel(router, photosService));
-            "And I'm at ShareViewModel"
-                .x(() => navigator.Peek().Returns(new Transition()
-                {
-                    ViewModel = shareViewModel
-                }, new Transition()
-                {
-                    ViewModel = photoListViewModel
-                }));
             "And the PhotoViewModel Parameters"
                 .x(() => parameters = new PhotoViewModel.Params()
                 {
@@ -123,8 +101,6 @@ namespace ShareNavigation.Tests
                         PhotoUrl = "Url"
                     }
                 });
-            "And a PhotoViewModel registration"
-                .x(() => Resolver.Register(() => new PhotoViewModel(), typeof(PhotoViewModel)));
             "And a presenter for the view model"
                 .x(() => presenter = Substitute.For<IPresenter>());
             "That is registered"
@@ -133,13 +109,22 @@ namespace ShareNavigation.Tests
                 .x(() => activator = Resolver.GetService<IActivator>());
             "And a IRouter"
                 .x(async () => router = await activator.ActivateAsync<IRouter, RouterParams>(Resolver.GetService<RouterParams>()));
+            "And I'm at ShareViewModel"
+                .x(async () =>
+                {
+                    await navigator.PushAsync(new Transition()
+                    {
+                        ViewModel = new ShareViewModel()
+                    });
+                });
             "When I Show the PhotoViewModel"
                 .x(async () => await router.ShowAsync<PhotoViewModel, PhotoViewModel.Params>(parameters));
             "Then I Should have navigated to the PhotoViewModel"
                 .x(() =>
                 {
-                    navigator.Received(1).PopAsync();
-                    navigator.Received().PushAsync(Arg.Is<Transition>(t => t.ViewModel is PhotoViewModel));
+                    Assert.Collection(navigator.TransitionStack,
+                        t => t.ViewModel.Should().BeOfType<PhotoListViewModel>(),
+                        t => t.ViewModel.Should().BeOfType<PhotoViewModel>());
                 });
             "And the PhotoViewModel presenter should have recieved a present call"
                 .x(() => presenter.Received().PresentAsync(Arg.Any<object>(), Arg.Any<object>()));
