@@ -112,6 +112,10 @@ namespace ReactiveUI.Routing
             {
                 await ShowAsync(showViewModelAction.ActivationParams.Type, showViewModelAction.ActivationParams.Params);
             });
+            await When<NavigateBackAction>(action, async navigateBackAction =>
+            {
+                await Navigator.PopAsync();
+            });
         }
 
         protected async Task When<T>(IRouterAction action, Func<T, Task> operation)

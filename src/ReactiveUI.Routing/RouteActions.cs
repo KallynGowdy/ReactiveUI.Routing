@@ -11,7 +11,11 @@ namespace ReactiveUI.Routing
     /// </summary>
     public sealed class RouteActions
     {
-        
+        /// <summary>
+        /// Gets or sets the array of actions that the router should perform.
+        /// </summary>
+        [Obsolete("Not implemented")]
+        public IRouterAction[] Actions { get; set; }
         /// <summary>
         /// Gets or sets the navigation action that should be run when the route is hit.
         /// </summary>

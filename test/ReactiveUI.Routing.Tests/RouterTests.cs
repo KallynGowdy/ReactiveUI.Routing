@@ -352,6 +352,7 @@ namespace ReactiveUI.Routing.Tests
         [Fact]
         public async Task Test_NavigateBackAction_Causes_Router_To_Navigate_Backwards()
         {
+            Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
             var initParams = new RouterParams()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
