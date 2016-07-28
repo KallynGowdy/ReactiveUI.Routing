@@ -44,6 +44,7 @@
     <Compile Include="ActivatableObject.cs" />
     <Compile Include="ActivatorExtensions.cs" />
     <Compile Include="BaseActivator.cs" />
+    <Compile Include="BaseReActivator.cs" />
     <Compile Include="Builder\IRouteBuilder.cs" />
     <Compile Include="Builder\IRouterBuilder.cs" />
     <Compile Include="Builder\RouteBuilder.cs" />
@@ -59,13 +60,18 @@
     <Compile Include="IPresenter.cs" />
     <Compile Include="IRootPresenter.cs" />
     <Compile Include="Actions\IRouterAction.cs" />
+    <Compile Include="ISuspensionNotifier.cs" />
+    <Compile Include="IObjectStateStore.cs" />
     <Compile Include="IViewTypeLocator.cs" />
     <Compile Include="LocatorActivator.cs" />
     <Compile Include="Navigator.cs" />
     <Compile Include="Presenter.cs" />
     <Compile Include="ReActivatableObject.cs" />
+    <Compile Include="ReActivator.cs" />
+    <Compile Include="ReActivatorExtensions.cs" />
     <Compile Include="RootPresenterParams.cs" />
     <Compile Include="RoutedAppHost.cs" />
+    <Compile Include="SuspensionNotifierHelper.cs" />
     <Compile Include="Router.cs" />
     <Compile Include="RouteActions.cs" />
     <Compile Include="RouterActions.cs" />

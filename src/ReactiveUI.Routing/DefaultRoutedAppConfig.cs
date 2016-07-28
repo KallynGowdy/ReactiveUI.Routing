@@ -17,9 +17,12 @@ namespace ReactiveUI.Routing
         public virtual void RegisterDependencies(IMutableDependencyResolver resolver)
         {
             if (resolver == null) throw new ArgumentNullException(nameof(resolver));
+            resolver.RegisterLazySingleton(BuildSuspensionNotifier, typeof(ISuspensionNotifier));
+            resolver.RegisterLazySingleton(BuildObjectStateStore, typeof(IObjectStateStore));
             resolver.Register(() => new DefaultViewTypeLocator(GetType().GetTypeInfo().Assembly), typeof(IViewTypeLocator));
             resolver.Register(() => new Navigator(), typeof(INavigator));
             resolver.Register(() => new LocatorActivator(), typeof(IActivator));
+            resolver.Register(() => new ReActivator(), typeof(IReActivator));
             resolver.Register(() => Router.Value, typeof(IRouter));
             resolver.Register(BuildRouterParamsSafe, typeof(RouterParams));
         }
@@ -35,5 +38,7 @@ namespace ReactiveUI.Routing
         }
 
         protected abstract RouterParams BuildRouterParams();
+        protected abstract ISuspensionNotifier BuildSuspensionNotifier();
+        protected abstract IObjectStateStore BuildObjectStateStore();
     }
 }

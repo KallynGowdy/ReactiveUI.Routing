@@ -20,6 +20,16 @@ namespace ReactiveUI.Routing.Tests
         {
             return RouterParams;
         }
+
+        protected override ISuspensionNotifier BuildSuspensionNotifier()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override IObjectStateStore BuildObjectStateStore()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class RoutedAppHostTests : LocatorTest
@@ -49,8 +59,10 @@ namespace ReactiveUI.Routing.Tests
         public void Test_Start_Calls_Register_Dependencies_On_Config()
         {
             Register(new RouterParams());
-            Register(Substitute.For<IActivator>());
+            Register(Substitute.For<IReActivator>());
             Register(Substitute.For<IRouter>());
+            Register(Substitute.For<ISuspensionNotifier>());
+            Register(Substitute.For<IObjectStateStore>());
             AppHost.Start();
             Config.Received(1).RegisterDependencies(Arg.Any<IMutableDependencyResolver>());
         }
@@ -61,8 +73,10 @@ namespace ReactiveUI.Routing.Tests
             var buildRouterParams = Substitute.For<Func<RouterParams>>();
             buildRouterParams().Returns(new RouterParams());
             Register(buildRouterParams);
-            Register(Substitute.For<IActivator>());
+            Register(Substitute.For<IReActivator>());
             Register(Substitute.For<IRouter>());
+            Register(Substitute.For<ISuspensionNotifier>());
+            Register(Substitute.For<IObjectStateStore>());
             AppHost.Start();
             buildRouterParams.Received(1)();
         }
@@ -88,16 +102,18 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public async Task Test_StartAsync_Calls_Activate_Async_On_IActivator_For_Router()
+        public async Task Test_StartAsync_Calls_ResumeAsync_On_IReActivator_For_Router()
         {
-            var activator = Substitute.For<IActivator>();
+            var activator = Substitute.For<IReActivator>();
             Register(new RouterParams());
             Register(activator);
+            Register(Substitute.For<ISuspensionNotifier>());
+            Register(Substitute.For<IObjectStateStore>());
             await AppHost.StartAsync();
 
 
             activator.Received(1)
-                .ActivateAsync(Arg.Is<ActivationParams>(p => p.Type == typeof(IRouter) && p.Params is RouterParams));
+                .ResumeAsync(Arg.Is<ObjectState>(p => p.Params.Type == typeof(IRouter) && p.Params.Params is RouterParams));
         }
     }
 }

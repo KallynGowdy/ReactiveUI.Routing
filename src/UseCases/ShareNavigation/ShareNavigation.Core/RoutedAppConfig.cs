@@ -31,5 +31,15 @@ namespace ShareNavigation
                 .When<PhotoViewModel>(route => route.NavigateFrom<PhotoListViewModel>().Present())
                 .Build();
         }
+
+        protected override ISuspensionNotifier BuildSuspensionNotifier()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override IObjectStateStore BuildObjectStateStore()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

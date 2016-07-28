@@ -30,7 +30,7 @@ namespace ReactiveUI.Routing
     /// <summary>
     /// Defines a generic interface that represents objects that can be suspended and resumed.
     /// </summary>
-    public interface IReActivatable<in TParams, TState> : IActivatable<TParams>, IReActivatable
+    public interface IReActivatable<TParams, TState> : IActivatable<TParams>, IReActivatable
         where TParams : new()
         where TState : new()
     {

@@ -15,6 +15,16 @@ namespace ReactiveUI.Routing.Tests
             {
                 return null;
             }
+
+            protected override ISuspensionNotifier BuildSuspensionNotifier()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override IObjectStateStore BuildObjectStateStore()
+            {
+                throw new NotImplementedException();
+            }
         }
 
         [Fact]

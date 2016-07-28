@@ -12,6 +12,11 @@ namespace ReactiveUI.Routing
     public interface IActivatable
     {
         /// <summary>
+        /// Gets the parameters that were used to initialize object.
+        /// </summary>
+        object InitParams { get; }
+
+        /// <summary>
         /// Runs initialization logic for the view model.
         /// </summary>
         /// <param name="parameters">The parameters that are needed to initialize this view model. Should never be null.</param>
@@ -29,9 +34,14 @@ namespace ReactiveUI.Routing
     /// Defines a generic interface that represents objects that can be activated.
     /// </summary>
     /// <typeparam name="TParams">The type of the parameter object that the object accepts.</typeparam>
-    public interface IActivatable<in TParams> : IActivatable
+    public interface IActivatable<TParams> : IActivatable
         where TParams : new()
     {
+        /// <summary>
+        /// Gets the parameters that were used to initialize object.
+        /// </summary>
+        new TParams InitParams { get; }
+
         /// <summary>
         /// Runs initialization logic for the view model.
         /// </summary>
