@@ -41,7 +41,7 @@ namespace ReactiveUI.Routing
             whenParams
                 .Do(async p => await Navigator.InitAsync(Unit.Default))
                 .SelectMany(p => Navigator.OnTransition)
-                .Do(transition => DisposePresenters(transition.Previous))
+                .Do(transition => DisposePresenters(transition.Removed))
                 .Do(async transition => await PresentTransitionAsync(transition.Current))
                 .Subscribe();
             whenParams

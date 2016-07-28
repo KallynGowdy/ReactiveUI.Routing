@@ -15,12 +15,12 @@ namespace ReactiveUI.Routing
         public IReadOnlyCollection<Transition> TransitionStack => Transitions;
         public IObservable<TransitionEvent> OnTransition => Subject.Where(e => e != null);
 
-        private void Notify()
+        private void Notify(Transition removed = null)
         {
             Subject.OnNext(new TransitionEvent()
             {
                 Current = Peek(),
-                Previous = Transitions.ElementAtOrDefault(Transitions.Count - 2)
+                Removed = removed
             });
         }
 
@@ -37,7 +37,7 @@ namespace ReactiveUI.Routing
             if (Transitions.Count <= 0) throw new InvalidOperationException("Cannot pop transition from stack. There are currently no transitions to pop.");
             var trans = Peek();
             Transitions.RemoveAt(Transitions.Count - 1);
-            Notify();
+            Notify(trans);
             return Task.FromResult(trans);
         }
 

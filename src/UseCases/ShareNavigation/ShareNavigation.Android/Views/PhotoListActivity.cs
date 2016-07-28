@@ -11,9 +11,8 @@ using ShareNavigation.ViewModels;
 namespace ShareNavigation.Views
 {
     [Activity(Label = "Starter-Android")]
-    public class PhotoListActivity : ReactiveActivity<PhotoListViewModel>
+    public class PhotoListActivity : RoutableActivity<PhotoListViewModel>
     {
-
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);

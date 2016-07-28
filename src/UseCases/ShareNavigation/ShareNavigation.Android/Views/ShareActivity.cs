@@ -15,7 +15,7 @@ using ShareNavigation.ViewModels;
 namespace ShareNavigation.Views
 {
     [Activity(Label = "Share!")]
-    public class ShareActivity : ReactiveActivity<ShareViewModel>
+    public class ShareActivity : RoutableActivity<ShareViewModel>
     {
         protected override void OnCreate(Bundle bundle)
         {

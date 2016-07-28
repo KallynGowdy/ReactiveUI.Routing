@@ -16,7 +16,7 @@ using ShareNavigation.ViewModels;
 namespace ShareNavigation.Views
 {
     [Activity(Label = "Share!")]
-    public class PhotoActivity : ReactiveActivity<PhotoViewModel>
+    public class PhotoActivity : RoutableActivity<PhotoViewModel>
     {
         protected override void OnCreate(Bundle bundle)
         {

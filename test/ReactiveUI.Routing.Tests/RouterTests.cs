@@ -300,7 +300,11 @@ namespace ReactiveUI.Routing.Tests
             Locator.CurrentMutable.Register(() => presenter, typeof(TestPresenterType));
             var subject = new Subject<TransitionEvent>();
             var viewModel = new TestViewModel();
-            var trans = new Transition()
+            var firstTrans = new Transition()
+            {
+                ViewModel = viewModel
+            };
+            var secondTrans = new Transition()
             {
                 ViewModel = viewModel
             };
@@ -326,21 +330,47 @@ namespace ReactiveUI.Routing.Tests
 
             subject.OnNext(new TransitionEvent()
             {
-                Current = trans
+                Current = firstTrans
+            });
+
+            subject.OnNext(new TransitionEvent()
+            {
+                Current = secondTrans
             });
 
             disposable.IsDisposed.Should().BeFalse();
 
             subject.OnNext(new TransitionEvent()
             {
-                Current = new Transition()
-                {
-                    ViewModel = new TestViewModel()
-                },
-                Previous = trans
+                Current = firstTrans,
+                Removed = secondTrans
             });
 
             disposable.IsDisposed.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task Test_NavigateBackAction_Causes_Router_To_Navigate_Backwards()
+        {
+            var initParams = new RouterParams()
+            {
+                ViewModelMap = new Dictionary<Type, RouteActions>()
+                {
+                    {
+                        typeof(TestViewModel),
+                        new RouteActions()
+                        {
+                            NavigationAction = (nav, transition) => nav.PushAsync(transition)
+                        }
+                    }
+                }
+            };
+
+            await router.InitAsync(initParams);
+            await router.ShowAsync<TestViewModel, TestParams>();
+            await router.BackAsync();
+
+            navigator.Received(1).PopAsync();
         }
     }
 }

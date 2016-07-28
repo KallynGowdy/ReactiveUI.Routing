@@ -25,5 +25,10 @@ namespace ReactiveUI.Routing
             }
             return router.DispatchAsync(RouterActions.ShowViewModel(typeof(TViewModel), parameters));
         }
+
+        public static Task BackAsync(this IRouter router)
+        {
+            return router.DispatchAsync(RouterActions.Back());
+        }
     }
 }

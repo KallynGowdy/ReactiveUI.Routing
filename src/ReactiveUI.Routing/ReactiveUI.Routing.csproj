@@ -35,6 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Actions\NavigateBackAction.cs" />
+    <Compile Include="Actions\PresentAction.cs" />
     <Compile Include="Actions\ShowViewModelAction.cs" />
     <Compile Include="ActivatableObject.cs" />
     <Compile Include="ActivatorExtensions.cs" />

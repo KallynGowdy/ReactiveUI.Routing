@@ -20,5 +20,10 @@ namespace ReactiveUI.Routing
                 }
             };
         }
+
+        public static IRouterAction Back()
+        {
+            return new NavigateBackAction();
+        }
     }
 }
