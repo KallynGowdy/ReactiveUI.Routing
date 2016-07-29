@@ -38,10 +38,11 @@ namespace ReactiveUI.Routing
             var stateStore = GetService<IObjectStateStore>();
             var notifier = GetService<ISuspensionNotifier>();
             var routerParams = GetService<RouterParams>();
-            var existingState = await stateStore.LoadStateAsync();
             var activator = GetService<IReActivator>();
+            var router = GetService<IRouter>();
+            var existingState = await stateStore.LoadStateAsync();
             var routerState = await GetRouterState(existingState, stateStore);
-            var router = await ResumeRouterAsync(activator, routerParams, routerState, stateStore);
+            await ResumeRouterAsync(router, activator, routerParams, routerState, stateStore);
             await router.ShowDefaultViewModelAsync();
 
             notifier.OnSaveState
@@ -61,18 +62,21 @@ namespace ReactiveUI.Routing
                 .Subscribe();
         }
 
-        private static async Task<IRouter> ResumeRouterAsync(IReActivator activator, RouterParams routerParams, RouterState routerState, IObjectStateStore stateStore)
+        private static async Task ResumeRouterAsync(IRouter router, IReActivator activator, RouterParams routerParams, RouterState routerState, IObjectStateStore stateStore)
         {
+            await router.InitAsync(routerParams);
             try
             {
-                return await activator.ResumeAsync<IRouter, RouterParams, RouterState>(routerParams, routerState);
+                if (routerState != null)
+                {
+                    await router.ResumeAsync(routerState, activator);
+                }
             }
             catch (Exception e)
             {
                 await stateStore.SaveStateAsync(null);
                 // Make sure that the router gets started
                 // TODO: Log exceptions
-                return await activator.ActivateAsync<IRouter, RouterParams>(routerParams);
             }
         }
 

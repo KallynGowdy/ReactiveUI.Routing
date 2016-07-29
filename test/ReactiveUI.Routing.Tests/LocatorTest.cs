@@ -31,7 +31,7 @@ namespace ReactiveUI.Routing.Tests
         protected virtual void Dispose(bool disposing)
         {
             Resolver.Dispose();
-            Locator.CurrentMutable = originalResolver;
+            Locator.Current = originalResolver;
         }
     }
 }

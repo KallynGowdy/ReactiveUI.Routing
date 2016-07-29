@@ -169,41 +169,13 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public async Task Test_InitAsync_Navigates_To_DefaultViewModel()
-        {
-            Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
-            var initParams = new RouterParams()
-            {
-                ViewModelMap = new Dictionary<Type, RouteActions>()
-                {
-                    {
-                        typeof(TestViewModel),
-                        new RouteActions()
-                        {
-                            Actions = new[]
-                            {
-                                RouteActions.Navigate()
-                            }
-                        }
-                    }
-                },
-                DefaultViewModelType = typeof(TestViewModel),
-                DefaultParameters = new TestParams()
-            };
-
-            await router.InitAsync(initParams);
-
-            navigator.Received(1).PushAsync(Arg.Is<Transition>(t => t.ViewModel is TestViewModel));
-        }
-
-        [Fact]
         public async Task Test_Router_Presents_Transition_Resolved_From_OnTransition()
         {
-            IPresenter presenter = Substitute.For<IPresenter>();
-            Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
-            Locator.CurrentMutable.Register(() => presenter, typeof(TestPresenterType));
-            var subject = new Subject<TransitionEvent>();
             var viewModel = new TestViewModel();
+            var subject = new Subject<TransitionEvent>();
+            IPresenter presenter = Substitute.For<IPresenter>();
+            Locator.CurrentMutable.Register(() => presenter, typeof(TestPresenterType));
+            Locator.CurrentMutable.Register(() => viewModel, typeof(TestViewModel));
             var initParams = new RouterParams()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
@@ -224,13 +196,7 @@ namespace ReactiveUI.Routing.Tests
             navigator.OnTransition.Returns(subject);
             await router.InitAsync(initParams);
 
-            subject.OnNext(new TransitionEvent()
-            {
-                Current = new Transition()
-                {
-                    ViewModel = viewModel
-                }
-            });
+            router.ShowAsync<TestViewModel, TestParams>();
 
             presenter.Received(1).PresentAsync(viewModel, null);
         }
@@ -243,16 +209,6 @@ namespace ReactiveUI.Routing.Tests
             presenter.PresentAsync(Arg.Any<object>(), Arg.Any<object>()).Returns(disposable);
             Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
             Locator.CurrentMutable.Register(() => presenter, typeof(TestPresenterType));
-            var subject = new Subject<TransitionEvent>();
-            var viewModel = new TestViewModel();
-            var firstTrans = new Transition()
-            {
-                ViewModel = viewModel
-            };
-            var secondTrans = new Transition()
-            {
-                ViewModel = viewModel
-            };
             var initParams = new RouterParams()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
@@ -270,27 +226,21 @@ namespace ReactiveUI.Routing.Tests
                     }
                 }
             };
-            navigator.OnTransition.Returns(subject);
+            Transition trans = null;
+            navigator.PushAsync(Arg.Any<Transition>()).Returns(c =>
+            {
+                trans = c.Arg<Transition>();
+                return Task.FromResult(0);
+            });
+            navigator.PopAsync().Returns(c => trans);
             await router.InitAsync(initParams);
 
-            subject.OnNext(new TransitionEvent()
-            {
-                Current = firstTrans
-            });
-
-            subject.OnNext(new TransitionEvent()
-            {
-                Current = secondTrans
-            });
+            await router.ShowAsync<TestViewModel, TestParams>();
+            await router.ShowAsync<TestViewModel, TestParams>();
 
             disposable.IsDisposed.Should().BeFalse();
 
-            subject.OnNext(new TransitionEvent()
-            {
-                Current = firstTrans,
-                Removed = secondTrans
-            });
-
+            await router.BackAsync();
             disposable.IsDisposed.Should().BeTrue();
         }
 

@@ -131,7 +131,7 @@ namespace ReactiveUI.Routing
             });
             await When<ShowDefaultViewModelAction>(action, async a =>
             {
-                if (Actions.Count == 0)
+                if (Actions.Count == 0 && Params?.DefaultViewModelType != null && Params.DefaultParameters != null)
                 {
                     await
                         DispatchAsync(RouterActions.ShowViewModel(Params.DefaultViewModelType, Params.DefaultParameters));

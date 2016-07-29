@@ -59,7 +59,7 @@ namespace ReactiveUI.Routing.Tests
         public void Test_Start_Calls_Register_Dependencies_On_Config()
         {
             Register(new RouterParams());
-            Register(Substitute.For<IReActivator>());
+            Register<IReActivator>(ReActivator.Current);
             Register(Substitute.For<IRouter>());
             Register(Substitute.For<ISuspensionNotifier>());
             Register(Substitute.For<IObjectStateStore>());
@@ -73,7 +73,7 @@ namespace ReactiveUI.Routing.Tests
             var buildRouterParams = Substitute.For<Func<RouterParams>>();
             buildRouterParams().Returns(new RouterParams());
             Register(buildRouterParams);
-            Register(Substitute.For<IReActivator>());
+            Register<IReActivator>(ReActivator.Current);
             Register(Substitute.For<IRouter>());
             Register(Substitute.For<ISuspensionNotifier>());
             Register(Substitute.For<IObjectStateStore>());
@@ -105,6 +105,7 @@ namespace ReactiveUI.Routing.Tests
         public async Task Test_StartAsync_Calls_ResumeAsync_On_IReActivator_For_Router()
         {
             var activator = Substitute.For<IReActivator>();
+            activator.ResumeAsync(Arg.Any<ObjectState>()).Returns(Substitute.For<IRouter>());
             Register(new RouterParams());
             Register(activator);
             Register(Substitute.For<ISuspensionNotifier>());

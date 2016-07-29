@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
+using Akavache;
 using FluentAssertions;
 using NSubstitute;
 using ReactiveUI.Routing;
@@ -22,59 +23,64 @@ namespace ShareNavigation.Tests
         }
 
         [Scenario]
-        public void Showing_PhotoListViewModel(IRouter router, INavigator navigator, IPresenter presenter, IActivator activator)
+        public void Showing_PhotoListViewModel(IRoutedAppConfig config, 
+            IRouter router, 
+            IPresenter presenter, 
+            IRoutedAppHost appHost,
+            IBlobCache cache)
         {
-            "Given a routed app config"
-                .x(() => new RoutedAppConfig().RegisterDependencies(Resolver));
-            "And a INavigator"
-                .x(() => navigator = Resolver.GetService<INavigator>());
-            "That is registered"
-                .x(() => Resolver.RegisterConstant(navigator, typeof(INavigator)));
-            "And a presenter for the view model"
-                .x(() => presenter = Substitute.For<IPresenter>());
-            "That is registered"
-                .x(() => Resolver.RegisterConstant(presenter, typeof(IPresenter)));
-            "And a IActivator"
-                .x(() => activator = Resolver.GetService<IActivator>());
-            "When the router is initialized"
-                .x(async () => router = await activator.ActivateAsync<IRouter, RouterParams>(Resolver.GetService<RouterParams>()));
-            "Then the navigator should have recieved a push call"
-                .x(() =>
-                {
-                    Assert.Collection(navigator.TransitionStack,
-                        t => t.ViewModel.Should().BeOfType<PhotoListViewModel>());
-                });
-            "And the presenter should have recieved a present call"
-                .x(() => presenter.Received(1).PresentAsync(Arg.Any<object>(), Arg.Any<object>()));
+            using (Resolver.WithResolver())
+            {
+                "Given a routed app config"
+                    .x(() => config = new TestRoutedAppConfig());
+                "And a IBlobCache"
+                    .x(() => cache = Substitute.For<IBlobCache>());
+                "That is registered"
+                    .x(() => Resolver.RegisterConstant(cache, typeof(IBlobCache)));
+                "And a presenter for the view model"
+                    .x(() => presenter = Substitute.For<IPresenter>());
+                "That is registered"
+                    .x(() => Resolver.RegisterConstant(presenter, typeof(IPresenter)));
+                "And a IRoutedAppConfig"
+                    .x(() => appHost = new RoutedAppHost(config));
+                "When the app is started"
+                    .x(async () => await appHost.StartAsync());
+                "Then the navigator should have recieved a push call"
+                    .x(() =>
+                    {
+                        Assert.Collection(Resolver.GetService<INavigator>().TransitionStack,
+                            t => t.ViewModel.Should().BeOfType<PhotoListViewModel>());
+                    });
+                "And the presenter should have recieved a present call"
+                    .x(() => presenter.Received(1).PresentAsync(Arg.Any<object>(), Arg.Any<object>()));
+            }
         }
 
         [Scenario]
         public void Showing_ShareViewModel(
             IRouter router,
-            INavigator navigator,
             IPresenter presenter,
-            IActivator activator)
+            IRoutedAppHost host,
+            IRoutedAppConfig config)
         {
             "Given a RoutedAppConfig"
-                .x(() => new RoutedAppConfig().RegisterDependencies(Resolver));
-            "And a navigator"
-                .x(() => navigator = Resolver.GetService<INavigator>());
-            "That is registered"
-                .x(() => Resolver.RegisterConstant(navigator, typeof(INavigator)));
+                .x(() => config = new TestRoutedAppConfig());
             "And a presenter for the view model"
                 .x(() => presenter = Substitute.For<IPresenter>());
             "That is registered"
                 .x(() => Resolver.Register(() => presenter, typeof(IPresenter)));
-            "And a IActivator"
-                .x(() => activator = Resolver.GetService<IActivator>());
+            "And a IRoutedAppHost"
+                .x(() => host = new RoutedAppHost(config));
+            "That is started"
+                .x(async () => await host.StartAsync());
             "And a IRouter"
-                .x(async () => router = await activator.ActivateAsync<IRouter, RouterParams>(Resolver.GetService<RouterParams>()));
+                .x(() => router = Resolver.GetService<IRouter>());
             "When I show the ShareViewModel"
                 .x(async () => await router.ShowAsync<ShareViewModel>());
             "Then the navigator should have recieved a push call"
                 .x(() =>
                 {
-                    Assert.Collection(navigator.TransitionStack,
+                    Assert.Collection(Resolver.GetService<INavigator>().TransitionStack,
                         t => t.ViewModel.Should().BeOfType<PhotoListViewModel>(),
                         t => t.ViewModel.Should().BeOfType<ShareViewModel>());
                 });
@@ -83,16 +89,17 @@ namespace ShareNavigation.Tests
         }
 
         [Scenario]
-        public void Showing_PhotoViewModel_From_ShareViewModel(IRouter router, INavigator navigator, PhotoListViewModel photoListViewModel, ShareViewModel shareViewModel, IPhotosService photosService, PhotoViewModel.Params parameters, IPresenter presenter, IActivator activator)
+        public void Showing_PhotoViewModel_From_ShareViewModel(
+            IRouter router, 
+            PhotoListViewModel photoListViewModel, 
+            ShareViewModel shareViewModel,
+            PhotoViewModel.Params parameters, 
+            IPresenter presenter, 
+            IRoutedAppHost host,
+            IRoutedAppConfig config)
         {
             "Given a RoutedAppConfig"
-                .x(() => new RoutedAppConfig().RegisterDependencies(Resolver));
-            "And a navigator"
-                .x(() => navigator = Resolver.GetService<INavigator>());
-            "That is registered"
-                .x(() => Resolver.RegisterConstant(navigator, typeof(INavigator)));
-            "And a IPhotosService"
-                .x(() => photosService = Substitute.For<IPhotosService>());
+                .x(() => config = new TestRoutedAppConfig());
             "And the PhotoViewModel Parameters"
                 .x(() => parameters = new PhotoViewModel.Params()
                 {
@@ -105,24 +112,20 @@ namespace ShareNavigation.Tests
                 .x(() => presenter = Substitute.For<IPresenter>());
             "That is registered"
                 .x(() => Resolver.Register(() => presenter, typeof(IPresenter)));
-            "And a IActivator"
-                .x(() => activator = Resolver.GetService<IActivator>());
+            "And a IRoutedAppHost"
+                .x(() => host = new RoutedAppHost(config));
+            "That is started"
+                .x(async () => await host.StartAsync());
             "And a IRouter"
-                .x(async () => router = await activator.ActivateAsync<IRouter, RouterParams>(Resolver.GetService<RouterParams>()));
+                .x(() => router = Resolver.GetService<IRouter>());
             "And I'm at ShareViewModel"
-                .x(async () =>
-                {
-                    await navigator.PushAsync(new Transition()
-                    {
-                        ViewModel = new ShareViewModel()
-                    });
-                });
+                .x(async () => await router.ShowAsync<ShareViewModel>());
             "When I Show the PhotoViewModel"
                 .x(async () => await router.ShowAsync<PhotoViewModel, PhotoViewModel.Params>(parameters));
             "Then I Should have navigated to the PhotoViewModel"
                 .x(() =>
                 {
-                    Assert.Collection(navigator.TransitionStack,
+                    Assert.Collection(Resolver.GetService<INavigator>().TransitionStack,
                         t => t.ViewModel.Should().BeOfType<PhotoListViewModel>(),
                         t => t.ViewModel.Should().BeOfType<PhotoViewModel>());
                 });

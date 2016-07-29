@@ -12,7 +12,7 @@ using Splat;
 
 namespace ShareNavigation
 {
-    public class RoutedAppConfig : DefaultRoutedAppConfig
+    public abstract class RoutedAppConfig : DefaultRoutedAppConfig
     {
         public override void RegisterDependencies(IMutableDependencyResolver resolver)
         {
@@ -35,11 +35,6 @@ namespace ShareNavigation
                 .When<ShareViewModel>(route => route.Navigate().Present())
                 .When<PhotoViewModel>(route => route.NavigateFrom<PhotoListViewModel>().Present())
                 .Build();
-        }
-
-        protected override ISuspensionNotifier BuildSuspensionNotifier()
-        {
-            throw new NotImplementedException();
         }
 
         protected override IObjectStateStore BuildObjectStateStore()
