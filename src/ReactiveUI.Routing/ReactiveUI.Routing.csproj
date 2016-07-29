@@ -40,6 +40,7 @@
     <Compile Include="Actions\NavigateBackWhileRouteAction.cs" />
     <Compile Include="Actions\NavigateRouteAction.cs" />
     <Compile Include="Actions\PresentRouteAction.cs" />
+    <Compile Include="Actions\ShowDefaultViewModelAction.cs" />
     <Compile Include="Actions\ShowViewModelAction.cs" />
     <Compile Include="ActivatableObject.cs" />
     <Compile Include="ActivatorExtensions.cs" />

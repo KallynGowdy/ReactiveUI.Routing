@@ -12,7 +12,7 @@ namespace ReactiveUI.Routing
     /// Often, implementations of this interface are combined with a presentation state object to handle navigation and presentation
     /// at the same time.
     /// </summary>
-    public interface INavigator : IReActivatable<Unit, NavigatorState>
+    public interface INavigator
     {
         /// <summary>
         /// Gets the stack of view models that have been transitioned to.

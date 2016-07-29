@@ -19,6 +19,7 @@ namespace ReactiveUI.Routing
         private INavigator Navigator { get; }
         private IActivator Activator { get; }
         private RouterParams Params => parameters.Value;
+        private List<IRouterAction> Actions { get; } = new List<IRouterAction>();
         private readonly Dictionary<Transition, List<IDisposable>> presenters = new Dictionary<Transition, List<IDisposable>>();
 
         public override bool SaveInitParams => false;
@@ -38,19 +39,6 @@ namespace ReactiveUI.Routing
             if (this.Navigator == null) throw new InvalidOperationException($"When creating a router, a {nameof(INavigator)} object must either be provided or locatable via Locator.Current.GetService<{nameof(INavigator)}>()");
 
             parameters = this.OnActivated.FirstAsync().ToProperty(this, r => r.Params);
-            var whenParams = this.WhenAnyValue(vm => vm.Params)
-                .Where(p => p != null);
-
-            whenParams
-                .Do(async p => await Navigator.InitAsync(Unit.Default))
-                .SelectMany(p => Navigator.OnTransition)
-                .Do(transition => DisposePresenters(transition.Removed))
-                .Do(async transition => await HandleTransitionAsync(transition.Current))
-                .Subscribe();
-            whenParams
-                .Where(p => p.DefaultViewModelType != null && p.DefaultParameters != null)
-                .Do(async p => await ShowCoreAsync(p.DefaultViewModelType, p.DefaultParameters))
-                .Subscribe();
         }
 
         private void DisposePresenters(Transition removed)
@@ -72,21 +60,17 @@ namespace ReactiveUI.Routing
         protected override async Task ResumeCoreAsync(RouterState storedState, IReActivator reActivator)
         {
             await base.ResumeCoreAsync(storedState, reActivator);
-            await Navigator.ResumeAsync(storedState.NavigatorState, reActivator);
-            await HandleTransitionAsyncCore(Navigator.Peek());
+            foreach (var action in storedState.Actions)
+            {
+                await DispatchAsync(action);
+            }
         }
 
         protected override async Task<RouterState> SuspendCoreAsync()
         {
             var state = await base.SuspendCoreAsync();
-            state.NavigatorState = await Navigator.SuspendAsync();
+            state.Actions = Actions.ToArray();
             return state;
-        }
-
-        protected override async Task DestroyCoreAsync()
-        {
-            await base.DestroyCoreAsync();
-            await Navigator.DestroyAsync();
         }
 
         protected async Task ShowCoreAsync(Type viewModel, object vmParams)
@@ -96,7 +80,7 @@ namespace ReactiveUI.Routing
             await HandleRouteActionsAsync(routeActions, transition);
         }
 
-        protected async Task ShowAsync(Type viewModel, object vmParams)
+        protected async Task ShowViewModelAsync(Type viewModel, object vmParams)
         {
             CheckInit();
             await ShowCoreAsync(viewModel, vmParams);
@@ -104,7 +88,7 @@ namespace ReactiveUI.Routing
 
         protected async Task HandleTransitionAsync(Transition transition)
         {
-            if (Navigator.Peek() != transition)
+            if (!presenters.ContainsKey(transition))
             {
                 await HandleTransitionAsyncCore(transition);
             }
@@ -116,17 +100,51 @@ namespace ReactiveUI.Routing
             await HandleRouteActionsAsync(routeActions, transition);
         }
 
+        // Show 1 -> Show 2 -> Back (Show 1)
+        // 
+        // Show 1:
+        // Action is dispatched, transition is created, view model is presented.
+        // Show 2:
+        // Action is dispatched, transition created and view model is presented.
+        // Back:
+        // Transition is popped, Show 2 presenters are disposed, Show 1 is presented.
+
         public async Task DispatchAsync(IRouterAction action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
             await When<ShowViewModelAction>(action, async showViewModelAction =>
             {
-                await ShowAsync(showViewModelAction.ActivationParams.Type, showViewModelAction.ActivationParams.Params);
+                Actions.Add(action);
+                await ShowViewModelAsync(showViewModelAction.ActivationParams.Type, showViewModelAction.ActivationParams.Params);
             });
             await When<NavigateBackAction>(action, async navigateBackAction =>
             {
-                await Navigator.PopAsync();
+                Actions.RemoveAt(Actions.Count - 1);
+                var transition = await Navigator.PopAsync();
+                DisposePresenters(transition);
+                var current = Navigator.Peek();
+                if (current != null)
+                {
+                    var actions = GetActionsForViewModelType(current.ViewModel.GetType());
+                    await HandleRoutePresentation(actions.Actions, current);
+                }
             });
+            await When<ShowDefaultViewModelAction>(action, async a =>
+            {
+                if (Actions.Count == 0)
+                {
+                    await
+                        DispatchAsync(RouterActions.ShowViewModel(Params.DefaultViewModelType, Params.DefaultParameters));
+                }
+            });
+        }
+
+        private async Task HandleRoutePresentation(IRouteAction[] actions, Transition transition)
+        {
+            foreach (var action in actions)
+            {
+                await HandleRoutePresentation(action, transition);
+            }
         }
 
         protected async Task When<T>(IRouterAction action, Func<T, Task> operation)
@@ -159,24 +177,34 @@ namespace ReactiveUI.Routing
                 }
             }
         }
-        
-        private async Task HandleRouteActionAsync(IRouteAction action, Transition transition)
+
+        private async Task HandleRouteNavigationAsync(IRouteAction action, Transition transition)
         {
             await WhenAction<NavigateRouteAction>(action, async n =>
             {
-                await Navigator.PushAsync(transition);
-            });
-            await WhenAction<PresentRouteAction>(action, async p =>
-            {
-                await PresentAsync(p, transition);
+                if (Navigator.Peek() != transition)
+                {
+                    await Navigator.PushAsync(transition);
+                }
             });
             await WhenAction<NavigateBackWhileRouteAction>(action, async n =>
             {
-                while(Navigator.TransitionStack.Count > 0 && n.GoBackWhile(Navigator.Peek()))
+                while (Navigator.TransitionStack.Count > 0 && n.GoBackWhile(Navigator.Peek()))
                 {
                     await Navigator.PopAsync();
                 }
             });
+        }
+
+        private async Task HandleRouteActionAsync(IRouteAction action, Transition transition)
+        {
+            await HandleRouteNavigationAsync(action, transition);
+            await HandleRoutePresentation(action, transition);
+        }
+
+        private async Task HandleRoutePresentation(IRouteAction action, Transition transition)
+        {
+            await WhenAction<PresentRouteAction>(action, async p => { await PresentAsync(p, transition); });
         }
 
         private async Task PresentAsync(PresentRouteAction presenter, Transition transition)

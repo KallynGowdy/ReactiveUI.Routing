@@ -53,20 +53,12 @@ namespace ShareNavigation
             var viewType = ViewLocator.ResolveViewType(viewModelType);
             if (viewType != null)
             {
-                return Observable.Create<Activity>(o =>
-                {
-                    Activity activity = null;
-                    ActivityCallbacks.ActivityCreated
-                        .FirstAsync(a => a.GetType() == viewType)
-                        .Do(a => activity = a)
-                        .Cast<IViewFor>()
-                        .Do(a => a.ViewModel = viewModel)
-                        .Subscribe(a => { }, onError: o.OnError);
-                    Context.StartActivity(viewType);
-
-                    return new ScheduledDisposable(RxApp.MainThreadScheduler,
-                            new FuncDisposable(() => activity?.Finish()));
-                }).Subscribe();
+                Context.StartActivity(viewType);
+                var activity = await ActivityCallbacks.ActivityCreated
+                    .FirstAsync(a => a.GetType() == viewType);
+                ((IViewFor) activity).ViewModel = viewModel;
+                return new ScheduledDisposable(RxApp.MainThreadScheduler,
+                        new FuncDisposable(() => activity?.Finish()));
             }
             else
             {

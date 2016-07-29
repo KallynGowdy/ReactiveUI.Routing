@@ -103,44 +103,5 @@ namespace ReactiveUI.Routing.Tests
             await Navigator.PopAsync();
             Navigator.Peek().Should().Be(trans);
         }
-
-        [Fact]
-        public async Task Test_SuspendAsync_Returns_NavigatorState_With_TransitionStates()
-        {
-            var trans = new Transition();
-            await Navigator.PushAsync(trans);
-            var state = await Navigator.SuspendAsync();
-
-            Assert.Collection(state.TransitionStack,
-                t => t.Should().NotBeNull());
-        }
-
-        [Fact]
-        public async Task Test_ResumeAsync_Populates_TransitionStack()
-        {
-            var state = new ObjectState()
-            {
-                Params = new ActivationParams()
-                {
-                    Params = Unit.Default,
-                    Type = typeof(TestViewModel)
-                },
-                State = null
-            };
-            var reActivator = Substitute.For<IReActivator>();
-            var trans = new Transition();
-            reActivator.ResumeAsync(state).Returns(trans);
-
-            await Navigator.ResumeAsync(new NavigatorState()
-            {
-                TransitionStack = new []
-                {
-                    state
-                }
-            }, reActivator);
-
-            Assert.Collection(Navigator.TransitionStack,
-                t => t.Should().Be(trans));
-        }
     }
 }

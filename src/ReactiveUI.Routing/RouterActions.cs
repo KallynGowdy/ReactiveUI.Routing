@@ -27,5 +27,10 @@ namespace ReactiveUI.Routing
         {
             return new NavigateBackAction();
         }
+
+        public static IRouterAction ShowDefaultViewModel()
+        {
+            return new ShowDefaultViewModelAction();
+        }
     }
 }

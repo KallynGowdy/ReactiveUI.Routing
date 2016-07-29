@@ -1,7 +1,12 @@
-﻿namespace ReactiveUI.Routing
+﻿using ReactiveUI.Routing.Actions;
+
+namespace ReactiveUI.Routing
 {
     public sealed class RouterState
     {
-        public NavigatorState NavigatorState { get; set; }
+        /// <summary>
+        /// Gets or sets the list of actions that were performed on the router.
+        /// </summary>
+        public IRouterAction[] Actions { get; set; }
     }
 }

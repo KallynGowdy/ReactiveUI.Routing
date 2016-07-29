@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ReactiveUI.Routing.Actions;
 using Splat;
 
 namespace ReactiveUI.Routing
@@ -24,7 +25,11 @@ namespace ReactiveUI.Routing
 
         public void Start()
         {
-            Task.Run(StartAsync).Wait();
+            var task = Task.Run(StartAsync);
+            if (ModeDetector.InUnitTestRunner())
+            {
+                task.Wait();
+            }
         }
 
         public virtual async Task StartAsync()
@@ -37,6 +42,7 @@ namespace ReactiveUI.Routing
             var activator = GetService<IReActivator>();
             var routerState = await GetRouterState(existingState, stateStore);
             var router = await ResumeRouterAsync(activator, routerParams, routerState, stateStore);
+            await router.ShowDefaultViewModelAsync();
 
             notifier.OnSaveState
                 .Do(async u =>
@@ -61,7 +67,7 @@ namespace ReactiveUI.Routing
             {
                 return await activator.ResumeAsync<IRouter, RouterParams, RouterState>(routerParams, routerState);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 await stateStore.SaveStateAsync(null);
                 // Make sure that the router gets started
@@ -75,7 +81,7 @@ namespace ReactiveUI.Routing
             RouterState routerState = null;
             try
             {
-                routerState = (RouterState) existingState?.State;
+                routerState = (RouterState)existingState?.State;
             }
             catch (InvalidCastException)
             {

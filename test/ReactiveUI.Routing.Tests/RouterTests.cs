@@ -40,43 +40,7 @@ namespace ReactiveUI.Routing.Tests
                 await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
             });
         }
-
-        [Fact]
-        public async Task Test_InitAsync_Initializes_Navigator()
-        {
-            await router.InitAsync(new RouterParams());
-            navigator.Received(1).InitAsync(Unit.Default);
-        }
-
-        [Fact]
-        public async Task Test_ResumeAsync_Resumes_Navigator()
-        {
-            var state = new RouterState()
-            {
-                NavigatorState = new NavigatorState()
-            };
-            await router.ResumeAsync(state, Substitute.For<IReActivator>());
-            navigator.Received(1).ResumeAsync(state.NavigatorState, Arg.Any<IReActivator>());
-        }
-
-        [Fact]
-        public async Task Test_SuspendAsync_Suspends_Navigator()
-        {
-            var navigationState = new NavigatorState();
-            navigator.SuspendAsync().Returns(navigationState);
-
-            var state = await router.SuspendAsync();
-
-            state.NavigatorState.Should().Be(navigationState);
-        }
-
-        [Fact]
-        public async Task Test_DestroyAsync_Destroys_Navigator()
-        {
-            await router.DestroyAsync();
-            navigator.Received(1).DestroyAsync();
-        }
-
+        
         [Fact]
         public async Task Test_ShowAsync_Pipes_Transition_To_Navigator_If_Router_Actions_Specify_Navigate()
         {
@@ -233,34 +197,6 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public async Task Test_SuspendAsync_Returns_Navigator_State()
-        {
-            var initParams = new RouterParams()
-            {
-                ViewModelMap = new Dictionary<Type, RouteActions>()
-                {
-                    {
-                        typeof(TestViewModel),
-                        new RouteActions()
-                        {
-                            Actions = new IRouteAction[]
-                            {
-                                RouteActions.Navigate()
-                            }
-                        }
-                    }
-                }
-            };
-
-            var state = new NavigatorState();
-            navigator.SuspendAsync().Returns(state);
-            await router.InitAsync(initParams);
-            var stored = await router.SuspendAsync();
-
-            stored.NavigatorState.Should().Be(state);
-        }
-
-        [Fact]
         public async Task Test_Router_Presents_Transition_Resolved_From_OnTransition()
         {
             IPresenter presenter = Substitute.For<IPresenter>();
@@ -407,7 +343,7 @@ namespace ReactiveUI.Routing.Tests
                     }
                 }
             };
-            navigator.TransitionStack.Count.Returns(1, 0);
+            navigator.TransitionStack.Count.Returns(1);
             navigator.Peek().Returns(new Transition()
             {
                 ViewModel = new TestViewModel()
