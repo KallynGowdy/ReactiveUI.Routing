@@ -27,9 +27,14 @@ namespace ReactiveUI.Routing
         public Task PushAsync(Transition transition)
         {
             if (transition == null) throw new ArgumentNullException(nameof(transition));
-            Transitions.Add(transition);
+            PushCore(transition);
             Notify();
             return Task.FromResult(0);
+        }
+
+        private void PushCore(Transition transition)
+        {
+            Transitions.Add(transition);
         }
 
         public Task<Transition> PopAsync()
@@ -58,10 +63,18 @@ namespace ReactiveUI.Routing
             await base.ResumeCoreAsync(storedState, reActivator);
             if (storedState.TransitionStack != null)
             {
+                if (storedState.TransitionStack.Length > 0)
+                {
+                    while (Transitions.Count > 0)
+                    {
+                        await PopAsync();
+                    }
+                }
                 foreach (var transition in storedState.TransitionStack)
                 {
-                    var resumed = (Transition)await reActivator.ResumeAsync(transition);
-                    await PushAsync(resumed);
+                    var trans = new Transition(reActivator);
+                    await trans.ResumeAsync(transition, reActivator);
+                    PushCore(trans);
                 }
             }
         }

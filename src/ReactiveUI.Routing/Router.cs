@@ -21,6 +21,8 @@ namespace ReactiveUI.Routing
         private RouterParams Params => parameters.Value;
         private readonly Dictionary<Transition, List<IDisposable>> presenters = new Dictionary<Transition, List<IDisposable>>();
 
+        public override bool SaveInitParams => false;
+
         public Router() : this(null, null)
         {
         }
@@ -35,7 +37,7 @@ namespace ReactiveUI.Routing
             this.Activator = activator ?? Locator.Current.GetService<IActivator>() ?? new LocatorActivator();
             if (this.Navigator == null) throw new InvalidOperationException($"When creating a router, a {nameof(INavigator)} object must either be provided or locatable via Locator.Current.GetService<{nameof(INavigator)}>()");
 
-            parameters = this.OnActivated.ToProperty(this, r => r.Params);
+            parameters = this.OnActivated.FirstAsync().ToProperty(this, r => r.Params);
             var whenParams = this.WhenAnyValue(vm => vm.Params)
                 .Where(p => p != null);
 
@@ -71,6 +73,7 @@ namespace ReactiveUI.Routing
         {
             await base.ResumeCoreAsync(storedState, reActivator);
             await Navigator.ResumeAsync(storedState.NavigatorState, reActivator);
+            await HandleTransitionAsyncCore(Navigator.Peek());
         }
 
         protected override async Task<RouterState> SuspendCoreAsync()
@@ -103,9 +106,14 @@ namespace ReactiveUI.Routing
         {
             if (Navigator.Peek() != transition)
             {
-                var routeActions = GetActionsForViewModelType(transition.ViewModel.GetType());
-                await HandleRouteActionsAsync(routeActions, transition);
+                await HandleTransitionAsyncCore(transition);
             }
+        }
+
+        private async Task HandleTransitionAsyncCore(Transition transition)
+        {
+            var routeActions = GetActionsForViewModelType(transition.ViewModel.GetType());
+            await HandleRouteActionsAsync(routeActions, transition);
         }
 
         public async Task DispatchAsync(IRouterAction action)

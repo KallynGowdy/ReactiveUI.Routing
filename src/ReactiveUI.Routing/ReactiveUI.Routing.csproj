@@ -71,6 +71,7 @@
     <Compile Include="ReActivatorExtensions.cs" />
     <Compile Include="RootPresenterParams.cs" />
     <Compile Include="RoutedAppHost.cs" />
+    <Compile Include="Stores\BinaryObjectStateFormatter.cs" />
     <Compile Include="SuspensionNotifierHelper.cs" />
     <Compile Include="Router.cs" />
     <Compile Include="RouteActions.cs" />

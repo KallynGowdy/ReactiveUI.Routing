@@ -3,10 +3,11 @@
   "dependencies": {
     "NETStandard.Library": "1.6.0",
     "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
+    "System.Runtime.Serialization.Primitives": "4.1.1" ,
     "Rx-Main": "2.2.5",
     "Rx-Interfaces": "2.2.5",
     "Splat": "1.6.2",
-    "reactiveui": "6.5.0" 
+    "reactiveui": "6.5.0"
   },
   "frameworks": {
     "netstandard1.2": {

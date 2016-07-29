@@ -37,6 +37,7 @@ namespace ReactiveUI.Routing.Tests
         {
             var obj = Substitute.For<IActivatable>();
             obj.InitParams.Returns(Unit.Default);
+            obj.SaveInitParams.Returns(true);
             var state = await ReActivator.SuspendAsync(obj);
             state.Params.Type.Should().BeAssignableTo<IActivatable>();
             state.Params.Params.Should().Be(Unit.Default);
@@ -44,17 +45,32 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public async Task Test_SuspendAsync_Calls_DeactivateAsync_On_Activator_For_IActivatable_Objects()
+        public async Task Test_SuspendAsync_Does_Not_Call_DeactivateAsync_On_Activator_For_IActivatable_Objects()
         {
             var obj = Substitute.For<IActivatable>();
             obj.InitParams.Returns(Unit.Default);
             await ReActivator.SuspendAsync(obj);
 
-            Activator.Received(1).DeactivateAsync(obj);
+            Activator.DidNotReceive().DeactivateAsync(obj);
         }
 
         [Fact]
-        public async Task Test_SuspendAsync_Calls_SuspendAsync_On_IReActivatable_Object()
+        public async Task Test_SuspendAsync_Retrieves_InitParams_From_Object_When_SaveInitParams_Is_True()
+        {
+            var obj = Substitute.For<IReActivatable>();
+            var objState = new object();
+            obj.InitParams.Returns(Unit.Default);
+            obj.SaveInitParams.Returns(true);
+            obj.SuspendAsync().Returns(objState);
+            var state = await ReActivator.SuspendAsync(obj);
+
+            state.Params.Type.Should().BeAssignableTo<IActivatable>();
+            state.Params.Params.Should().Be(Unit.Default);
+            state.State.Should().Be(objState);
+        }
+
+        [Fact]
+        public async Task Test_SuspendAsync_Skips_InitParams_From_Object_When_SaveInitParams_Is_True()
         {
             var obj = Substitute.For<IReActivatable>();
             var objState = new object();
@@ -63,7 +79,7 @@ namespace ReactiveUI.Routing.Tests
             var state = await ReActivator.SuspendAsync(obj);
 
             state.Params.Type.Should().BeAssignableTo<IActivatable>();
-            state.Params.Params.Should().Be(Unit.Default);
+            state.Params.Params.Should().Be(null);
             state.State.Should().Be(objState);
         }
 

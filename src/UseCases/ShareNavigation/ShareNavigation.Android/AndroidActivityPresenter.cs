@@ -38,47 +38,12 @@ namespace ShareNavigation
             }
         }
 
-        public class Callbacks : Object, Application.IActivityLifecycleCallbacks
-        {
-            private readonly BehaviorSubject<Activity> activityCreated = new BehaviorSubject<Activity>(null);
-            public IObservable<Activity> ActivityCreated => activityCreated.Where(a => a != null);
-
-            public void OnActivityCreated(Activity activity, Bundle savedInstanceState)
-            {
-                activityCreated.OnNext(activity);
-            }
-
-            public void OnActivityDestroyed(Activity activity)
-            {
-            }
-
-            public void OnActivityPaused(Activity activity)
-            {
-            }
-
-            public void OnActivityResumed(Activity activity)
-            {
-            }
-
-            public void OnActivitySaveInstanceState(Activity activity, Bundle outState)
-            {
-            }
-
-            public void OnActivityStarted(Activity activity)
-            {
-            }
-
-            public void OnActivityStopped(Activity activity)
-            {
-            }
-        }
-
-        private Callbacks ActivityCallbacks { get; }
+        private AndroidActivityCallbacks ActivityCallbacks { get; }
 
         public AndroidActivityPresenter(Application application = null, Context context = null, IViewTypeLocator viewLocator = null)
             : base(application, context, viewLocator)
         {
-            ActivityCallbacks = new Callbacks();
+            ActivityCallbacks = new AndroidActivityCallbacks();
             Application.RegisterActivityLifecycleCallbacks(ActivityCallbacks);
         }
 
@@ -91,7 +56,7 @@ namespace ShareNavigation
                 return Observable.Create<Activity>(o =>
                 {
                     Activity activity = null;
-                    var sub = ActivityCallbacks.ActivityCreated
+                    ActivityCallbacks.ActivityCreated
                         .FirstAsync(a => a.GetType() == viewType)
                         .Do(a => activity = a)
                         .Cast<IViewFor>()
@@ -100,9 +65,7 @@ namespace ShareNavigation
                     Context.StartActivity(viewType);
 
                     return new ScheduledDisposable(RxApp.MainThreadScheduler,
-                        new CompositeDisposable(
-                            sub,
-                            new FuncDisposable(() => activity?.Finish())));
+                            new FuncDisposable(() => activity?.Finish()));
                 }).Subscribe();
             }
             else

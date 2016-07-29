@@ -13,7 +13,15 @@ namespace ReactiveUI.Routing
     public interface ISuspensionNotifier
     {
         /// <summary>
-        /// Gets an observable that resolves when the app should be suspended.
+        /// Gets an observable that resolves when the app should save its state.
+        /// This is usually means that the app could be terminated at any moment without notice,
+        /// but may not be terminated.
+        /// </summary>
+        IObservable<Unit> OnSaveState { get; }
+
+        /// <summary>
+        /// Gets an observable that resolves when the app is being closed.
+        /// Usually resolved in combination with OnSaveState.
         /// </summary>
         IObservable<Unit> OnSuspend { get; }
     }

@@ -20,6 +20,7 @@ namespace ReactiveUI.Routing
         /// </summary>
         /// <param name="state">The state that was stored for the object that should be reactivated.</param>
         /// <returns>Returns the object that was resumed.</returns>
+        /// TODO: Refactor to Accept Object to ReActivate.
         Task<object> ResumeAsync(ObjectState state);
     }
 }

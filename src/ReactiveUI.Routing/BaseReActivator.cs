@@ -50,7 +50,6 @@ namespace ReactiveUI.Routing
                 Params = activationParams,
                 State = state
             };
-            await DeactivateAsync(activatable);
             return ret;
         }
 
@@ -58,7 +57,7 @@ namespace ReactiveUI.Routing
         {
             return new ActivationParams()
             {
-                Params = activatable.InitParams,
+                Params = activatable.SaveInitParams ? activatable.InitParams : null,
                 Type = activatable.GetType()
             };
         }

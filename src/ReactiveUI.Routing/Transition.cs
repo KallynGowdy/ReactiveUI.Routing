@@ -13,12 +13,12 @@ namespace ReactiveUI.Routing
         {
         }
 
-        public Transition(IActivator activator)
+        public Transition(IReActivator activator)
         {
-            Activator = activator ?? Locator.Current.GetService<IActivator>() ?? new LocatorActivator();
+            Activator = activator ?? Locator.Current.GetService<IReActivator>() ?? new ReActivator();
         }
 
-        private IActivator Activator { get; }
+        private IReActivator Activator { get; }
         private ActivationParams ActivationParams { get; set; }
 
         /// <summary>
@@ -35,10 +35,26 @@ namespace ReactiveUI.Routing
             ViewModel = vm;
         }
 
+        protected override async Task<ObjectState> SuspendCoreAsync()
+        {
+            return await Activator.SuspendAsync(ViewModel);
+        }
+
+        protected override async Task ResumeCoreAsync(ObjectState storedState, IReActivator reActivator)
+        {
+            await base.ResumeCoreAsync(storedState, reActivator);
+            ViewModel = await reActivator.ResumeAsync(storedState);
+        }
+
         protected override async Task DestroyCoreAsync()
         {
             await base.DestroyAsync();
             await Activator.DeactivateAsync(ViewModel);
+        }
+
+        public override string ToString()
+        {
+            return $"Transition to: {ActivationParams.Type}";
         }
     }
 }

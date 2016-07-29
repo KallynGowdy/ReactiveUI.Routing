@@ -15,11 +15,19 @@ namespace ReactiveUI.Routing
     {
         public SuspensionNotifierHelper()
         {
+            SaveStateSubject = new Subject<Unit>();
             SuspendSubject = new Subject<Unit>();
         }
 
+        private Subject<Unit> SaveStateSubject { get; }
         private Subject<Unit> SuspendSubject { get; }
+        public IObservable<Unit> OnSaveState => SaveStateSubject;
         public IObservable<Unit> OnSuspend => SuspendSubject;
+
+        public void TriggerSaveState()
+        {
+            SaveStateSubject.OnNext(Unit.Default);
+        }
 
         public void TriggerSuspension()
         {

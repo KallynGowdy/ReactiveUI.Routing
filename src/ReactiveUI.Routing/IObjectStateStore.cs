@@ -16,12 +16,12 @@ namespace ReactiveUI.Routing
         /// </summary>
         /// <param name="state">The state that should be saved.</param>
         /// <returns></returns>
-        Task SaveState(ObjectState state);
+        Task SaveStateAsync(ObjectState state);
         
         /// <summary>
         /// Loads the state from the store. Returns null if no state has been saved.
         /// </summary>
         /// <returns></returns>
-        Task<ObjectState> LoadState();
+        Task<ObjectState> LoadStateAsync();
     }
 }

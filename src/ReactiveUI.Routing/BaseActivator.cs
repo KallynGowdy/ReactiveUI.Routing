@@ -14,7 +14,7 @@ namespace ReactiveUI.Routing
         {
             var obj = InstantiateObject(parameters);
             var activatable = obj as IActivatable;
-            if (activatable != null)
+            if (activatable != null && !activatable.Initialized)
             {
                 await activatable.InitAsync(parameters.Params);
             }

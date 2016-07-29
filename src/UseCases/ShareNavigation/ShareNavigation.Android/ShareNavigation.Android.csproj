@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AkavacheSqliteLinkerOverride.cs" />
+    <Compile Include="AndroidActivityCallbacks.cs" />
     <Compile Include="AndroidActivityPresenter.cs" />
     <Compile Include="AndroidPresenter.cs" />
     <Compile Include="AndroidAppConfig.cs" />

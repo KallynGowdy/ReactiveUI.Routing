@@ -111,7 +111,6 @@ namespace ReactiveUI.Routing.Tests
             Register(Substitute.For<IObjectStateStore>());
             await AppHost.StartAsync();
 
-
             activator.Received(1)
                 .ResumeAsync(Arg.Is<ObjectState>(p => p.Params.Type == typeof(IRouter) && p.Params.Params is RouterParams));
         }

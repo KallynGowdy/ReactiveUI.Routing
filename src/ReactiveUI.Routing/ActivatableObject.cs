@@ -16,6 +16,7 @@ namespace ReactiveUI.Routing
         private readonly ObservableAsPropertyHelper<TParams> initParams;
         private readonly BehaviorSubject<TParams> onActivated;
 
+        public virtual bool SaveInitParams => true;
         public bool Initialized => initialized.Value;
 
         public IObservable<TParams> OnActivated => onActivated
@@ -24,7 +25,7 @@ namespace ReactiveUI.Routing
         public ActivatableObject()
         {
             onActivated = new BehaviorSubject<TParams>(default(TParams));
-            initialized = onActivated.Select(p => p != null).ToProperty(this, o => o.Initialized);
+            initialized = OnActivated.Select(i => true).FirstAsync().ToProperty(this, o => o.Initialized);
             initParams = OnActivated.ToProperty(this, o => o.InitParams);
         }
 

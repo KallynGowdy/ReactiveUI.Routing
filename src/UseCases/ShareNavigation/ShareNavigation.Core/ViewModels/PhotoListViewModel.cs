@@ -31,9 +31,14 @@ namespace ShareNavigation.ViewModels
         {
             Service = service ?? Locator.Current.GetService<IPhotosService>();
             LoadPhotos = ReactiveCommand.CreateAsyncTask(async o => await Service.GetPhotosAsync());
-            Share = ReactiveCommand.CreateAsyncTask(async o => await Router.ShowAsync<ShareViewModel>());
+            Share = ReactiveCommand.CreateAsyncTask(async o => await ShareImpl());
             loadedPhotos = Observable.Merge(Resumed.Select(state => state?.LoadedPhotos), LoadPhotos)
                 .ToProperty(this, vm => vm.LoadedPhotos, new Photo[0]);
+        }
+
+        private Task ShareImpl()
+        {
+            return Router.ShowAsync<ShareViewModel>();
         }
 
         protected override State SuspendCoreSync()

@@ -17,6 +17,17 @@ namespace ReactiveUI.Routing
         object InitParams { get; }
 
         /// <summary>
+        /// Gets whether the parameters used to initialize
+        /// this object should be saved to the object state.
+        /// </summary>
+        bool SaveInitParams { get; }
+
+        /// <summary>
+        /// Gets whether the object is currently initialized.
+        /// </summary>
+        bool Initialized { get; }
+
+        /// <summary>
         /// Runs initialization logic for the view model.
         /// </summary>
         /// <param name="parameters">The parameters that are needed to initialize this view model. Should never be null.</param>

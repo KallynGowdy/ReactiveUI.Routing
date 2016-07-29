@@ -18,20 +18,26 @@ namespace ShareNavigation
     public class AndroidAppConfig : RoutedAppConfig
     {
         private readonly Application application;
-        private readonly Context mainActivityContext;
+        private readonly Context hostActivity;
 
-        public AndroidAppConfig(Application application, Context mainActivityContext)
+        public AndroidAppConfig(Application application, Context hostActivity)
         {
             this.application = application;
-            this.mainActivityContext = mainActivityContext;
+            this.hostActivity = hostActivity;
         }
 
         public override void RegisterDependencies(IMutableDependencyResolver resolver)
         {
             base.RegisterDependencies(resolver);
             resolver.RegisterConstant(application, typeof(Application));
-            resolver.RegisterConstant(mainActivityContext, typeof(Context));
+            resolver.RegisterConstant(hostActivity, typeof(Context));
+            resolver.RegisterLazySingleton(() => new SuspensionNotifierHelper(), typeof(SuspensionNotifierHelper));
             resolver.Register(() => new AndroidActivityPresenter(), typeof(IPresenter));
+        }
+
+        protected override ISuspensionNotifier BuildSuspensionNotifier()
+        {
+            return Locator.Current.GetService<SuspensionNotifierHelper>();
         }
     }
 }
