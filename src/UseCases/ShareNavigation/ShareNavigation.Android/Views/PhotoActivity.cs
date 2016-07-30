@@ -11,6 +11,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using ReactiveUI;
+using ReactiveUI.Routing.Android;
 using ShareNavigation.ViewModels;
 
 namespace ShareNavigation.Views

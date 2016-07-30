@@ -11,26 +11,25 @@ using Android.Views;
 using Android.Widget;
 using ReactiveUI;
 using ReactiveUI.Routing;
+using ReactiveUI.Routing.Android;
 using Splat;
 
 namespace ShareNavigation
 {
     [Activity(Label = "MainActivity", MainLauncher = true)]
-    public class MainActivity : Activity
+    public class MainActivity : SuspendableAcitivity
     {
-        private SuspensionNotifierHelper suspensionNotifier;
         private IRoutedAppHost host;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             host = new RoutedAppHost(new AndroidAppConfig(Application, this));
-            suspensionNotifier = Locator.Current.GetService<SuspensionNotifierHelper>();
             host.Start();
         }
 
         protected override void OnDestroy()
         {
-            suspensionNotifier.TriggerSuspension();
+            SuspensionNotifier.TriggerSuspension();
             base.OnDestroy();
         }
     }

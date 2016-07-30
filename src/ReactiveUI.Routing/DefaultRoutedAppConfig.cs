@@ -26,6 +26,7 @@ namespace ReactiveUI.Routing
             resolver.Register(() => new DefaultViewTypeLocator(GetType().GetTypeInfo().Assembly), typeof(IViewTypeLocator));
         }
 
+
         private RouterConfig BuildRouterParamsSafe()
         {
             var parameters = BuildRouterParams();
@@ -36,6 +37,7 @@ namespace ReactiveUI.Routing
             return parameters;
         }
 
+        public abstract void CloseApp();
         protected abstract RouterConfig BuildRouterParams();
         protected abstract ISuspensionNotifier BuildSuspensionNotifier();
         protected abstract IObjectStateStore BuildObjectStateStore();

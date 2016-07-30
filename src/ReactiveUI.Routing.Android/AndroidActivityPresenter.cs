@@ -1,25 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using Java.Interop;
-using ReactiveUI;
-using ReactiveUI.Routing;
-using Object = Java.Lang.Object;
 
-namespace ShareNavigation
+namespace ReactiveUI.Routing.Android
 {
     public class AndroidActivityPresenter : AndroidPresenter
     {

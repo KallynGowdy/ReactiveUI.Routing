@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI.Routing.Actions;
@@ -13,6 +14,8 @@ namespace ReactiveUI.Routing
     /// </summary>
     public interface IRouter : IReActivatable<RouterConfig, RouterState>
     {
+        IObservable<Unit> CloseApp { get; }
+
         /// <summary>
         /// Dispatches the given action to the router.
         /// </summary>

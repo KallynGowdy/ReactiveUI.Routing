@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI.Routing.Actions;
@@ -12,15 +14,14 @@ namespace ReactiveUI.Routing
     /// <summary>
     /// Defines a class that contains common core functionality for routed apps.
     /// </summary>
-    /// <typeparam name="TConfig"></typeparam>
     public class RoutedAppHost : IRoutedAppHost
     {
-        public IRoutedAppConfig Config { get; }
+        private readonly IRoutedAppConfig config;
 
         public RoutedAppHost(IRoutedAppConfig config)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
-            Config = config;
+            this.config = config;
         }
 
         public void Start()
@@ -34,22 +35,24 @@ namespace ReactiveUI.Routing
 
         public virtual async Task StartAsync()
         {
-            Config.RegisterDependencies(Locator.CurrentMutable);
+            config.RegisterDependencies(Locator.CurrentMutable);
             var stateStore = GetService<IObjectStateStore>();
             var notifier = GetService<ISuspensionNotifier>();
             var routerParams = GetService<RouterConfig>();
             var activator = GetService<IReActivator>();
             var router = GetService<IRouter>();
+
+            router.CloseApp
+                .Do(async u => await SaveRouterStateAsync(activator, router, stateStore))
+                .Do(u => config.CloseApp())
+                .Subscribe();
+
             var routerState = await GetRouterState(stateStore);
             await ResumeRouterAsync(router, activator, routerParams, routerState, stateStore);
             await router.ShowDefaultViewModelAsync();
 
             notifier.OnSaveState
-                .Do(async u =>
-                {
-                    var state = await activator.SuspendAsync(router);
-                    await stateStore.SaveStateAsync(state);
-                })
+                .Do(async u => await SaveRouterStateAsync(activator, router, stateStore))
                 .Subscribe();
 
             notifier.OnSuspend
@@ -59,6 +62,12 @@ namespace ReactiveUI.Routing
                     await activator.DeactivateAsync(router);
                 })
                 .Subscribe();
+        }
+
+        private static async Task SaveRouterStateAsync(IReActivator activator, IRouter router, IObjectStateStore stateStore)
+        {
+            var state = await activator.SuspendAsync(router);
+            await stateStore.SaveStateAsync(state);
         }
 
         private static async Task ResumeRouterAsync(IRouter router, IReActivator activator, RouterConfig routerConfig, RouterState routerState, IObjectStateStore stateStore)

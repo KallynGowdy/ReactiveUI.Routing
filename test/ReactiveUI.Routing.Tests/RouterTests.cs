@@ -510,6 +510,30 @@ namespace ReactiveUI.Routing.Tests
                 await Router.ShowAsync<TestViewModel, TestParams>();
             });
         }
+
+        [Fact]
+        public async Task Test_CloseApp_Resolves_When_Navigating_Back_From_Root_ViewModel()
+        {
+            Navigator = new Navigator();
+            Router = new Router(Navigator);
+            Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
+            var routerParams = new RouterBuilder()
+                .When<TestViewModel>(r => r.Navigate())
+                .Build();
+
+            await Router.InitAsync(routerParams);
+            await Router.ShowAsync<TestViewModel, TestParams>();
+            await Router.ShowAsync<TestViewModel, TestParams>();
+
+            List<Unit> closeNotifications = new List<Unit>();
+            Router.CloseApp.Subscribe(u => closeNotifications.Add(u));
+
+            await Router.BackAsync();
+            closeNotifications.Should().BeEmpty();
+            await Router.BackAsync();
+            Assert.Collection(closeNotifications,
+                u => u.Should().NotBeNull());
+        }
     }
 }
 #pragma warning restore 4014

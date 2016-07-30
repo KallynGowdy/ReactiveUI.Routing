@@ -9,32 +9,13 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using ReactiveUI.Routing.Builder;
 using Splat;
 using Xunit;
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
 namespace ReactiveUI.Routing.Tests
 {
-    public class TestRoutedAppConfig : DefaultRoutedAppConfig
-    {
-        public RouterConfig RouterConfig { get; set; } = new RouterConfig();
-
-        protected override RouterConfig BuildRouterParams()
-        {
-            return RouterConfig;
-        }
-
-        protected override ISuspensionNotifier BuildSuspensionNotifier()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override IObjectStateStore BuildObjectStateStore()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public class RoutedAppHostTests : LocatorTest
     {
         public IRoutedAppHost AppHost { get; set; }
@@ -219,6 +200,36 @@ namespace ReactiveUI.Routing.Tests
             await AppHost.StartAsync();
 
             stateStore.Received(1).SaveStateAsync(null);
+        }
+
+        [Fact]
+        public async Task Test_Calls_CloseApp_On_RoutedAppConfig_When_Router_Notifies_CloseApp()
+        {
+            var activator = Substitute.For<IReActivator>();
+            var navigator = new Navigator();
+            var router = new Router(navigator);
+            var stateStore = Substitute.For<IObjectStateStore>();
+            var suspensionNotifier = Substitute.For<ISuspensionNotifier>();
+            var routerParams = new RouterBuilder()
+                .When<TestViewModel>(r => r.Navigate())
+                .Build();
+
+            suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
+            suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
+            Register(() => new TestViewModel());
+            Register(routerParams);
+            Register(activator);
+            Register(suspensionNotifier);
+            Register(stateStore);
+            Register<IRouter>(router);
+            await AppHost.StartAsync();
+
+            await router.ShowAsync<TestViewModel, TestParams>();
+            await router.ShowAsync<TestViewModel, TestParams>();
+            await router.BackAsync();
+            await router.BackAsync();
+
+            Config.Received(1).CloseApp();
         }
     }
 }

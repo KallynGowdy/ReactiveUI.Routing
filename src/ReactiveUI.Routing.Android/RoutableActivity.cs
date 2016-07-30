@@ -1,41 +1,29 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using ReactiveUI;
-using ReactiveUI.Routing;
 using Splat;
-using IActivatable = ReactiveUI.IActivatable;
 
-namespace ShareNavigation
+namespace ReactiveUI.Routing.Android
 {
-    public class RoutableActivity<T> : Activity, ICanActivate, IActivatable, IViewFor<T>, INotifyPropertyChanged
-        where T : class
+    /// <summary>
+    /// Defines an activity that implements activation and back button logic for activities.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of view model that this activity represents.</typeparam>
+    public class RoutableActivity<TViewModel> : SuspendableAcitivity, ICanActivate, ReactiveUI.IActivatable, IViewFor<TViewModel>, INotifyPropertyChanged
+        where TViewModel : class
     {
-        private readonly Lazy<SuspensionNotifierHelper> suspensionNotifier;
-        private Subject<Unit> activated = new Subject<Unit>();
-        private Subject<Unit> deactivated = new Subject<Unit>();
-        protected SuspensionNotifierHelper SuspensionNotifier => suspensionNotifier.Value;
+        private readonly Subject<Unit> activated = new Subject<Unit>();
+        private readonly Subject<Unit> deactivated = new Subject<Unit>();
         private readonly IRouter router;
-        private T viewModel;
+        private TViewModel viewModel;
 
         public RoutableActivity() : this(null, null) { }
         public RoutableActivity(IRouter router, SuspensionNotifierHelper supensionNotifier)
+            : base(supensionNotifier)
         {
-            this.suspensionNotifier = new Lazy<SuspensionNotifierHelper>(() =>
-                supensionNotifier ?? Locator.Current.GetService<SuspensionNotifierHelper>());
             this.router = router ?? Locator.Current.GetService<IRouter>();
         }
 
@@ -44,15 +32,9 @@ namespace ShareNavigation
             router.BackAsync();
         }
 
-        protected override void OnSaveInstanceState(Bundle outState)
-        {
-            SuspensionNotifier.TriggerSaveState();
-            base.OnSaveInstanceState(outState);
-        }
-
         public IObservable<Unit> Activated =>
-            activated.CombineLatest(this.WhenAnyValue(v => v.ViewModel), (unit, viewModel) => viewModel)
-                .Where(viewModel => viewModel != null)
+            activated.CombineLatest(this.WhenAnyValue(v => v.ViewModel), (unit, vm) => vm)
+                .Where(vm => vm != null)
             .Select(v => Unit.Default);
         public IObservable<Unit> Deactivated => deactivated;
 
@@ -61,11 +43,11 @@ namespace ShareNavigation
             get { return ViewModel; }
             set
             {
-                ViewModel = (T)value;
+                ViewModel = (TViewModel)value;
             }
         }
 
-        public T ViewModel
+        public TViewModel ViewModel
         {
             get { return viewModel; }
             set

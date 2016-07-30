@@ -99,14 +99,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AkavacheSqliteLinkerOverride.cs" />
-    <Compile Include="AndroidActivityCallbacks.cs" />
-    <Compile Include="AndroidActivityPresenter.cs" />
-    <Compile Include="AndroidPresenter.cs" />
     <Compile Include="AndroidAppConfig.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RoutableActivity.cs" />
     <Compile Include="Views\PhotoActivity.cs" />
     <Compile Include="Views\PhotoListActivity.cs" />
     <Compile Include="Views\PhotoListItemAdapter.cs" />
@@ -133,6 +129,10 @@
     <AndroidResource Include="Resources\drawable\Icon.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\ReactiveUI.Routing.Android\ReactiveUI.Routing.Android.csproj">
+      <Project>{341c4efa-e88e-40ba-a39c-0fa7719cdf94}</Project>
+      <Name>ReactiveUI.Routing.Android</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
       <Project>{7cf2ae8e-4920-41c9-b3b2-be83ec3daa7f}</Project>
       <Name>ReactiveUI.Routing</Name>

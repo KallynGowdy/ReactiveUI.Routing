@@ -11,6 +11,11 @@ namespace ReactiveUI.Routing.Tests
     {
         public class TestNullRoutedAppConfig : DefaultRoutedAppConfig
         {
+            public override void CloseApp()
+            {
+                throw new NotImplementedException();
+            }
+
             protected override RouterConfig BuildRouterParams()
             {
                 return null;

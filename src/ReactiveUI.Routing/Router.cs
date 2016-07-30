@@ -22,20 +22,22 @@ namespace ReactiveUI.Routing
             public object ViewModelState { get; set; }
         }
 
-        public class ActiveRouterAction
+        private class ActiveRouterAction
         {
             public IRouterAction Action { get; set; }
             public Transition Transition { get; set; }
         }
 
         private readonly ObservableAsPropertyHelper<RouterConfig> parameters;
+        private readonly Subject<Unit> closeApp = new Subject<Unit>();
         private INavigator Navigator { get; }
         private IReActivator Activator { get; }
         private RouterConfig Config => parameters.Value;
         private List<ActiveRouterAction> Actions { get; } = new List<ActiveRouterAction>();
-        private readonly Dictionary<Transition, List<IDisposable>> presenters = new Dictionary<Transition, List<IDisposable>>();
+        private Dictionary<Transition, List<IDisposable>> Presenters { get; } = new Dictionary<Transition, List<IDisposable>>();
 
         public override bool SaveInitParams => false;
+        public IObservable<Unit> CloseApp => closeApp;
 
         public Router() : this(null, null)
         {
@@ -59,13 +61,13 @@ namespace ReactiveUI.Routing
             if (removed != null)
             {
                 List<IDisposable> disposables;
-                if (presenters.TryGetValue(removed, out disposables))
+                if (Presenters.TryGetValue(removed, out disposables))
                 {
                     foreach (var d in disposables)
                     {
                         d.Dispose();
                     }
-                    presenters.Remove(removed);
+                    Presenters.Remove(removed);
                 }
             }
         }
@@ -189,6 +191,10 @@ namespace ReactiveUI.Routing
                 var actions = GetActionsForViewModelType(current.ViewModel.GetType());
                 await HandleRoutePresentation(actions.Actions, current);
             }
+            else
+            {
+                closeApp.OnNext(Unit.Default);
+            }
         }
 
         private async Task HandleRoutePresentation(IRouteAction[] actions, Transition transition)
@@ -221,7 +227,7 @@ namespace ReactiveUI.Routing
 
         private async Task HandleRouteActionsAsync(RouteActions actions, Transition transition)
         {
-            if (actions.Actions != null && !presenters.ContainsKey(transition))
+            if (actions.Actions != null && !Presenters.ContainsKey(transition))
             {
                 foreach (var action in actions.Actions)
                 {
@@ -269,13 +275,13 @@ namespace ReactiveUI.Routing
         private void AddDisposable(Transition transition, IDisposable disposable)
         {
             List<IDisposable> list;
-            if (presenters.TryGetValue(transition, out list))
+            if (Presenters.TryGetValue(transition, out list))
             {
                 list.Add(disposable);
             }
             else
             {
-                presenters.Add(transition, new List<IDisposable> { disposable });
+                Presenters.Add(transition, new List<IDisposable> { disposable });
             }
         }
 

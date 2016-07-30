@@ -1,19 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
-
 using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Object = Java.Lang.Object;
 
-namespace ShareNavigation
+namespace ReactiveUI.Routing.Android
 {
     public class SaveInstanceStateEvent
     {

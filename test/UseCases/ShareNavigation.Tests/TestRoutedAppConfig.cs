@@ -10,6 +10,11 @@ namespace ShareNavigation.Tests
 {
     public class TestRoutedAppConfig : RoutedAppConfig
     {
+        public override void CloseApp()
+        {
+            throw new NotImplementedException();
+        }
+
         protected override ISuspensionNotifier BuildSuspensionNotifier()
         {
             return For<ISuspensionNotifier>();
