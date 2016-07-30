@@ -73,7 +73,9 @@ var router = Locator.Current.GetService<IRouter>();
 ```csharp
 class MyViewModel : ActivatableObject<Unit> {}
 
-router.ShowAsync<MyViewModel>();
+await router.ShowAsync<MyViewModel>();
+await router.BackAsync();
+await router.ShowDefaultViewModelAsync();
 ```
 
 ### Parameterized Navigation
