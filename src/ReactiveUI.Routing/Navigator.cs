@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI.Routing
 {
-    public class Navigator : ReActivatableObject<Unit, NavigatorState>, INavigator
+    public class Navigator : INavigator
     {
         private List<Transition> Transitions { get; } = new List<Transition>();
         private Subject<TransitionEvent> Subject { get; } = new Subject<TransitionEvent>();
@@ -49,34 +49,6 @@ namespace ReactiveUI.Routing
         public Transition Peek()
         {
             return Transitions.LastOrDefault();
-        }
-
-        protected override async Task<NavigatorState> SuspendCoreAsync()
-        {
-            var state = await base.SuspendCoreAsync();
-            state.TransitionStack = await Task.WhenAll(Transitions.Select(t => t.SuspendAsync()).ToArray());
-            return state;
-        }
-
-        protected override async Task ResumeCoreAsync(NavigatorState storedState, IReActivator reActivator)
-        {
-            await base.ResumeCoreAsync(storedState, reActivator);
-            if (storedState.TransitionStack != null)
-            {
-                if (storedState.TransitionStack.Length > 0)
-                {
-                    while (Transitions.Count > 0)
-                    {
-                        await PopAsync();
-                    }
-                }
-                foreach (var transition in storedState.TransitionStack)
-                {
-                    var trans = new Transition(reActivator);
-                    await trans.ResumeAsync(transition, reActivator);
-                    PushCore(trans);
-                }
-            }
         }
     }
 }

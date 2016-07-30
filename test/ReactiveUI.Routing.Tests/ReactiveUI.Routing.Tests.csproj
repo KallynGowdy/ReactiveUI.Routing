@@ -123,7 +123,6 @@
     <Compile Include="TestPresenterType.cs" />
     <Compile Include="TestState.cs" />
     <Compile Include="TestViewModel.cs" />
-    <Compile Include="TransitionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

@@ -15,11 +15,17 @@ namespace ReactiveUI.Routing
     /// </summary>
     public class Router : ReActivatableObject<RouterParams, RouterState>, IRouter
     {
+        public class StoredRouterAction
+        {
+            public IRouterAction Action { get; set; }
+            public Transition Transition { get; set; }
+        }
+
         private readonly ObservableAsPropertyHelper<RouterParams> parameters;
         private INavigator Navigator { get; }
         private IActivator Activator { get; }
         private RouterParams Params => parameters.Value;
-        private List<IRouterAction> Actions { get; } = new List<IRouterAction>();
+        private List<StoredRouterAction> Actions { get; } = new List<StoredRouterAction>();
         private readonly Dictionary<Transition, List<IDisposable>> presenters = new Dictionary<Transition, List<IDisposable>>();
 
         public override bool SaveInitParams => false;
@@ -62,8 +68,27 @@ namespace ReactiveUI.Routing
             await base.ResumeCoreAsync(storedState, reActivator);
             foreach (var action in storedState.Actions)
             {
-                await DispatchAsync(action);
+                await DispatchAsync(action.Action, action.Transition);
             }
+        }
+
+        private async Task DispatchAsync(IRouterAction action, Transition transition)
+        {
+            await When<ShowViewModelAction>(action, async showViewModelAction =>
+            {
+                await ShowViewModelAsync(showViewModelAction, transition);
+            });
+            await When<NavigateBackAction>(action, async navigateBackAction =>
+            {
+                await NavigateBackAsync(navigateBackAction);
+            });
+            await When<ShowDefaultViewModelAction>(action, async a =>
+            {
+                if (Actions.Count == 0 && Params?.DefaultViewModelType != null && Params.DefaultParameters != null)
+                {
+                    await DispatchAsync(RouterActions.ShowViewModel(Params.DefaultViewModelType, Params.DefaultParameters), transition);
+                }
+            });
         }
 
         protected override async Task<RouterState> SuspendCoreAsync()
@@ -73,30 +98,21 @@ namespace ReactiveUI.Routing
             return state;
         }
 
-        protected async Task ShowCoreAsync(Type viewModel, object vmParams)
+        private async Task ShowViewModelAsync(ShowViewModelAction action)
         {
-            var transition = await BuildTransitionAsync(viewModel, vmParams);
-            var routeActions = GetActionsForViewModelType(viewModel);
-            await HandleRouteActionsAsync(routeActions, transition);
+            var activationParams = action.ActivationParams;
+            var transition = await BuildTransitionAsync(activationParams);
+            await ShowViewModelAsync(action, transition);
         }
 
-        protected async Task ShowViewModelAsync(Type viewModel, object vmParams)
+        private async Task ShowViewModelAsync(ShowViewModelAction action, Transition transition)
         {
-            CheckInit();
-            await ShowCoreAsync(viewModel, vmParams);
-        }
-
-        protected async Task HandleTransitionAsync(Transition transition)
-        {
-            if (!presenters.ContainsKey(transition))
+            Actions.Add(new StoredRouterAction()
             {
-                await HandleTransitionAsyncCore(transition);
-            }
-        }
-
-        private async Task HandleTransitionAsyncCore(Transition transition)
-        {
-            var routeActions = GetActionsForViewModelType(transition.ViewModel.GetType());
+                Action = action,
+                Transition = transition
+            });
+            var routeActions = GetActionsForViewModelType(action.ActivationParams.Type);
             await HandleRouteActionsAsync(routeActions, transition);
         }
 
@@ -112,22 +128,14 @@ namespace ReactiveUI.Routing
         public async Task DispatchAsync(IRouterAction action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
+            CheckInit();
             await When<ShowViewModelAction>(action, async showViewModelAction =>
             {
-                Actions.Add(action);
-                await ShowViewModelAsync(showViewModelAction.ActivationParams.Type, showViewModelAction.ActivationParams.Params);
+                await ShowViewModelAsync(showViewModelAction);
             });
             await When<NavigateBackAction>(action, async navigateBackAction =>
             {
-                Actions.RemoveAt(Actions.Count - 1);
-                var transition = await Navigator.PopAsync();
-                DisposePresenters(transition);
-                var current = Navigator.Peek();
-                if (current != null)
-                {
-                    var actions = GetActionsForViewModelType(current.ViewModel.GetType());
-                    await HandleRoutePresentation(actions.Actions, current);
-                }
+                await NavigateBackAsync(navigateBackAction);
             });
             await When<ShowDefaultViewModelAction>(action, async a =>
             {
@@ -137,6 +145,19 @@ namespace ReactiveUI.Routing
                         DispatchAsync(RouterActions.ShowViewModel(Params.DefaultViewModelType, Params.DefaultParameters));
                 }
             });
+        }
+
+        private async Task NavigateBackAsync(NavigateBackAction navigateBackAction)
+        {
+            Actions.RemoveAt(Actions.Count - 1);
+            var transition = await Navigator.PopAsync();
+            DisposePresenters(transition);
+            var current = Navigator.Peek();
+            if (current != null)
+            {
+                var actions = GetActionsForViewModelType(current.ViewModel.GetType());
+                await HandleRoutePresentation(actions.Actions, current);
+            }
         }
 
         private async Task HandleRoutePresentation(IRouteAction[] actions, Transition transition)
@@ -236,21 +257,15 @@ namespace ReactiveUI.Routing
             });
         }
 
-        private async Task<Transition> BuildTransitionAsync(Type viewModel, object vmParams)
+        private async Task<Transition> BuildTransitionAsync(ActivationParams activationParams)
         {
-            var activationParams = BuildTransitionParams(viewModel, vmParams);
-            var transition = new Transition();
-            await transition.InitAsync(activationParams);
-            return transition;
-        }
-
-        private ActivationParams BuildTransitionParams(Type viewModel, object vmParams)
-        {
-            return new ActivationParams()
+            var vm = await Activator.ActivateAsync(activationParams);
+            if (vm == null) throw new InvalidOperationException($"Cannot initialize transition. The returned value from the Locator.Current.GetService({activationParams.Type}) was null, which means that the view model could not be instantiated.");
+            var transition = new Transition()
             {
-                Type = viewModel,
-                Params = vmParams
+                ViewModel = vm
             };
+            return transition;
         }
 
         protected virtual RouteActions GetActionsForViewModelType(Type viewModel)

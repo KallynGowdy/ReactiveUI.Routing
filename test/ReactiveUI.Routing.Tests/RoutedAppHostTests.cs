@@ -102,18 +102,43 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public async Task Test_StartAsync_Calls_ResumeAsync_On_IReActivator_For_Router()
+        public async Task Test_StartAsync_Calls_InitAsync_On_IRouter()
         {
             var activator = Substitute.For<IReActivator>();
-            activator.ResumeAsync(Arg.Any<ObjectState>()).Returns(Substitute.For<IRouter>());
-            Register(new RouterParams());
+            var router = Substitute.For<IRouter>();
+            var routerParams = new RouterParams();
+            Register(routerParams);
             Register(activator);
             Register(Substitute.For<ISuspensionNotifier>());
             Register(Substitute.For<IObjectStateStore>());
+            Register(router);
             await AppHost.StartAsync();
 
-            activator.Received(1)
-                .ResumeAsync(Arg.Is<ObjectState>(p => p.Params.Type == typeof(IRouter) && p.Params.Params is RouterParams));
+            router.Received(1).InitAsync(routerParams);
+        }
+
+        [Fact]
+        public async Task Test_StartAsync_Calls_ResumeAsync_On_IRouter_When_State_Is_Available()
+        {
+            var activator = Substitute.For<IReActivator>();
+            var router = Substitute.For<IRouter>();
+            var stateStore = Substitute.For<IObjectStateStore>();
+            var routerParams = new RouterParams();
+            var routerState = new RouterState();
+            var state = new ObjectState()
+            {
+                State = routerState
+            };
+
+            stateStore.LoadStateAsync().Returns(state);
+            Register(routerParams);
+            Register(activator);
+            Register(Substitute.For<ISuspensionNotifier>());
+            Register(stateStore);
+            Register(router);
+            await AppHost.StartAsync();
+
+            router.Received(1).ResumeAsync(routerState, activator);
         }
     }
 }

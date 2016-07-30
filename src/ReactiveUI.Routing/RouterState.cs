@@ -1,4 +1,5 @@
-﻿using ReactiveUI.Routing.Actions;
+﻿using System.Collections.Generic;
+using ReactiveUI.Routing.Actions;
 
 namespace ReactiveUI.Routing
 {
@@ -7,6 +8,6 @@ namespace ReactiveUI.Routing
         /// <summary>
         /// Gets or sets the list of actions that were performed on the router.
         /// </summary>
-        public IRouterAction[] Actions { get; set; }
+        public Router.StoredRouterAction[] Actions { get; set; }
     }
 }

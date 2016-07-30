@@ -18,6 +18,7 @@ namespace ShareNavigation.ViewModels
 
         public class State
         {
+            public string PhotoUrl { get; set; }
         }
 
         public string PhotoUrl
@@ -45,6 +46,19 @@ namespace ShareNavigation.ViewModels
                     Photo = photo
                 }));
             });
+        }
+
+        protected override void ResumeCoreSync(State storedState)
+        {
+            base.ResumeCoreSync(storedState);
+            PhotoUrl = storedState.PhotoUrl;
+        }
+
+        protected override State SuspendCoreSync()
+        {
+            var state = base.SuspendCoreSync();
+            state.PhotoUrl = PhotoUrl;
+            return state;
         }
     }
 }
