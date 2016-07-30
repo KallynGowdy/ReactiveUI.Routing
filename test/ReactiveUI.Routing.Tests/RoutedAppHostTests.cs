@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Splat;
 using Xunit;
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -139,6 +142,83 @@ namespace ReactiveUI.Routing.Tests
             await AppHost.StartAsync();
 
             router.Received(1).ResumeAsync(routerState, activator);
+        }
+
+        [Fact]
+        public async Task Test_Clears_Stored_State_When_ResumeAsync_Fails_On_Router()
+        {
+            var activator = Substitute.For<IReActivator>();
+            var router = Substitute.For<IRouter>();
+            var stateStore = Substitute.For<IObjectStateStore>();
+            var suspensionNotifier = Substitute.For<ISuspensionNotifier>();
+            var routerParams = new RouterParams();
+            var routerState = new RouterState();
+            var state = new ObjectState()
+            {
+                State = routerState
+            };
+
+            suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
+            suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
+            stateStore.LoadStateAsync().Returns(state);
+            router.ResumeAsync(Arg.Any<RouterState>(), activator).Throws<Exception>();
+            Register(routerParams);
+            Register(activator);
+            Register(suspensionNotifier);
+            Register(stateStore);
+            Register(router);
+            await AppHost.StartAsync();
+
+            stateStore.Received(1).SaveStateAsync(null);
+        }
+
+        [Fact]
+        public async Task Test_Clears_Stored_State_When_Not_Castable_To_RouterState()
+        {
+            var activator = Substitute.For<IReActivator>();
+            var router = Substitute.For<IRouter>();
+            var stateStore = Substitute.For<IObjectStateStore>();
+            var suspensionNotifier = Substitute.For<ISuspensionNotifier>();
+            var routerParams = new RouterParams();
+            var notCastable = new object();
+            var state = new ObjectState()
+            {
+                State = notCastable
+            };
+
+            suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
+            suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
+            stateStore.LoadStateAsync().Returns(state);
+            Register(routerParams);
+            Register(activator);
+            Register(suspensionNotifier);
+            Register(stateStore);
+            Register(router);
+            await AppHost.StartAsync();
+
+            stateStore.Received(1).SaveStateAsync(null);
+        }
+
+        [Fact]
+        public async Task Test_Clears_Stored_State_When_ObjectStateStore_Throws()
+        {
+            var activator = Substitute.For<IReActivator>();
+            var router = Substitute.For<IRouter>();
+            var stateStore = Substitute.For<IObjectStateStore>();
+            var suspensionNotifier = Substitute.For<ISuspensionNotifier>();
+            var routerParams = new RouterParams();
+
+            suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
+            suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
+            stateStore.LoadStateAsync().Throws<Exception>();
+            Register(routerParams);
+            Register(activator);
+            Register(suspensionNotifier);
+            Register(stateStore);
+            Register(router);
+            await AppHost.StartAsync();
+
+            stateStore.Received(1).SaveStateAsync(null);
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using ReactiveUI.Routing.Actions;
+using ReactiveUI.Routing.Builder;
 using Splat;
 using Xunit;
 #pragma warning disable 4014
@@ -17,13 +18,13 @@ namespace ReactiveUI.Routing.Tests
 {
     public class RouterTests : LocatorTest
     {
-        private readonly INavigator navigator;
-        private readonly Router router;
+        public INavigator Navigator { get; private set; }
+        public Router Router { get; private set; }
 
         public RouterTests()
         {
-            navigator = Substitute.For<INavigator>();
-            router = new Router(navigator);
+            Navigator = Substitute.For<INavigator>();
+            Router = new Router(Navigator);
         }
 
         [Fact]
@@ -37,10 +38,10 @@ namespace ReactiveUI.Routing.Tests
         {
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
+                await Router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
             });
         }
-        
+
         [Fact]
         public async Task Test_ShowAsync_Pipes_Transition_To_Navigator_If_Router_Actions_Specify_Navigate()
         {
@@ -59,10 +60,10 @@ namespace ReactiveUI.Routing.Tests
                 }
             };
 
-            await router.InitAsync(initParams);
-            await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
+            await Router.InitAsync(initParams);
+            await Router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
 
-            navigator.Received(1)
+            Navigator.Received(1)
                 .PushAsync(Arg.Is<Transition>(t => t.ViewModel is TestViewModel));
         }
 
@@ -81,10 +82,10 @@ namespace ReactiveUI.Routing.Tests
                 }
             };
 
-            await router.InitAsync(initParams);
-            await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
+            await Router.InitAsync(initParams);
+            await Router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
 
-            navigator.DidNotReceive()
+            Navigator.DidNotReceive()
                 .PushAsync(Arg.Any<Transition>());
         }
 
@@ -96,10 +97,10 @@ namespace ReactiveUI.Routing.Tests
                 ViewModelMap = new Dictionary<Type, RouteActions>()
             };
 
-            await router.InitAsync(initParams);
+            await Router.InitAsync(initParams);
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
+                await Router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
             });
         }
 
@@ -127,8 +128,8 @@ namespace ReactiveUI.Routing.Tests
                 }
             };
 
-            await router.InitAsync(initParams);
-            await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
+            await Router.InitAsync(initParams);
+            await Router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
 
             presenterConstructor.Received(1)();
         }
@@ -156,14 +157,14 @@ namespace ReactiveUI.Routing.Tests
                     }
                 }
             };
-            navigator.PushAsync(Arg.Any<Transition>()).Returns(ci =>
+            Navigator.PushAsync(Arg.Any<Transition>()).Returns(ci =>
             {
                 subject.OnNext(ci.Arg<Transition>());
                 return Task.FromResult(0);
             });
 
-            await router.InitAsync(initParams);
-            await router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
+            await Router.InitAsync(initParams);
+            await Router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
 
             presenter.Received(1).PresentAsync(Arg.Any<object>(), Arg.Any<object>());
         }
@@ -193,10 +194,10 @@ namespace ReactiveUI.Routing.Tests
                     }
                 }
             };
-            navigator.OnTransition.Returns(subject);
-            await router.InitAsync(initParams);
+            Navigator.OnTransition.Returns(subject);
+            await Router.InitAsync(initParams);
 
-            router.ShowAsync<TestViewModel, TestParams>();
+            Router.ShowAsync<TestViewModel, TestParams>();
 
             presenter.Received(1).PresentAsync(viewModel, null);
         }
@@ -227,20 +228,20 @@ namespace ReactiveUI.Routing.Tests
                 }
             };
             Transition trans = null;
-            navigator.PushAsync(Arg.Any<Transition>()).Returns(c =>
+            Navigator.PushAsync(Arg.Any<Transition>()).Returns(c =>
             {
                 trans = c.Arg<Transition>();
                 return Task.FromResult(0);
             });
-            navigator.PopAsync().Returns(c => trans);
-            await router.InitAsync(initParams);
+            Navigator.PopAsync().Returns(c => trans);
+            await Router.InitAsync(initParams);
 
-            await router.ShowAsync<TestViewModel, TestParams>();
-            await router.ShowAsync<TestViewModel, TestParams>();
+            await Router.ShowAsync<TestViewModel, TestParams>();
+            await Router.ShowAsync<TestViewModel, TestParams>();
 
             disposable.IsDisposed.Should().BeFalse();
 
-            await router.BackAsync();
+            await Router.BackAsync();
             disposable.IsDisposed.Should().BeTrue();
         }
 
@@ -265,11 +266,11 @@ namespace ReactiveUI.Routing.Tests
                 }
             };
 
-            await router.InitAsync(initParams);
-            await router.ShowAsync<TestViewModel, TestParams>();
-            await router.BackAsync();
+            await Router.InitAsync(initParams);
+            await Router.ShowAsync<TestViewModel, TestParams>();
+            await Router.BackAsync();
 
-            navigator.Received(1).PopAsync();
+            Navigator.Received(1).PopAsync();
         }
 
         [Fact]
@@ -293,19 +294,221 @@ namespace ReactiveUI.Routing.Tests
                     }
                 }
             };
-            navigator.TransitionStack.Count.Returns(1);
-            navigator.Peek().Returns(new Transition()
+            Navigator.TransitionStack.Count.Returns(1);
+            Navigator.Peek().Returns(new Transition()
             {
                 ViewModel = new TestViewModel()
             }, new Transition()
             {
-                
-            });
-            await router.InitAsync(initParams);
-            await router.ShowAsync<TestViewModel, TestParams>();
-            await router.ShowAsync<TestViewModel, TestParams>();
 
-            navigator.Received(1).PopAsync();
+            });
+            await Router.InitAsync(initParams);
+            await Router.ShowAsync<TestViewModel, TestParams>();
+            await Router.ShowAsync<TestViewModel, TestParams>();
+
+            Navigator.Received(1).PopAsync();
+        }
+
+        [Fact]
+        public async Task Test_SuspendAsync_Returns_RouterState()
+        {
+            Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
+            Navigator = new Navigator();
+            Router = new Router(Navigator);
+            var routerParams = new RouterBuilder()
+                .When<TestViewModel>(r => r.Navigate())
+                .Build();
+
+            await Router.InitAsync(routerParams);
+            await Router.ShowAsync<TestViewModel, TestParams>();
+
+            var state = await Router.SuspendAsync();
+
+            Assert.Collection(state.Actions,
+                a =>
+                {
+                    a.Action.Should().BeAssignableTo<ShowViewModelAction>();
+                    var action = a.Action.As<ShowViewModelAction>();
+                    action.ActivationParams.Params.Should().BeAssignableTo<TestParams>();
+                    action.ActivationParams.Type.Should().Be<TestViewModel>();
+                    a.ViewModelState.Should().BeNull();
+                });
+        }
+
+        [Fact]
+        public async Task Test_SuspendAsync_Returns_RouterState_With_ViewModel_State()
+        {
+            var viewModel = new TestReActivatableViewModel()
+            {
+                State = new TestState()
+                {
+                    Value = "Hello, State!"
+                }
+            };
+            Resolver.RegisterConstant(viewModel, typeof(TestReActivatableViewModel));
+            Navigator = new Navigator();
+            Router = new Router(Navigator);
+            var routerParams = new RouterBuilder()
+                .When<TestReActivatableViewModel>(r => r.Navigate())
+                .Build();
+
+            await Router.InitAsync(routerParams);
+            await Router.ShowAsync<TestReActivatableViewModel, TestParams>();
+
+            var state = await Router.SuspendAsync();
+            Assert.Collection(state.Actions,
+                a =>
+                {
+                    a.Action.Should().BeAssignableTo<ShowViewModelAction>();
+                    var action = a.Action.As<ShowViewModelAction>();
+                    action.ActivationParams.Params.Should().BeAssignableTo<TestParams>();
+                    action.ActivationParams.Type.Should().Be<TestReActivatableViewModel>();
+                    a.ViewModelState.Should().BeAssignableTo<TestState>();
+                    a.ViewModelState.As<TestState>().Value.Should().Be("Hello, State!");
+                });
+        }
+
+        [Fact]
+        public async Task Test_SuspendAsync_Returns_RouterState_With_ViewModel_Params()
+        {
+            var viewModel = new TestReActivatableViewModel();
+            Resolver.RegisterConstant(viewModel, typeof(TestReActivatableViewModel));
+            Navigator = new Navigator();
+            Router = new Router(Navigator);
+            var routerParams = new RouterBuilder()
+                .When<TestReActivatableViewModel>(r => r.Navigate())
+                .Build();
+
+            await Router.InitAsync(routerParams);
+            await Router.ShowAsync<TestReActivatableViewModel, TestParams>(new TestParams()
+            {
+                Value = "Hello, Params!"
+            });
+
+            var state = await Router.SuspendAsync();
+            Assert.Collection(state.Actions,
+                a =>
+                {
+                    a.Action.Should().BeAssignableTo<ShowViewModelAction>();
+                    var action = a.Action.As<ShowViewModelAction>();
+                    action.ActivationParams.Params.Should().BeAssignableTo<TestParams>();
+                    action.ActivationParams.Params.As<TestParams>().Value.Should().Be("Hello, Params!");
+                });
+        }
+
+        [Fact]
+        public async Task Test_ResumeAsync_Dispatches_Saved_Actions()
+        {
+            Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
+            Navigator = new Navigator();
+            Router = new Router(Navigator);
+            var routerParams = new RouterBuilder()
+                .When<TestViewModel>(r => r.Navigate())
+                .Build();
+            var savedState = new RouterState()
+            {
+                Actions = new[]
+                {
+                    new Router.StoredRouterAction()
+                    {
+                        Action = RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()),
+                        ViewModelState = null
+                    },
+                }
+            };
+
+            await Router.InitAsync(routerParams);
+            await Router.ResumeAsync(savedState, Substitute.For<IReActivator>());
+
+            Assert.Collection(Navigator.TransitionStack,
+                t => t.ViewModel.Should().BeAssignableTo<TestViewModel>());
+        }
+
+        [Fact]
+        public async Task Test_ResumeAsync_Resumes_Stored_ViewModel_State()
+        {
+            Resolver.Register(() => new TestReActivatableViewModel(), typeof(TestReActivatableViewModel));
+            Navigator = new Navigator();
+            Router = new Router(Navigator);
+            var routerParams = new RouterBuilder()
+                .When<TestReActivatableViewModel>(r => r.Navigate())
+                .Build();
+            var viewModelState = new TestState();
+            var savedState = new RouterState()
+            {
+                Actions = new[]
+                {
+                    new Router.StoredRouterAction()
+                    {
+                        Action = RouterActions.ShowViewModel(typeof(TestReActivatableViewModel), new TestParams()),
+                        ViewModelState = viewModelState
+                    },
+                }
+            };
+
+            await Router.InitAsync(routerParams);
+            await Router.ResumeAsync(savedState, Substitute.For<IReActivator>());
+
+            Assert.Collection(Navigator.TransitionStack,
+                t =>
+                {
+                    t.ViewModel.Should().BeAssignableTo<TestReActivatableViewModel>();
+                    t.ViewModel.As<TestReActivatableViewModel>().State.Should().Be(viewModelState);
+                });
+        }
+
+        [Fact]
+        public async Task Test_NavigateBackAction_Presents_Previous_ViewModel()
+        {
+            Navigator = new Navigator();
+            Router = new Router(Navigator);
+            var presenter = Substitute.For<IPresenter>();
+            Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
+            Resolver.RegisterConstant(presenter, typeof(IPresenter));
+            var routerParams = new RouterBuilder()
+                .When<TestViewModel>(r => r.Navigate().Present())
+                .Build();
+
+            await Router.InitAsync(routerParams);
+            await Router.ShowAsync<TestViewModel, TestParams>();
+            await Router.ShowAsync<TestViewModel, TestParams>();
+            await Router.BackAsync();
+
+            presenter.Received(3).PresentAsync(Arg.Any<object>(), Arg.Any<object>());
+        }
+
+        [Fact]
+        public async Task Test_InvalidOperationException_Is_Thrown_If_ViewModel_Cannot_Be_Located()
+        {
+            Navigator = new Navigator();
+            Router = new Router(Navigator);
+            var routerParams = new RouterBuilder()
+                .When<TestViewModel>(r => r.Navigate().Present())
+                .Build();
+
+            await Router.InitAsync(routerParams);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            {
+                await Router.ShowAsync<TestViewModel, TestParams>();
+            });
+        }
+
+        [Fact]
+        public async Task
+            Test_InvalidOperationException_Is_Thrown_If_Attempting_To_Navigate_To_ViewModel_That_Is_Not_In_RouterParams()
+        {
+            Navigator = new Navigator();
+            Router = new Router(Navigator);
+            var routerParams = new RouterBuilder()
+                .Build();
+
+            await Router.InitAsync(routerParams);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            {
+                await Router.ShowAsync<TestViewModel, TestParams>();
+            });
         }
     }
 }

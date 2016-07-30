@@ -40,8 +40,7 @@ namespace ReactiveUI.Routing
             var routerParams = GetService<RouterParams>();
             var activator = GetService<IReActivator>();
             var router = GetService<IRouter>();
-            var existingState = await stateStore.LoadStateAsync();
-            var routerState = await GetRouterState(existingState, stateStore);
+            var routerState = await GetRouterState(stateStore);
             await ResumeRouterAsync(router, activator, routerParams, routerState, stateStore);
             await router.ShowDefaultViewModelAsync();
 
@@ -72,7 +71,7 @@ namespace ReactiveUI.Routing
                     await router.ResumeAsync(routerState, activator);
                 }
             }
-            catch (Exception e)
+            catch
             {
                 await stateStore.SaveStateAsync(null);
                 // Make sure that the router gets started
@@ -80,8 +79,17 @@ namespace ReactiveUI.Routing
             }
         }
 
-        private static async Task<RouterState> GetRouterState(ObjectState existingState, IObjectStateStore stateStore)
+        private static async Task<RouterState> GetRouterState(IObjectStateStore stateStore)
         {
+            ObjectState existingState = null;
+            try
+            {
+                existingState = await stateStore.LoadStateAsync();
+            }
+            catch
+            {
+                await stateStore.SaveStateAsync(null);
+            }
             RouterState routerState = null;
             try
             {

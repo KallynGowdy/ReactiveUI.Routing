@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using ReactiveUI.Routing.Actions;
+using ReactiveUI.Routing.Builder;
 using Splat;
 
 namespace ReactiveUI.Routing
@@ -18,14 +19,20 @@ namespace ReactiveUI.Routing
         public class StoredRouterAction
         {
             public IRouterAction Action { get; set; }
+            public object ViewModelState { get; set; }
+        }
+
+        public class ActiveRouterAction
+        {
+            public IRouterAction Action { get; set; }
             public Transition Transition { get; set; }
         }
 
         private readonly ObservableAsPropertyHelper<RouterParams> parameters;
         private INavigator Navigator { get; }
-        private IActivator Activator { get; }
+        private IReActivator Activator { get; }
         private RouterParams Params => parameters.Value;
-        private List<StoredRouterAction> Actions { get; } = new List<StoredRouterAction>();
+        private List<ActiveRouterAction> Actions { get; } = new List<ActiveRouterAction>();
         private readonly Dictionary<Transition, List<IDisposable>> presenters = new Dictionary<Transition, List<IDisposable>>();
 
         public override bool SaveInitParams => false;
@@ -38,10 +45,10 @@ namespace ReactiveUI.Routing
         {
         }
 
-        public Router(INavigator navigator, IActivator activator)
+        public Router(INavigator navigator, IReActivator activator)
         {
             this.Navigator = navigator ?? Locator.Current.GetService<INavigator>();
-            this.Activator = activator ?? Locator.Current.GetService<IActivator>() ?? new LocatorActivator();
+            this.Activator = activator ?? Locator.Current.GetService<IReActivator>() ?? new ReActivator();
             if (this.Navigator == null) throw new InvalidOperationException($"When creating a router, a {nameof(INavigator)} object must either be provided or locatable via Locator.Current.GetService<{nameof(INavigator)}>()");
 
             parameters = this.OnActivated.FirstAsync().ToProperty(this, r => r.Params);
@@ -68,25 +75,30 @@ namespace ReactiveUI.Routing
             await base.ResumeCoreAsync(storedState, reActivator);
             foreach (var action in storedState.Actions)
             {
-                await DispatchAsync(action.Action, action.Transition);
+                await DispatchAsync(action);
             }
         }
 
-        private async Task DispatchAsync(IRouterAction action, Transition transition)
+        private async Task DispatchAsync(StoredRouterAction action)
         {
-            await When<ShowViewModelAction>(action, async showViewModelAction =>
+            await When<ShowViewModelAction>(action.Action, async showViewModelAction =>
             {
-                await ShowViewModelAsync(showViewModelAction, transition);
+                await ShowViewModelAsync(showViewModelAction, action.ViewModelState);
             });
-            await When<NavigateBackAction>(action, async navigateBackAction =>
+            await When<NavigateBackAction>(action.Action, async navigateBackAction =>
             {
                 await NavigateBackAsync(navigateBackAction);
             });
-            await When<ShowDefaultViewModelAction>(action, async a =>
+            await When<ShowDefaultViewModelAction>(action.Action, async a =>
             {
                 if (Actions.Count == 0 && Params?.DefaultViewModelType != null && Params.DefaultParameters != null)
                 {
-                    await DispatchAsync(RouterActions.ShowViewModel(Params.DefaultViewModelType, Params.DefaultParameters), transition);
+                    var stored = new StoredRouterAction()
+                    {
+                        Action = RouterActions.ShowViewModel(Params.DefaultViewModelType, Params.DefaultParameters),
+                        ViewModelState = action.ViewModelState
+                    };
+                    await DispatchAsync(stored);
                 }
             });
         }
@@ -94,20 +106,39 @@ namespace ReactiveUI.Routing
         protected override async Task<RouterState> SuspendCoreAsync()
         {
             var state = await base.SuspendCoreAsync();
-            state.Actions = Actions.ToArray();
+            List<StoredRouterAction> outputActions = new List<StoredRouterAction>();
+            foreach (var action in Actions)
+            {
+                object vmState = null;
+                var vm = action.Transition.ViewModel as IReActivatable;
+                if (vm != null)
+                {
+                    vmState = await vm.SuspendAsync();
+                }
+                outputActions.Add(new StoredRouterAction()
+                {
+                    Action = action.Action,
+                    ViewModelState = vmState
+                });
+            }
+            state.Actions = outputActions.ToArray();
             return state;
         }
 
         private async Task ShowViewModelAsync(ShowViewModelAction action)
         {
-            var activationParams = action.ActivationParams;
-            var transition = await BuildTransitionAsync(activationParams);
-            await ShowViewModelAsync(action, transition);
+            await ShowViewModelAsync(action, null);
         }
 
-        private async Task ShowViewModelAsync(ShowViewModelAction action, Transition transition)
+        private async Task ShowViewModelAsync(ShowViewModelAction action, object state)
         {
-            Actions.Add(new StoredRouterAction()
+            var transition = await BuildViewModelAsync(action.ActivationParams);
+            var reActivatable = transition.ViewModel as IReActivatable;
+            if (reActivatable != null && state != null)
+            {
+                await reActivatable.ResumeAsync(state, Activator);
+            }
+            Actions.Add(new ActiveRouterAction()
             {
                 Action = action,
                 Transition = transition
@@ -257,10 +288,10 @@ namespace ReactiveUI.Routing
             });
         }
 
-        private async Task<Transition> BuildTransitionAsync(ActivationParams activationParams)
+        private async Task<Transition> BuildViewModelAsync(ActivationParams activationParams)
         {
             var vm = await Activator.ActivateAsync(activationParams);
-            if (vm == null) throw new InvalidOperationException($"Cannot initialize transition. The returned value from the Locator.Current.GetService({activationParams.Type}) was null, which means that the view model could not be instantiated.");
+            if (vm == null) throw new InvalidOperationException($"Cannot initialize ViewModel. The returned value from the Locator.Current.GetService({activationParams.Type}) was null, which means that the view model could not be instantiated.");
             var transition = new Transition()
             {
                 ViewModel = vm
@@ -277,20 +308,13 @@ namespace ReactiveUI.Routing
             }
             else
             {
-                throw new InvalidOperationException($"Cannot navigate to type {viewModel}. It was not found in the view model map");
+                throw new InvalidOperationException($"Cannot navigate to type {viewModel}. It was not found in the view model map. Make sure you are calling {nameof(RouterBuilder.When)} on your {nameof(RouterBuilder)}.");
             }
         }
 
         private void CheckInit()
         {
             if (!Initialized) throw new InvalidOperationException("The router must be initialized before use.");
-        }
-
-        public static async Task<IRouter> InitWithParamsAsync(RouterParams routerParams)
-        {
-            var router = new Router();
-            await router.InitAsync(routerParams);
-            return router;
         }
     }
 }
