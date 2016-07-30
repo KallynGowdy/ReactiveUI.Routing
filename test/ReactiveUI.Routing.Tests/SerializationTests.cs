@@ -16,7 +16,7 @@ namespace ReactiveUI.Routing.Tests
         [Fact]
         public void Test_Can_Serialize_RouterParams()
         {
-            var str = JsonConvert.SerializeObject(new RouterParams()
+            var str = JsonConvert.SerializeObject(new RouterConfig()
             {
                 DefaultParameters = new TestParams(),
                 DefaultViewModelType = typeof(TestViewModel),

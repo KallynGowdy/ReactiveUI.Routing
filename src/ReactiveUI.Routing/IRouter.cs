@@ -11,7 +11,7 @@ namespace ReactiveUI.Routing
     /// Defines an interface that represents a router. That is, an object
     /// that controls the selection of logic when showing a view model.
     /// </summary>
-    public interface IRouter : IReActivatable<RouterParams, RouterState>
+    public interface IRouter : IReActivatable<RouterConfig, RouterState>
     {
         /// <summary>
         /// Dispatches the given action to the router.

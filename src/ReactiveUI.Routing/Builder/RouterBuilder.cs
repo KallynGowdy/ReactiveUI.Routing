@@ -49,9 +49,9 @@ namespace ReactiveUI.Routing.Builder
             return this;
         }
 
-        public RouterParams Build()
+        public RouterConfig Build()
         {
-            return new RouterParams()
+            return new RouterConfig()
             {
                 ViewModelMap = BuiltRoutes.Select(r => r.Build()).ToDictionary(a => a.ViewModelType),
                 DefaultViewModelType = DefaultRoute?.ViewModelType,

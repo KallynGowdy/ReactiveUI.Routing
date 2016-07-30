@@ -27,7 +27,7 @@ namespace ShareNavigation
             }, typeof(JsonSerializerSettings));
         }
 
-        protected override RouterParams BuildRouterParams()
+        protected override RouterConfig BuildRouterParams()
         {
             return new RouterBuilder()
                 .Default<PhotoListViewModel>()

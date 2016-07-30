@@ -20,13 +20,13 @@ namespace ReactiveUI.Routing
             resolver.RegisterLazySingleton(BuildSuspensionNotifier, typeof(ISuspensionNotifier));
             resolver.RegisterLazySingleton(BuildObjectStateStore, typeof(IObjectStateStore));
             resolver.RegisterLazySingleton(() => new Router(), typeof(IRouter));
-            resolver.RegisterLazySingleton(BuildRouterParamsSafe, typeof(RouterParams));
+            resolver.RegisterLazySingleton(BuildRouterParamsSafe, typeof(RouterConfig));
             resolver.RegisterLazySingleton(() => new Navigator(), typeof(INavigator));
             resolver.RegisterLazySingleton(() => ReActivator.Current, typeof(IReActivator));
             resolver.Register(() => new DefaultViewTypeLocator(GetType().GetTypeInfo().Assembly), typeof(IViewTypeLocator));
         }
 
-        private RouterParams BuildRouterParamsSafe()
+        private RouterConfig BuildRouterParamsSafe()
         {
             var parameters = BuildRouterParams();
             if (parameters == null)
@@ -36,7 +36,7 @@ namespace ReactiveUI.Routing
             return parameters;
         }
 
-        protected abstract RouterParams BuildRouterParams();
+        protected abstract RouterConfig BuildRouterParams();
         protected abstract ISuspensionNotifier BuildSuspensionNotifier();
         protected abstract IObjectStateStore BuildObjectStateStore();
     }

@@ -9,7 +9,7 @@ namespace ReactiveUI.Routing
     /// Defines a class that represents the parameters that a router requires.
     /// </summary>
     [DataContract]
-    public sealed class RouterParams
+    public sealed class RouterConfig
     {
         [DataMember]
         private Dictionary<string, RouteActions> ViewModelTypeNameMap

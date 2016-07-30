@@ -11,7 +11,7 @@ namespace ReactiveUI.Routing.Tests
     {
         public class TestNullRoutedAppConfig : DefaultRoutedAppConfig
         {
-            protected override RouterParams BuildRouterParams()
+            protected override RouterConfig BuildRouterParams()
             {
                 return null;
             }

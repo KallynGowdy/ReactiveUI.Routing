@@ -37,7 +37,7 @@ namespace ReactiveUI.Routing
             Config.RegisterDependencies(Locator.CurrentMutable);
             var stateStore = GetService<IObjectStateStore>();
             var notifier = GetService<ISuspensionNotifier>();
-            var routerParams = GetService<RouterParams>();
+            var routerParams = GetService<RouterConfig>();
             var activator = GetService<IReActivator>();
             var router = GetService<IRouter>();
             var routerState = await GetRouterState(stateStore);
@@ -61,9 +61,9 @@ namespace ReactiveUI.Routing
                 .Subscribe();
         }
 
-        private static async Task ResumeRouterAsync(IRouter router, IReActivator activator, RouterParams routerParams, RouterState routerState, IObjectStateStore stateStore)
+        private static async Task ResumeRouterAsync(IRouter router, IReActivator activator, RouterConfig routerConfig, RouterState routerState, IObjectStateStore stateStore)
         {
-            await router.InitAsync(routerParams);
+            await router.InitAsync(routerConfig);
             try
             {
                 if (routerState != null)

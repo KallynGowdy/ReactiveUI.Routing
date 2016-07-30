@@ -46,7 +46,7 @@ namespace ReactiveUI.Routing.Tests
         public async Task Test_ShowAsync_Pipes_Transition_To_Navigator_If_Router_Actions_Specify_Navigate()
         {
             Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
-            var initParams = new RouterParams()
+            var initParams = new RouterConfig()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
                 {
@@ -71,7 +71,7 @@ namespace ReactiveUI.Routing.Tests
         public async Task Test_ShowAsync_Does_Not_Pipe_Transition_To_Navigator_If_Router_Actions_Specify_Navigate()
         {
             Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
-            var initParams = new RouterParams()
+            var initParams = new RouterConfig()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
                 {
@@ -92,7 +92,7 @@ namespace ReactiveUI.Routing.Tests
         [Fact]
         public async Task Test_ShowAsync_Throws_If_Given_Type_Is_Not_In_Map()
         {
-            var initParams = new RouterParams()
+            var initParams = new RouterConfig()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
             };
@@ -111,7 +111,7 @@ namespace ReactiveUI.Routing.Tests
             presenterConstructor().Returns(new TestPresenterType());
             Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
             Locator.CurrentMutable.Register(presenterConstructor, typeof(TestPresenterType));
-            var initParams = new RouterParams()
+            var initParams = new RouterConfig()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
                 {
@@ -141,7 +141,7 @@ namespace ReactiveUI.Routing.Tests
             Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
             Locator.CurrentMutable.Register(() => presenter, typeof(TestPresenterType));
             var subject = new Subject<Transition>();
-            var initParams = new RouterParams()
+            var initParams = new RouterConfig()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
                 {
@@ -177,7 +177,7 @@ namespace ReactiveUI.Routing.Tests
             IPresenter presenter = Substitute.For<IPresenter>();
             Locator.CurrentMutable.Register(() => presenter, typeof(TestPresenterType));
             Locator.CurrentMutable.Register(() => viewModel, typeof(TestViewModel));
-            var initParams = new RouterParams()
+            var initParams = new RouterConfig()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
                 {
@@ -210,7 +210,7 @@ namespace ReactiveUI.Routing.Tests
             presenter.PresentAsync(Arg.Any<object>(), Arg.Any<object>()).Returns(disposable);
             Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
             Locator.CurrentMutable.Register(() => presenter, typeof(TestPresenterType));
-            var initParams = new RouterParams()
+            var initParams = new RouterConfig()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
                 {
@@ -249,7 +249,7 @@ namespace ReactiveUI.Routing.Tests
         public async Task Test_NavigateBackAction_Causes_Router_To_Navigate_Backwards()
         {
             Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
-            var initParams = new RouterParams()
+            var initParams = new RouterConfig()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
                 {
@@ -277,7 +277,7 @@ namespace ReactiveUI.Routing.Tests
         public async Task Test_NavigateBackWhileAction_Causes_Rotuer_To_Navigate_Backwards_While_The_Func_Is_True()
         {
             Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
-            var initParams = new RouterParams()
+            var initParams = new RouterConfig()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
                 {

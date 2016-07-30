@@ -78,7 +78,7 @@
     <Compile Include="RouteActions.cs" />
     <Compile Include="RouterActions.cs" />
     <Compile Include="RouterExtensions.cs" />
-    <Compile Include="RouterParams.cs" />
+    <Compile Include="RouterConfig.cs" />
     <Compile Include="RouterState.cs" />
     <Compile Include="Transition.cs" />
     <Compile Include="ActivationParams.cs" />
