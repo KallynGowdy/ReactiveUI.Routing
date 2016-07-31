@@ -16,15 +16,14 @@ namespace ReactiveUI.Routing
         /// suspension. If null is returned, an exception is thrown.
         /// </summary>
         /// <returns></returns>
-        Task<object> SuspendAsync();
+        Task<object> GetStateAsync();
 
         /// <summary>
         /// Resumes the view model state by restoring the stored state.
         /// </summary>
         /// <param name="storedState">The state that was previously stored.</param>
-        /// <param name="reActivator">The object that can reactivate dependent child objects of this object.</param>
         /// <returns></returns>
-        Task ResumeAsync(object storedState, IReActivator reActivator);
+        Task ResumeAsync(object storedState);
     }
 
     /// <summary>
@@ -39,14 +38,13 @@ namespace ReactiveUI.Routing
         /// suspension. If null is returned, an exception is thrown.
         /// </summary>
         /// <returns></returns>
-        new Task<TState> SuspendAsync();
+        new Task<TState> GetStateAsync();
 
         /// <summary>
         /// Resumes the view model state by restoring the stored state.
         /// </summary>
         /// <param name="storedState">The state that was previously stored.</param>
-        /// <param name="reActivator">The object that can reactivate dependent child objects of this object.</param>
         /// <returns></returns>
-        Task ResumeAsync(TState storedState, IReActivator reActivator);
+        Task ResumeAsync(TState storedState);
     }
 }

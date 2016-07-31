@@ -41,23 +41,14 @@ namespace ReactiveUI.Routing.Tests
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await ReObj.ResumeAsync(null, Substitute.For<IReActivator>());
-            });
-        }
-
-        [Fact]
-        public async Task Test_ResumeAsync_Throws_If_Given_Null_IReActivator()
-        {
-            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            {
-                await ReObj.ResumeAsync(new TestState(), null);
+                await ReObj.ResumeAsync(null);
             });
         }
 
         [Fact]
         public async Task Test_ResumeAsync_Does_Not_Throw_If_Given_Non_Null_State()
         {
-            await ReObj.ResumeAsync(new TestState(), Substitute.For<IReActivator>());
+            await ReObj.ResumeAsync(new TestState());
         }
 
         [Fact]
@@ -66,7 +57,7 @@ namespace ReactiveUI.Routing.Tests
             Obj = new TestSyncReActivatablObject();
             await Assert.ThrowsAsync<InvalidReturnValueException>(async () =>
             {
-                await ReObj.SuspendAsync();
+                await ReObj.GetStateAsync();
             });
         }
 
@@ -76,14 +67,14 @@ namespace ReactiveUI.Routing.Tests
             Obj = new TestAsyncReActivatablObject();
             await Assert.ThrowsAsync<InvalidReturnValueException>(async () =>
             {
-                await ReObj.SuspendAsync();
+                await ReObj.GetStateAsync();
             });
         }
 
         [Fact]
         public async Task Test_SuspendAsync_Does_Not_Throw_If_Returns_Non_Null_State()
         {
-            await ReObj.SuspendAsync();
+            await ReObj.GetStateAsync();
         }
 
         [Fact]
@@ -95,8 +86,8 @@ namespace ReactiveUI.Routing.Tests
             List<TestState> resumedStates = new List<TestState>(2);
             obj.Resumed.Subscribe(state => resumedStates.Add(state));
 
-            await obj.ResumeAsync(first, Substitute.For<IReActivator>());
-            await obj.ResumeAsync(second, Substitute.For<IReActivator>());
+            await obj.ResumeAsync(first);
+            await obj.ResumeAsync(second);
 
             Assert.Collection(resumedStates,
                 s => s.Should().Be(first),
@@ -110,7 +101,7 @@ namespace ReactiveUI.Routing.Tests
             var first = new TestState();
             List<TestState> resumedStates = new List<TestState>(2);
             Action subscribe = () => obj.Resumed.Subscribe(state => resumedStates.Add(state));
-            await obj.ResumeAsync(first, Substitute.For<IReActivator>());
+            await obj.ResumeAsync(first);
 
             subscribe();
             subscribe();

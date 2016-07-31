@@ -39,45 +39,44 @@ namespace ReactiveUI.Routing
             var stateStore = GetService<IObjectStateStore>();
             var notifier = GetService<ISuspensionNotifier>();
             var routerParams = GetService<RouterConfig>();
-            var activator = GetService<IReActivator>();
             var router = GetService<IRouter>();
 
             router.CloseApp
-                .Do(async u => await SaveRouterStateAsync(activator, router, stateStore))
+                .Do(async u => await SaveRouterStateAsync(router, stateStore))
                 .Do(u => config.CloseApp())
                 .Subscribe();
 
             var routerState = await GetRouterState(stateStore);
-            await ResumeRouterAsync(router, activator, routerParams, routerState, stateStore);
+            await ResumeRouterAsync(router, routerParams, routerState, stateStore);
             await router.ShowDefaultViewModelAsync();
 
             notifier.OnSaveState
-                .Do(async u => await SaveRouterStateAsync(activator, router, stateStore))
+                .Do(async u => await SaveRouterStateAsync(router, stateStore))
                 .Subscribe();
 
             notifier.OnSuspend
                 .FirstAsync()
                 .Do(async u =>
                 {
-                    await activator.DeactivateAsync(router);
+                    await ActivationHelpers.DestroyObjectAsync(router);
                 })
                 .Subscribe();
         }
 
-        private static async Task SaveRouterStateAsync(IReActivator activator, IRouter router, IObjectStateStore stateStore)
+        private static async Task SaveRouterStateAsync(IRouter router, IObjectStateStore stateStore)
         {
-            var state = await activator.SuspendAsync(router);
+            var state = await ActivationHelpers.GetObjectStateAsync(router);
             await stateStore.SaveStateAsync(state);
         }
 
-        private static async Task ResumeRouterAsync(IRouter router, IReActivator activator, RouterConfig routerConfig, RouterState routerState, IObjectStateStore stateStore)
+        private static async Task ResumeRouterAsync(IRouter router, RouterConfig routerConfig, RouterState routerState, IObjectStateStore stateStore)
         {
-            await router.InitAsync(routerConfig);
+            await ActivationHelpers.InitObjectAsync(router, routerConfig);
             try
             {
                 if (routerState != null)
                 {
-                    await router.ResumeAsync(routerState, activator);
+                    await ActivationHelpers.ResumeObjectStateAsync(router, routerState);
                 }
             }
             catch

@@ -16,13 +16,11 @@ namespace ReactiveUI.Routing
         {
             if (resolver == null) throw new ArgumentNullException(nameof(resolver));
             
-            resolver.RegisterConstant(new LocatorActivator(), typeof(IActivator));
             resolver.RegisterLazySingleton(BuildSuspensionNotifier, typeof(ISuspensionNotifier));
             resolver.RegisterLazySingleton(BuildObjectStateStore, typeof(IObjectStateStore));
             resolver.RegisterLazySingleton(() => new Router(), typeof(IRouter));
             resolver.RegisterLazySingleton(BuildRouterParamsSafe, typeof(RouterConfig));
             resolver.RegisterLazySingleton(() => new Navigator(), typeof(INavigator));
-            resolver.RegisterLazySingleton(() => ReActivator.Current, typeof(IReActivator));
             resolver.Register(() => new DefaultViewTypeLocator(GetType().GetTypeInfo().Assembly), typeof(IViewTypeLocator));
         }
 
