@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -141,6 +142,7 @@ namespace ReactiveUI.Routing.Tests
 
             suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
             suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
+            router.CloseApp.Returns(Observable.Never<Unit>());
             stateStore.LoadStateAsync().Returns(state);
             router.ResumeAsync(Arg.Any<RouterState>(), activator).Throws<Exception>();
             Register(routerParams);
@@ -169,6 +171,7 @@ namespace ReactiveUI.Routing.Tests
 
             suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
             suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
+            router.CloseApp.Returns(Observable.Never<Unit>());
             stateStore.LoadStateAsync().Returns(state);
             Register(routerParams);
             Register(activator);
@@ -191,6 +194,7 @@ namespace ReactiveUI.Routing.Tests
 
             suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
             suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
+            router.CloseApp.Returns(Observable.Never<Unit>());
             stateStore.LoadStateAsync().Throws<Exception>();
             Register(routerParams);
             Register(activator);
@@ -222,14 +226,44 @@ namespace ReactiveUI.Routing.Tests
             Register(suspensionNotifier);
             Register(stateStore);
             Register<IRouter>(router);
-            await AppHost.StartAsync();
 
+            await AppHost.StartAsync();
             await router.ShowAsync<TestViewModel, TestParams>();
             await router.ShowAsync<TestViewModel, TestParams>();
             await router.BackAsync();
             await router.BackAsync();
 
             Config.Received(1).CloseApp();
+        }
+
+        [Fact]
+        public async Task Test_Saves_State_When_Router_Notifies_CloseApp()
+        {
+            var activator = Substitute.For<IReActivator>();
+            var closeApp = new Subject<Unit>();
+            var router = Substitute.For<IRouter>();
+            var stateStore = Substitute.For<IObjectStateStore>();
+            var suspensionNotifier = Substitute.For<ISuspensionNotifier>();
+            var routerParams = new RouterBuilder()
+                .When<TestViewModel>(r => r.Navigate())
+                .Build();
+            var state = new ObjectState();
+
+            router.CloseApp.Returns(closeApp);
+            activator.SuspendAsync(router).Returns(state);
+            suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
+            suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
+            Register(() => new TestViewModel());
+            Register(routerParams);
+            Register(activator);
+            Register(suspensionNotifier);
+            Register(stateStore);
+            Register(router);
+
+            await AppHost.StartAsync();
+            closeApp.OnNext(Unit.Default);
+
+            stateStore.Received(1).SaveStateAsync(state);
         }
     }
 }
