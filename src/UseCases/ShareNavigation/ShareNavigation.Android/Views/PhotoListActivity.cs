@@ -12,7 +12,7 @@ using ShareNavigation.ViewModels;
 
 namespace ShareNavigation.Views
 {
-    [Activity(Label = "Starter-Android")]
+    [Activity(Label = "Photos!")]
     public class PhotoListActivity : RoutableActivity<PhotoListViewModel>
     {
         protected override void OnCreate(Bundle bundle)

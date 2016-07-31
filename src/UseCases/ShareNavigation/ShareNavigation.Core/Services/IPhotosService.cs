@@ -8,6 +8,7 @@ namespace ShareNavigation.Services
     public interface IPhotosService
     {
         Task<Photo[]> GetPhotosAsync();
+        Task<byte[]> GetPhotoDataAsync(Photo photo);
         Task SharePhotoAsync(Photo photo);
     }
 }

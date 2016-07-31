@@ -56,7 +56,17 @@ protected override RouterConfig BuildRouterParams()
         // Specifies that when ShowAsync<MyViewModel>() is
         // called on the router, that it should be navigated to
         // and presented.
-        .When<MyViewModel>(r => r.Navigate().Present());
+        .When<MyViewModel>(r => r.Navigate().Present())
+
+        // Specifies that when ShowAsync<MyOtherViewModel>() is
+        // called on the router that the "parent" view model should be MyViewModel.
+        // Also specifies that this view model should be presented. 
+        .When<MyOtherViewModel>(r => r.NavigateFrom<MyViewModel>().Present())
+        
+        // Specifies that when ShowAsync<MyNotificationViewModel>() is
+        // called that the router should not navigate to it, but should
+        // present it with a IMyNotificationPresenter type.
+        .When<MyNotificationViewModel>(r => r.Present<IMyNotificationPresenter>());
 }
 ```
 

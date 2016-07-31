@@ -20,22 +20,11 @@ namespace ReactiveUI.Routing.Android
         private readonly IRouter router;
         private TViewModel viewModel;
 
-        public RoutableActivity() : this(null, null) { }
-        public RoutableActivity(IRouter router, SuspensionNotifierHelper supensionNotifier)
-            : base(supensionNotifier)
-        {
-            this.router = router ?? Locator.Current.GetService<IRouter>();
-        }
-
-        public override void OnBackPressed()
-        {
-            router.BackAsync();
-        }
-
+        public event PropertyChangedEventHandler PropertyChanged;
         public IObservable<Unit> Activated =>
             activated.CombineLatest(this.WhenAnyValue(v => v.ViewModel), (unit, vm) => vm)
                 .Where(vm => vm != null)
-            .Select(v => Unit.Default);
+                .Select(v => Unit.Default);
         public IObservable<Unit> Deactivated => deactivated;
 
         object IViewFor.ViewModel
@@ -57,7 +46,18 @@ namespace ReactiveUI.Routing.Android
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public RoutableActivity() : this(null, null) { }
+
+        public RoutableActivity(IRouter router, SuspensionNotifierHelper supensionNotifier)
+            : base(supensionNotifier)
+        {
+            this.router = router ?? Locator.Current.GetService<IRouter>();
+        }
+
+        public override void OnBackPressed()
+        {
+            router.BackAsync();
+        }
 
         protected override void OnPause()
         {

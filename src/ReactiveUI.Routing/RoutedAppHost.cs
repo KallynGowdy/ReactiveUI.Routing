@@ -82,7 +82,7 @@ namespace ReactiveUI.Routing
             }
             catch
             {
-                await stateStore.SaveStateAsync(null);
+                await InvalidateStateAsync(stateStore);
                 // Make sure that the router gets started
                 // TODO: Log exceptions
             }
@@ -97,7 +97,7 @@ namespace ReactiveUI.Routing
             }
             catch
             {
-                await stateStore.SaveStateAsync(null);
+                await InvalidateStateAsync(stateStore);
             }
             RouterState routerState = null;
             try
@@ -106,9 +106,14 @@ namespace ReactiveUI.Routing
             }
             catch (InvalidCastException)
             {
-                await stateStore.SaveStateAsync(null);
+                await InvalidateStateAsync(stateStore);
             }
             return routerState;
+        }
+
+        private static async Task InvalidateStateAsync(IObjectStateStore stateStore)
+        {
+            await stateStore.SaveStateAsync(null);
         }
 
         private T GetService<T>()

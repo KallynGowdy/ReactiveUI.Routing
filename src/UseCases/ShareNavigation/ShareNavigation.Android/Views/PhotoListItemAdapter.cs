@@ -29,9 +29,9 @@ namespace ShareNavigation.Views
             if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
             this.context = context;
             this.viewModel = viewModel;
-            this.viewModel.WhenAnyValue(vm => vm.LoadedPhotos)
-                .SelectMany(photos => Task.WhenAll(photos.Select(p => GetImageBitmapFromUrl(p.PhotoUrl))))
-                .ObserveOn(RxApp.MainThreadScheduler)
+            this.viewModel.WhenAnyValue(vm => vm.LoadedPhotoData)
+                .Where(data => data != null)
+                .Select(photos => photos.Select(p => BitmapFactory.DecodeByteArray(p, 0, p.Length)).ToArray())
                 .Do(bitmaps => this.bitmaps = bitmaps)
                 .Do(b => this.NotifyDataSetChanged())
                 .Subscribe();
@@ -40,22 +40,6 @@ namespace ShareNavigation.Views
         public override long GetItemId(int position)
         {
             return position;
-        }
-
-        public static async Task<Bitmap> GetImageBitmapFromUrl(string url)
-        {
-            Bitmap imageBitmap = null;
-
-            using (var webClient = new WebClient())
-            {
-                var imageBytes = await webClient.DownloadDataTaskAsync(url);
-                if (imageBytes != null && imageBytes.Length > 0)
-                {
-                    imageBitmap = BitmapFactory.DecodeByteArray(imageBytes, 0, imageBytes.Length);
-                }
-            }
-
-            return imageBitmap;
         }
 
         public override View GetView(int position, View convertView, ViewGroup parent)

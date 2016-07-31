@@ -6,6 +6,7 @@ using System.Text;
 
 using Android.App;
 using Android.Content;
+using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
@@ -16,7 +17,7 @@ using ShareNavigation.ViewModels;
 
 namespace ShareNavigation.Views
 {
-    [Activity(Label = "Share!")]
+    [Activity(Label = "Photo!")]
     public class PhotoActivity : RoutableActivity<PhotoViewModel>
     {
         protected override void OnCreate(Bundle bundle)
@@ -25,10 +26,9 @@ namespace ShareNavigation.Views
             SetContentView(Resource.Layout.PhotoListItem);
             this.WhenActivated(d =>
             {
-                d(ViewModel.WhenAnyValue(vm => vm.PhotoUrl)
-                    .Where(p => !string.IsNullOrEmpty(p))
-                    .SelectMany(PhotoListItemAdapter.GetImageBitmapFromUrl)
-                    .ObserveOn(RxApp.MainThreadScheduler)
+                d(ViewModel.WhenAnyValue(vm => vm.PhotoData)
+                    .Where(p => p != null)
+                    .Select(data => BitmapFactory.DecodeByteArray(data, 0, data.Length))
                     .Do(b => Photo.SetImageBitmap(b))
                     .Subscribe());
             });

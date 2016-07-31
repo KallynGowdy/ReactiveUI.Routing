@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Fusillade;
 
 namespace ShareNavigation.Services
 {
@@ -14,9 +16,21 @@ namespace ShareNavigation.Services
             }
         };
 
+        public PhotosService()
+        {
+            Client = new HttpClient(NetCache.UserInitiated);
+        }
+
+        private HttpClient Client { get; }
+
         public Task<Photo[]> GetPhotosAsync()
         {
             return Task.FromResult(photos.ToArray());
+        }
+
+        public Task<byte[]> GetPhotoDataAsync(Photo photo)
+        {
+            return Client.GetByteArrayAsync(photo.PhotoUrl);
         }
 
         public Task SharePhotoAsync(Photo photo)

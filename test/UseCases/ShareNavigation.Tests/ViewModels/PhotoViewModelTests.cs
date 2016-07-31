@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using NSubstitute;
+using ShareNavigation.Services;
 using ShareNavigation.ViewModels;
 using Xunit;
 
@@ -12,10 +14,12 @@ namespace ShareNavigation.Tests.ViewModels
     public class PhotoViewModelTests : RoutedViewModelTests<PhotoViewModel.Params, PhotoViewModel.State>
     {
         public PhotoViewModel ViewModel => (PhotoViewModel) RoutedViewModel;
+        public IPhotosService Service { get; set; }
 
         public PhotoViewModelTests()
         {
-            RoutedViewModel = new PhotoViewModel(Router);
+            Service = Substitute.For<IPhotosService>();
+            RoutedViewModel = new PhotoViewModel(Router, Service);
         }
 
         [Fact]
@@ -29,7 +33,7 @@ namespace ShareNavigation.Tests.ViewModels
                 }
             });
 
-            ViewModel.PhotoUrl.Should().Be("Test URL");
+            ViewModel.Photo.PhotoUrl.Should().Be("Test URL");
         }
     }
 }
