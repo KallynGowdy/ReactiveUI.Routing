@@ -168,23 +168,23 @@ namespace ReactiveUI.Routing
 
         private async Task DisposeTransitionAsync(Transition transition)
         {
-            DisposePresenters(transition);
-            await ActivationHelpers.DestroyObjectAsync(transition.ViewModel);
+            if (transition != null)
+            {
+                DisposePresenters(transition);
+                await ActivationHelpers.DestroyObjectAsync(transition.ViewModel);
+            }
         }
 
         private void DisposePresenters(Transition removed)
         {
-            if (removed != null)
+            List<IDisposable> disposables;
+            if (Presenters.TryGetValue(removed, out disposables))
             {
-                List<IDisposable> disposables;
-                if (Presenters.TryGetValue(removed, out disposables))
+                foreach (var d in disposables)
                 {
-                    foreach (var d in disposables)
-                    {
-                        d.Dispose();
-                    }
-                    Presenters.Remove(removed);
+                    d.Dispose();
                 }
+                Presenters.Remove(removed);
             }
         }
 
