@@ -50,22 +50,6 @@ namespace ReactiveUI.Routing
             parameters = this.OnActivated.FirstAsync().ToProperty(this, r => r.Config);
         }
 
-        private void DisposePresenters(Transition removed)
-        {
-            if (removed != null)
-            {
-                List<IDisposable> disposables;
-                if (Presenters.TryGetValue(removed, out disposables))
-                {
-                    foreach (var d in disposables)
-                    {
-                        d.Dispose();
-                    }
-                    Presenters.Remove(removed);
-                }
-            }
-        }
-
         protected override async Task ResumeCoreAsync(RouterState storedState)
         {
             await base.ResumeCoreAsync(storedState);
@@ -143,15 +127,6 @@ namespace ReactiveUI.Routing
             await HandleRouteActionsAsync(routeActions, transition);
         }
 
-        // Show 1 -> Show 2 -> Back (Show 1)
-        // 
-        // Show 1:
-        // Action is dispatched, transition is created, view model is presented.
-        // Show 2:
-        // Action is dispatched, transition created and view model is presented.
-        // Back:
-        // Transition is popped, Show 2 presenters are disposed, Show 1 is presented.
-
         public async Task DispatchAsync(IRouterAction action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
@@ -194,7 +169,23 @@ namespace ReactiveUI.Routing
         private async Task DisposeTransitionAsync(Transition transition)
         {
             DisposePresenters(transition);
-            
+            await ActivationHelpers.DestroyObjectAsync(transition.ViewModel);
+        }
+
+        private void DisposePresenters(Transition removed)
+        {
+            if (removed != null)
+            {
+                List<IDisposable> disposables;
+                if (Presenters.TryGetValue(removed, out disposables))
+                {
+                    foreach (var d in disposables)
+                    {
+                        d.Dispose();
+                    }
+                    Presenters.Remove(removed);
+                }
+            }
         }
 
         private async Task HandleRoutePresentation(IRouteAction[] actions, Transition transition)
