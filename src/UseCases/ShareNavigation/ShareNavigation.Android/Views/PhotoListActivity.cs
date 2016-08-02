@@ -23,12 +23,14 @@ namespace ShareNavigation.Views
             {
                 PhotosList.Adapter = new PhotoListItemAdapter(this, ViewModel);
                 d(this.BindCommand(ViewModel, vm => vm.Share, view => view.ShareButton, nameof(Button.Click)));
+                d(this.OneWayBind(ViewModel, vm => vm.IsLoading, view => view.ProgressBar.Visibility));
                 ViewModel.LoadPhotos.Execute(null);
             });
         }
 
         private ListView PhotosList => this.GetControl<ListView>();
         private Button ShareButton => this.GetControl<Button>();
+        private ProgressBar ProgressBar => this.GetControl<ProgressBar>();
 
     }
 }

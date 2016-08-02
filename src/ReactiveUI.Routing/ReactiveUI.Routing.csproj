@@ -51,6 +51,7 @@
     <Compile Include="Builder\RouterBuilderExtensions.cs" />
     <Compile Include="DefaultRoutedAppConfig.cs" />
     <Compile Include="DefaultViewTypeLocator.cs" />
+    <Compile Include="IRegisterDependencies.cs" />
     <Compile Include="IRoutedAppConfig.cs" />
     <Compile Include="IRoutedAppHost.cs" />
     <Compile Include="InvalidReturnValueException.cs" />

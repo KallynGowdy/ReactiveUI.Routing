@@ -18,7 +18,7 @@ namespace ShareNavigation.Services
 
         public PhotosService()
         {
-            Client = new HttpClient(NetCache.UserInitiated);
+            Client = new HttpClient();
         }
 
         private HttpClient Client { get; }
