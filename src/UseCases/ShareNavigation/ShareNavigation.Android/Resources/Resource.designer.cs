@@ -61,20 +61,20 @@ namespace ShareNavigation
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f050003
-			public const int photo = 2131034115;
+			// aapt resource value: 0x7f050001
+			public const int photo = 2131034113;
 			
 			// aapt resource value: 0x7f050004
 			public const int photoUrl = 2131034116;
 			
-			// aapt resource value: 0x7f050001
-			public const int photosList = 2131034113;
+			// aapt resource value: 0x7f050002
+			public const int photosList = 2131034114;
 			
 			// aapt resource value: 0x7f050000
 			public const int progressBar = 2131034112;
 			
-			// aapt resource value: 0x7f050002
-			public const int shareButton = 2131034114;
+			// aapt resource value: 0x7f050003
+			public const int shareButton = 2131034115;
 			
 			static Id()
 			{
@@ -90,13 +90,16 @@ namespace ShareNavigation
 		{
 			
 			// aapt resource value: 0x7f030000
-			public const int PhotoList = 2130903040;
+			public const int Photo = 2130903040;
 			
 			// aapt resource value: 0x7f030001
-			public const int PhotoListItem = 2130903041;
+			public const int PhotoList = 2130903041;
 			
 			// aapt resource value: 0x7f030002
-			public const int Share = 2130903042;
+			public const int PhotoListItem = 2130903042;
+			
+			// aapt resource value: 0x7f030003
+			public const int Share = 2130903043;
 			
 			static Layout()
 			{
@@ -112,16 +115,10 @@ namespace ShareNavigation
 		{
 			
 			// aapt resource value: 0x7f040002
-			public const int ApplicationName = 2130968578;
+			public const int app_name = 2130968578;
 			
 			// aapt resource value: 0x7f040001
-			public const int Hello = 2130968577;
-			
-			// aapt resource value: 0x7f040004
-			public const int app_name = 2130968580;
-			
-			// aapt resource value: 0x7f040003
-			public const int hello = 2130968579;
+			public const int hello = 2130968577;
 			
 			// aapt resource value: 0x7f040000
 			public const int library_name = 2130968576;

@@ -19,18 +19,56 @@ namespace ReactiveUI.Routing.Android
     /// </summary>
     public class BooleanToViewStateTypeConverter : IBindingTypeConverter
     {
+        [Flags]
         public enum Hints
         {
             /// <summary>
             /// Defines that when the input value is false,
             /// that the output value should be <see cref="ViewStates.Gone"/>.
             /// </summary>
-            PreferGone,
+            GoneWhenFalse = 1 << 0,
+
             /// <summary>
             /// Defines that when the input value is false,
             /// that the output value should be <see cref="ViewStates.Invisible"/>.
             /// </summary>
-            PreferInvisible
+            InvisibleWhenFalse = 1 << 1,
+
+            /// <summary>
+            /// Defines that when the input value is false,
+            /// that the output value should be <see cref="ViewStates.Visible"/>.
+            /// </summary>
+            VisibleWhenFalse = 1 << 2,
+
+            /// <summary>
+            /// Defines that when the input value is true,
+            /// that the output value should be <see cref="ViewStates.Gone"/>.
+            /// </summary>
+            GoneWhenTrue = 1 << 3,
+
+            /// <summary>
+            /// Defines that when the input value is true,
+            /// that the output value should be <see cref="ViewStates.Invisible"/>.
+            /// </summary>
+            InvisibleWhenTrue = 1 << 4,
+
+            /// <summary>
+            /// Defines that when the input value is true,
+            /// that the output value should be <see cref="ViewStates.Visible"/>.
+            /// </summary>
+            VisibleWhenTrue = 1 << 5,
+
+            /// <summary>
+            /// Defines that the control should be <see cref="ViewStates.Visible"/> when the value is true,
+            /// and <see cref="ViewStates.Gone"/> when the value is false.
+            /// </summary>
+            Default = VisibleWhenTrue | GoneWhenFalse,
+
+            /// <summary>
+            /// Defines that the control should be <see cref="ViewStates.Gone"/> when the value is true,
+            /// and <see cref="ViewStates.Visible"/> when the value is false.
+            /// </summary>
+            Inverted = VisibleWhenFalse | GoneWhenTrue
         }
 
         public int GetAffinityForObjects(Type fromType, Type toType)
@@ -45,11 +83,12 @@ namespace ReactiveUI.Routing.Android
         public bool TryConvert(object @from, Type toType, object conversionHint, out object result)
         {
             var hint = conversionHint as Hints?;
-            var falseState = hint.GetValueOrDefault() == Hints.PreferGone ? ViewStates.Gone : ViewStates.Invisible;
+            var trueState = GetTrueState(hint);
+            var falseState = GetFalseState(hint);
             try
             {
                 var visible = (bool)@from;
-                result = visible ? ViewStates.Visible : falseState;
+                result = visible ? trueState : falseState;
                 return true;
             }
             catch (InvalidCastException ex)
@@ -58,6 +97,48 @@ namespace ReactiveUI.Routing.Android
                 this.Log().WarnException($"Couldn't convert object to type: {toType}.", ex);
                 return false;
             }
+        }
+
+        private ViewStates GetTrueState(Hints? conversionHint)
+        {
+            if (conversionHint.HasValue)
+            {
+                var hint = conversionHint.Value;
+                if (hint.HasFlag(Hints.GoneWhenTrue))
+                {
+                    return ViewStates.Gone;
+                }
+                else if (hint.HasFlag(Hints.InvisibleWhenTrue))
+                {
+                    return ViewStates.Invisible;
+                }
+                else if (hint.HasFlag(Hints.VisibleWhenTrue))
+                {
+                    return ViewStates.Visible;
+                }
+            }
+            return ViewStates.Visible;
+        }
+
+        private ViewStates GetFalseState(Hints? conversionHint)
+        {
+            if (conversionHint.HasValue)
+            {
+                var hint = conversionHint.Value;
+                if (hint.HasFlag(Hints.GoneWhenFalse))
+                {
+                    return ViewStates.Gone;
+                }
+                else if (hint.HasFlag(Hints.InvisibleWhenFalse))
+                {
+                    return ViewStates.Invisible;
+                }
+                else if (hint.HasFlag(Hints.VisibleWhenFalse))
+                {
+                    return ViewStates.Visible;
+                }
+            }
+            return ViewStates.Gone;
         }
     }
 }

@@ -17,7 +17,11 @@ namespace ReactiveUI.Routing.Android
     {
         private readonly BehaviorSubject<Activity> activityCreated = new BehaviorSubject<Activity>(null);
         private readonly BehaviorSubject<SaveInstanceStateEvent> saveInstanceState = new BehaviorSubject<SaveInstanceStateEvent>(null);
+        private readonly BehaviorSubject<Activity> activityPaused = new BehaviorSubject<Activity>(null);
+        private readonly BehaviorSubject<Activity> activityResumed = new BehaviorSubject<Activity>(null);
 
+        public IObservable<Activity> ActivityResumed => activityResumed.Where(a => a != null);
+        public IObservable<Activity> ActivityPaused => activityPaused.Where(a => a != null);
         public IObservable<Activity> ActivityCreated => activityCreated.Where(a => a != null);
         public IObservable<SaveInstanceStateEvent> SaveInstanceState => saveInstanceState.Where(a => a != null);
 
@@ -32,10 +36,12 @@ namespace ReactiveUI.Routing.Android
 
         public void OnActivityPaused(Activity activity)
         {
+            activityPaused.OnNext(activity);
         }
 
         public void OnActivityResumed(Activity activity)
         {
+            activityResumed.OnNext(activity);
         }
 
         public void OnActivitySaveInstanceState(Activity activity, Bundle outState)

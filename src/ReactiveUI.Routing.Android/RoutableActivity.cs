@@ -19,12 +19,8 @@ namespace ReactiveUI.Routing.Android
         private readonly Subject<Unit> deactivated = new Subject<Unit>();
         private readonly IRouter router;
         private TViewModel viewModel;
-
         public event PropertyChangedEventHandler PropertyChanged;
-        public IObservable<Unit> Activated =>
-            activated.CombineLatest(this.WhenAnyValue(v => v.ViewModel), (unit, vm) => vm)
-                .Where(vm => vm != null)
-                .Select(v => Unit.Default);
+        public IObservable<Unit> Activated { get; }
         public IObservable<Unit> Deactivated => deactivated;
 
         object IViewFor.ViewModel
@@ -48,10 +44,13 @@ namespace ReactiveUI.Routing.Android
 
         public RoutableActivity() : this(null, null) { }
 
-        public RoutableActivity(IRouter router, SuspensionNotifierHelper supensionNotifier)
-            : base(supensionNotifier)
+        public RoutableActivity(IRouter router, SuspensionNotifierHelper suspensionNotifier)
+            : base(suspensionNotifier)
         {
             this.router = router ?? Locator.Current.GetService<IRouter>();
+            Activated = activated.CombineLatest(this.WhenAny(v => v.ViewModel, vm => vm.Value), (unit, vm) => vm)
+                .Where(vm => vm != null)
+                .Select(v => Unit.Default);
         }
 
         public override void OnBackPressed()

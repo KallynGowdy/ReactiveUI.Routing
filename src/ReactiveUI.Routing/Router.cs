@@ -28,10 +28,8 @@ namespace ReactiveUI.Routing
             public Transition Transition { get; set; }
         }
 
-        private readonly ObservableAsPropertyHelper<RouterConfig> parameters;
         private readonly Subject<Unit> closeApp = new Subject<Unit>();
         private INavigator Navigator { get; }
-        private RouterConfig Config => parameters.Value;
         private List<ActiveRouterAction> Actions { get; } = new List<ActiveRouterAction>();
         private Dictionary<Transition, List<IDisposable>> Presenters { get; } = new Dictionary<Transition, List<IDisposable>>();
 
@@ -46,8 +44,6 @@ namespace ReactiveUI.Routing
         {
             this.Navigator = navigator ?? Locator.Current.GetService<INavigator>();
             if (this.Navigator == null) throw new InvalidOperationException($"When creating a router, a {nameof(INavigator)} object must either be provided or locatable via Locator.Current.GetService<{nameof(INavigator)}>()");
-
-            parameters = this.OnActivated.FirstAsync().ToProperty(this, r => r.Config);
         }
 
         protected override async Task ResumeCoreAsync(RouterState storedState)
@@ -71,11 +67,11 @@ namespace ReactiveUI.Routing
             });
             await When<ShowDefaultViewModelAction>(action.Action, async a =>
             {
-                if (Actions.Count == 0 && Config?.DefaultViewModelType != null && Config.DefaultParameters != null)
+                if (Actions.Count == 0 && InitParams?.DefaultViewModelType != null && InitParams.DefaultParameters != null)
                 {
                     var stored = new StoredRouterAction()
                     {
-                        Action = RouterActions.ShowViewModel(Config.DefaultViewModelType, Config.DefaultParameters),
+                        Action = RouterActions.ShowViewModel(InitParams.DefaultViewModelType, InitParams.DefaultParameters),
                         ViewModelState = action.ViewModelState
                     };
                     await DispatchAsync(stored);
@@ -141,10 +137,10 @@ namespace ReactiveUI.Routing
             });
             await When<ShowDefaultViewModelAction>(action, async a =>
             {
-                if (Actions.Count == 0 && Config?.DefaultViewModelType != null && Config.DefaultParameters != null)
+                if (Actions.Count == 0 && InitParams?.DefaultViewModelType != null && InitParams.DefaultParameters != null)
                 {
                     await
-                        DispatchAsync(RouterActions.ShowViewModel(Config.DefaultViewModelType, Config.DefaultParameters));
+                        DispatchAsync(RouterActions.ShowViewModel(InitParams.DefaultViewModelType, InitParams.DefaultParameters));
                 }
             });
         }
@@ -298,7 +294,7 @@ namespace ReactiveUI.Routing
         protected virtual RouteActions GetActionsForViewModelType(Type viewModel)
         {
             RouteActions actions;
-            if (Config.ViewModelMap.TryGetValue(viewModel, out actions))
+            if (InitParams.ViewModelMap.TryGetValue(viewModel, out actions))
             {
                 return actions;
             }

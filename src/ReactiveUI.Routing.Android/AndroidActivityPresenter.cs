@@ -42,9 +42,16 @@ namespace ReactiveUI.Routing.Android
                 Context.StartActivity(viewType);
                 var activity = await ActivityCallbacks.ActivityCreated
                     .FirstAsync(a => a.GetType() == viewType);
-                ((IViewFor) activity).ViewModel = viewModel;
-                return new ScheduledDisposable(RxApp.MainThreadScheduler,
-                        new FuncDisposable(() => activity?.Finish()));
+                var d = ActivityCallbacks.ActivityResumed
+                    .Where(a => a.GetType() == activity.GetType())
+                    .Do(a => ((IViewFor)a).ViewModel = viewModel)
+                    .Subscribe();
+                return new ScheduledDisposable(
+                    RxApp.MainThreadScheduler,
+                    new CompositeDisposable(
+                        d,
+                        new FuncDisposable(() => activity?.Finish())
+                ));
             }
             else
             {

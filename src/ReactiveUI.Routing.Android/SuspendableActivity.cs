@@ -11,16 +11,17 @@ namespace ReactiveUI.Routing.Android
         protected SuspensionNotifierHelper SuspensionNotifier => suspensionNotifier.Value;
 
         public SuspendableAcitivity() : this(null) { }
-        public SuspendableAcitivity(SuspensionNotifierHelper supensionNotifier)
+        public SuspendableAcitivity(SuspensionNotifierHelper suspensionNotifier)
         {
             this.suspensionNotifier = new Lazy<SuspensionNotifierHelper>(() =>
-                supensionNotifier ?? Locator.Current.GetService<SuspensionNotifierHelper>());
+                suspensionNotifier ?? Locator.Current.GetService<SuspensionNotifierHelper>());
+            if(this.suspensionNotifier == null) throw new ArgumentNullException(nameof(suspensionNotifier));
         }
 
         protected override void OnSaveInstanceState(Bundle outState)
         {
             base.OnSaveInstanceState(outState);
-            SuspensionNotifier.TriggerSaveState();
+            SuspensionNotifier?.TriggerSaveState();
         }
     }
 }

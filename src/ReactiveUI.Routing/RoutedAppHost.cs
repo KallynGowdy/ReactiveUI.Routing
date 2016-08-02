@@ -94,7 +94,7 @@ namespace ReactiveUI.Routing
             {
                 existingState = await stateStore.LoadStateAsync();
             }
-            catch
+            catch(Exception e)
             {
                 await InvalidateStateAsync(stateStore);
             }

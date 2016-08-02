@@ -24,6 +24,10 @@ namespace ShareNavigation.Views
                 PhotosList.Adapter = new PhotoListItemAdapter(this, ViewModel);
                 d(this.BindCommand(ViewModel, vm => vm.Share, view => view.ShareButton, nameof(Button.Click)));
                 d(this.OneWayBind(ViewModel, vm => vm.IsLoading, view => view.ProgressBar.Visibility));
+                d(Observable.FromEventPattern<AdapterView.ItemClickEventArgs>(h => this.PhotosList.ItemClick += h,
+                    h => this.PhotosList.ItemClick -= h)
+                    .Select(args => args.EventArgs.Position)
+                    .InvokeCommand(ViewModel, vm => vm.ShowPhoto));
                 ViewModel.LoadPhotos.Execute(null);
             });
         }

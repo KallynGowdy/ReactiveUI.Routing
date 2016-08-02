@@ -31,10 +31,14 @@ namespace ShareNavigation.Views
                     .Select(data => BitmapFactory.DecodeByteArray(data, 0, data.Length))
                     .Do(b => Photo.SetImageBitmap(b))
                     .Subscribe());
+                d(this.OneWayBind(ViewModel, vm => vm.IsLoading, view => view.ProgressBar.Visibility));
+                d(this.OneWayBind(ViewModel, vm => vm.IsLoading, view => view.Photo.Visibility,
+                    conversionHint: BooleanToViewStateTypeConverter.Hints.Inverted));
             });
         }
 
         private ImageView Photo => this.GetControl<ImageView>();
+        private ProgressBar ProgressBar => this.GetControl<ProgressBar>();
 
     }
 }

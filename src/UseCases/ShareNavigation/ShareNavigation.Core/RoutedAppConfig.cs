@@ -23,7 +23,8 @@ namespace ShareNavigation
             resolver.Register(() => new PhotosService(), typeof(IPhotosService));
             resolver.RegisterConstant(new JsonSerializerSettings()
             {
-                TypeNameHandling = TypeNameHandling.Auto
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
             }, typeof(JsonSerializerSettings));
         }
 

@@ -12,21 +12,17 @@ namespace ReactiveUI.Routing
     public class ActivatableObject<TParams> : ReactiveObject, IActivatable<TParams>
         where TParams : new()
     {
-        private readonly ObservableAsPropertyHelper<bool> initialized;
-        private readonly ObservableAsPropertyHelper<TParams> initParams;
         private readonly BehaviorSubject<TParams> onActivated;
 
         public virtual bool SaveInitParams => true;
-        public bool Initialized => initialized.Value;
-
+        public bool Initialized => InitParams != null;
+        public TParams InitParams { get; private set; }
         public IObservable<TParams> OnActivated => onActivated
             .Where(p => p != null);
 
         public ActivatableObject()
         {
             onActivated = new BehaviorSubject<TParams>(default(TParams));
-            initialized = OnActivated.Select(i => true).FirstAsync().ToProperty(this, o => o.Initialized);
-            initParams = OnActivated.ToProperty(this, o => o.InitParams);
         }
 
         protected virtual void InitCoreSync(TParams parameters)
@@ -38,13 +34,12 @@ namespace ReactiveUI.Routing
             return Task.FromResult(0);
         }
 
-        public TParams InitParams => initParams.Value;
-
         public async Task InitAsync(TParams parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             InitCoreSync(parameters);
             await InitCoreAsync(parameters);
+            InitParams = parameters;
             onActivated.OnNext(parameters);
         }
 

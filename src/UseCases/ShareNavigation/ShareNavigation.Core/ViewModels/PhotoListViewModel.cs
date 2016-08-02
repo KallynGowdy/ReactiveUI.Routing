@@ -28,6 +28,7 @@ namespace ShareNavigation.ViewModels
         public ReactiveCommand<Photo[]> LoadPhotos { get; }
         public ReactiveCommand<byte[][]> LoadPhotoData { get; }
         public ReactiveCommand<Unit> Share { get; }
+        public IReactiveCommand<Unit> ShowPhoto { get; }
         public Photo[] LoadedPhotos => loadedPhotos.Value;
         public byte[][] LoadedPhotoData => loadedPhotoBytes.Value;
         public bool IsLoading => isLoading.Value;
@@ -42,6 +43,7 @@ namespace ShareNavigation.ViewModels
                 .Select(p => p != null);
             LoadPhotoData = ReactiveCommand.CreateAsyncTask(canLoadData, async o => await LoadPhotoDataImpl());
             Share = ReactiveCommand.CreateAsyncTask(async o => await ShareImpl());
+            ShowPhoto = ReactiveCommand.CreateAsyncTask(async p => await ShowPhotoImpl((int) p));
             loadedPhotos = Resumed.Select(state => state?.LoadedPhotos).Merge(LoadPhotos)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, vm => vm.LoadedPhotos, new Photo[0]);
@@ -55,6 +57,15 @@ namespace ShareNavigation.ViewModels
 
             this.WhenAnyValue(vm => vm.LoadedPhotos)
                 .InvokeCommand(this, vm => vm.LoadPhotoData);
+        }
+
+        private async Task ShowPhotoImpl(int index)
+        {
+            var photo = LoadedPhotos[index];
+            await Router.ShowAsync<PhotoViewModel, PhotoViewModel.Params>(new PhotoViewModel.Params()
+            {
+                Photo = photo
+            });
         }
 
         private async Task<byte[][]> LoadPhotoDataImpl()
