@@ -37,6 +37,10 @@
   <ItemGroup>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ReactiveUI, Version=6.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\reactiveui-core.6.5.0\lib\MonoAndroid\ReactiveUI.dll</HintPath>
       <Private>True</Private>
@@ -69,10 +73,12 @@
   <ItemGroup>
     <Compile Include="AndroidActivityCallbacks.cs" />
     <Compile Include="AndroidActivityPresenter.cs" />
+    <Compile Include="AndroidBundleObjectStateStore.cs" />
     <Compile Include="AndroidPresenter.cs" />
     <Compile Include="BooleanToViewStateTypeConverter.cs" />
+    <Compile Include="ISuspendableActivity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AndroidRegistrations.cs" />
+    <Compile Include="DefaultAndroidConfig.cs" />
     <Compile Include="RoutableActivity.cs" />
     <Compile Include="SuspendableActivity.cs" />
   </ItemGroup>

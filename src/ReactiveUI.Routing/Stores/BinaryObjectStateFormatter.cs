@@ -5,7 +5,7 @@ namespace ReactiveUI.Routing.Stores
     /// <summary>
     /// Defines a base class for <see cref="IObjectStateStore"/> implementations.
     /// </summary>
-    public abstract class BaseObjectStateStore : IObjectStateStore
+    public abstract class BaseObjectStateStore : ReactiveObject, IObjectStateStore
     {
         public Task SaveStateAsync(ObjectState state)
         {

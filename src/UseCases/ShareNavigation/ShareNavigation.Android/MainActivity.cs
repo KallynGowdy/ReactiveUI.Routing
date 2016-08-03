@@ -23,14 +23,14 @@ namespace ShareNavigation
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            host = new RoutedAppHost(new AndroidAppConfig(this));
+            host = new RoutedAppHost(new AndroidAppConfig(this, savedInstanceState));
             host.Start();
         }
 
         protected override void OnDestroy()
         {
-            SuspensionNotifier.TriggerSuspension();
             base.OnDestroy();
+            SuspensionNotifier?.TriggerSuspension();
         }
     }
 }

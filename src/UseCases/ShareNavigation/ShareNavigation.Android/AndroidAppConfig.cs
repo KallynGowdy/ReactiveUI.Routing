@@ -19,27 +19,24 @@ namespace ShareNavigation
 {
     public class AndroidAppConfig : RoutedAppConfig
     {
-        private readonly Activity hostActivity;
+        private readonly DefaultAndroidConfig defaultAndroidConfig;
 
-        public AndroidAppConfig(Activity hostActivity)
+        public AndroidAppConfig(Activity hostActivity, Bundle savedInstanceState)
         {
-            this.hostActivity = hostActivity;
+            defaultAndroidConfig = new DefaultAndroidConfig(hostActivity, savedInstanceState);
         }
 
         public override void RegisterDependencies(IMutableDependencyResolver resolver)
         {
             base.RegisterDependencies(resolver);
-            AndroidRegistrations.RegisterDependencies(hostActivity, resolver);
+            defaultAndroidConfig.RegisterDependencies(resolver);
         }
 
-        public override void CloseApp()
-        {
-            hostActivity.FinishAffinity();
-        }
+        public override void CloseApp() => defaultAndroidConfig.CloseApp();
 
         protected override ISuspensionNotifier BuildSuspensionNotifier()
-        {
-            return Locator.Current.GetService<SuspensionNotifierHelper>();
-        }
+            => defaultAndroidConfig.BuildSuspensionNotifier();
+
+        protected override IObjectStateStore BuildObjectStateStore() => defaultAndroidConfig.BuildObjectStateStore();
     }
 }

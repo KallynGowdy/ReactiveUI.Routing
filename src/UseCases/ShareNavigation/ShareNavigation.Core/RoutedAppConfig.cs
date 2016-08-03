@@ -37,10 +37,5 @@ namespace ShareNavigation
                 .When<PhotoViewModel>(route => route.NavigateFrom<PhotoListViewModel>().Present())
                 .Build();
         }
-
-        protected override IObjectStateStore BuildObjectStateStore()
-        {
-            return new AkavacheObjectStateStore();
-        }
     }
 }

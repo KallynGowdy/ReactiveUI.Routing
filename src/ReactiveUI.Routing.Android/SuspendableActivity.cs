@@ -15,7 +15,6 @@ namespace ReactiveUI.Routing.Android
         {
             this.suspensionNotifier = new Lazy<SuspensionNotifierHelper>(() =>
                 suspensionNotifier ?? Locator.Current.GetService<SuspensionNotifierHelper>());
-            if(this.suspensionNotifier == null) throw new ArgumentNullException(nameof(suspensionNotifier));
         }
 
         protected override void OnSaveInstanceState(Bundle outState)
