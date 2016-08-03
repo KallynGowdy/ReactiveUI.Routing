@@ -32,9 +32,9 @@ namespace ShareNavigation
         {
             return new RouterBuilder()
                 .Default<PhotoListViewModel>()
-                .When<PhotoListViewModel>(route => route.Navigate().Present())
-                .When<ShareViewModel>(route => route.Navigate().Present())
-                .When<PhotoViewModel>(route => route.NavigateFrom<PhotoListViewModel>().Present())
+                .When<PhotoListViewModel>(route => route.Navigate().PresentInPage())
+                .When<ShareViewModel>(route => route.Navigate().PresentInPage())
+                .When<PhotoViewModel>(route => route.NavigateFrom<PhotoListViewModel>().PresentInPage())
                 .Build();
         }
     }

@@ -7,7 +7,7 @@ using Android.Content;
 
 namespace ReactiveUI.Routing.Android
 {
-    public class AndroidActivityPresenter : AndroidPresenter
+    public class AndroidActivityPresenter : AndroidPresenter, IPagePresenter
     {
         public class FuncDisposable : IDisposable
         {
