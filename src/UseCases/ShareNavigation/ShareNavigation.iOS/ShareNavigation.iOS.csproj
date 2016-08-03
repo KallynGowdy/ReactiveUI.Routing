@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{044066A7-4F56-429A-8866-B14CF24E4D41}</ProjectGuid>
-    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <RootNamespace>ShareNavigation</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
@@ -88,7 +88,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Akavache, Version=4.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\akavache.core.4.1.2\lib\MonoTouch\Akavache.dll</HintPath>
+      <HintPath>..\..\..\..\packages\akavache.core.4.1.2\lib\Xamarin.iOS10\Akavache.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akavache.Sqlite3, Version=4.1.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -100,19 +100,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="ReactiveUI, Version=6.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\reactiveui-core.6.5.0\lib\Monotouch\ReactiveUI.dll</HintPath>
+      <HintPath>..\..\..\..\packages\reactiveui-core.6.5.0\lib\Xamarin.iOS10\ReactiveUI.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ReactiveUI.Events, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\reactiveui-events.6.5.0\lib\Monotouch\ReactiveUI.Events.dll</HintPath>
+    <Reference Include="ReactiveUI.Events, Version=6.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\reactiveui-events.6.5.0\lib\Xamarin.iOS10\ReactiveUI.Events.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Splat, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\Splat.1.6.2\lib\monotouch\Splat.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SQLitePCL.raw, Version=0.8.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\SQLitePCL.raw_basic.0.8.6\lib\MonoTouch\SQLitePCL.raw.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Splat.1.6.2\lib\Xamarin.iOS10\Splat.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -134,18 +130,20 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="monotouch" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Info.plist" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AkavacheSqliteLinkerOverride.cs" />
+    <Compile Include="iOSAppConfig.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="Views\PhotoListViewController.cs" />
@@ -158,6 +156,12 @@
     <InterfaceDefinition Include="Views\TestViewController_iPad.xib" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\ReactiveUI.Routing.iOS\ReactiveUI.Routing.iOS.csproj">
+      <Project>{674e52fa-1774-444e-90a9-136bfdd4ac67}</Project>
+      <Name>ReactiveUI.Routing.iOS</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
       <Project>{7cf2ae8e-4920-41c9-b3b2-be83ec3daa7f}</Project>
       <Name>ReactiveUI.Routing</Name>
@@ -167,6 +171,13 @@
       <Name>ShareNavigation.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.1.2.3.6257\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.1.2.3.6257\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10\Xamarin.Forms.targets')" />
+  <Import Project="..\..\..\..\packages\SQLitePCL.raw_basic.0.8.6\build\Xamarin.iOS10\SQLitePCL.raw_basic.targets" Condition="Exists('..\..\..\..\packages\SQLitePCL.raw_basic.0.8.6\build\Xamarin.iOS10\SQLitePCL.raw_basic.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\..\packages\SQLitePCL.raw_basic.0.8.6\build\Xamarin.iOS10\SQLitePCL.raw_basic.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\SQLitePCL.raw_basic.0.8.6\build\Xamarin.iOS10\SQLitePCL.raw_basic.targets'))" />
+  </Target>
 </Project>

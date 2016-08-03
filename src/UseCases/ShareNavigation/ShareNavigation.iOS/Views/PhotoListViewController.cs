@@ -1,8 +1,8 @@
 using System.Reactive.Linq;
 using Akavache;
-using MonoTouch.UIKit;
 using ReactiveUI;
 using ShareNavigation.ViewModels;
+using UIKit;
 
 namespace ShareNavigation.Views
 {
