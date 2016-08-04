@@ -33,10 +33,7 @@ namespace ShareNavigation
         }
 
         public override void CloseApp() => defaultAndroidConfig.CloseApp();
-
-        protected override ISuspensionNotifier BuildSuspensionNotifier()
-            => defaultAndroidConfig.BuildSuspensionNotifier();
-
+        protected override ISuspensionNotifier BuildSuspensionNotifier() => defaultAndroidConfig.BuildSuspensionNotifier();
         protected override IObjectStateStore BuildObjectStateStore() => defaultAndroidConfig.BuildObjectStateStore();
     }
 }
