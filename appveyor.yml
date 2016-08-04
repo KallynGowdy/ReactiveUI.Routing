@@ -4,9 +4,6 @@ shallow_clone: true
 
 configuration: Release
 
-before_build:
-  - nuget restore
-
 build:
   project: ReactiveUI.Routing.sln
 
