@@ -13,9 +13,9 @@
 With these core ideas in mind, here are the conclusions that I have drawn.
 See [the proposal](./docs/proposal.md)!
 
-## Getting Started
+Note that Xamarin.Forms is not currently supported. Support for it is planned.
 
-### Running your app
+## Getting Started
 
 1. Add ReactiveUI.Routing to your project. (NuGet not yet available)
 2. Inherit `DefaultRoutedAppConfig` in your cross-platform project. This is where you put all of your common registrations, router config, etc.
@@ -33,54 +33,160 @@ public abstract class CrossPlatformAppConfig : DefaultRoutedAppConfig
     protected override RouterConfig BuildRouterParams()
     {
         // Build your router config here
-        return new RouterBuilder();
+        return new RouterBuilder().Build();
     }
 }
 ```
 
 3. Inherit your `CrossPlatformAppConfig` for your platform-specific projects, registering platform-specific services.
-4. Create a new `RoutedAppHost`, passing in an instance of your platorm-specific app config.
-5. Call `Start()` or `StartAsync()` on the new `RoutedAppHost` when the application is ready to start.
 
-### Routing Configuration
-
-1. Configure your router.
+In Android:
 
 ```csharp
-// CrossPlatformAppConfig.cs
-protected override RouterConfig BuildRouterParams()
+public class AndroidAppConfig : CrossPlatformAppConfig
 {
-    return new RouterBuilder()
-        // Specifies that when ShowAsync<MyViewModel>() is
-        // called on the router, that it should be navigated to
-        // and presented.
-        .When<MyViewModel>(r => r.Navigate().Present())
+    private DefaultAndroidConfig androidConfig;
+    
+    public AndroidAppConfig(Activity hostActivity, Bundle savedInstanceState) 
+    {
+        androidConfig = new DefaultAndroidConfig(hostActivity, savedInstanceState);
+    } 
 
-        // Specifies that when ShowAsync<MyOtherViewModel>() is
-        // called on the router that the "parent" view model should be MyViewModel.
-        // Also specifies that this view model should be presented. 
-        .When<MyOtherViewModel>(r => r.NavigateFrom<MyViewModel>().Present())
-        
-        // Specifies that when ShowAsync<MyNotificationViewModel>() is
-        // called that the router should not navigate to it, but should
-        // present it with a IMyNotificationPresenter type.
-        .When<MyNotificationViewModel>(r => r.Present<IMyNotificationPresenter>());
+    public override void RegisterDependencies(IMutableDependencyResolver resolver)
+    {
+        base.RegisterDependencies(resolver);
+        androidConfig.RegisterDependencies(resolver);
+    }
+
+    public override void CloseApp() => androidConfig.CloseApp();
+    protected override ISuspensionNotifier BuildSuspensionNotifier() => androidConfig.BuildSuspensionNotifier();
+    protected override IObjectStateStore BuildObjectStateStore() => androidConfig.BuildObjectStateStore();
 }
 ```
 
-2. Obtain an instance to a `IRouter`.
+In iOS:
+
+```csharp
+public class iOSAppConfig : RoutedAppConfig
+{
+    private readonly DefaultiOSConfig iosAppConfig;
+    public iOSAppConfig(AppDelegate appDelegate)
+    {
+        iosAppConfig = new DefaultiOSConfig(appDelegate);
+    }
+    public override void RegisterDependencies(IMutableDependencyResolver resolver)
+    {
+        base.RegisterDependencies(resolver);
+        iosAppConfig.RegisterDependencies(resolver);
+    }
+    public override void CloseApp() => iosAppConfig.CloseApp();
+    protected override ISuspensionNotifier BuildSuspensionNotifier() => iosAppConfig.BuildSuspensionNotifier();
+    protected override IObjectStateStore BuildObjectStateStore() => iosAppConfig.BuildObjectStateStore();
+}
+```
+
+4. Create a new `RoutedAppHost`, passing in an instance of your platorm-specific app config and call `Start()` on it.
+
+In Android:
+
+```csharp
+[Activity(Label = "MainActivity", MainLauncher = true)]
+public class MainActivity : SuspendableAcitivity
+{
+    private IRoutedAppHost host;
+    protected override void OnCreate(Bundle savedInstanceState)
+    {
+        base.OnCreate(savedInstanceState);
+        host = new RoutedAppHost(new AndroidAppConfig(this, savedInstanceState));
+        host.Start();
+    }
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        SuspensionNotifier?.TriggerSuspension();
+    }
+}
+```
+
+In iOS:
+
+```csharp
+// DefaultAppDelegate handles the creation of RoutedAppHost for you. 
+[Register ("AppDelegate")]
+public partial class AppDelegate : DefaultAppDelegate
+{
+    protected override IRoutedAppConfig BuildAppConfig(UIApplication app, NSDictionary options)
+    {
+        return new iOSAppConfig(this);
+    }
+}
+```
+
+## Routing Configuration
+
+To configure your routes, override `BuildRouterParams()` in your CrossPlatformAppConfig.
+There are two key concepts for the routing configuration:
+
+1. You specify actions for view model types.
+2. These actions determine how the view model handles navigation and how it is presented.
+
+You create a `RouterConfig` by using a `RouterBuilder`.
+From there, you can specify how actions should be handled for different view models.
+
+```csharp
+var builder = new RouterBuilder();
+
+// RouterBuilder.When() is used to specify actions for a view model type.
+builder.When<MyViewModel>(routeBuilder => 
+{
+    // In each call to When(), you need to specify
+    // the route actions. You can do that using a
+    // route builder lambda.
+
+    // RouteBuilder.Navigate() specifies that 
+    // the view model should be treated as a "place" that the 
+    // user can go to.
+    r.Navigate();
+
+    // RouteBuilder.NavigateFrom() builds on top 
+    // of RouteBuilder.Navigate() by navigating backwards
+    // until either the ParentViewModel is reached or if the end of the
+    // stack is met.
+    r.NavigateFrom<ParentViewModel>();
+
+    // RouteBuilder.Present() specifies that the
+    // view model should be presented using the registered IPresenter type.
+    // This means that the router will get a IPresenter from the Locator
+    // and attempt to present the view model with it.
+    // Additionally, Present() takes a hint object, which can communicate to the
+    // presenter specific detail on displaying the view model.
+    r.Present();
+
+    // An alternative to RouteBuilder.Present(),
+    // RouteBuilder.PresentPage() specifies that instead of the inspecific IPresenter type,
+    // that a IPagePresenter type should be used. Semantically, this means that the 
+    // view model will be presented in an Activity or UIViewController.
+    r.PresentPage();
+
+    return r;
+});
+
+RouterConfig config = builder.Build();
+```
+
+## Navigation Patterns
+
+Below are typical use cases for navigation with a router in ReactiveUI.Routing.
+
+### Getting a router
 
 ```csharp
 var router = Locator.Current.GetService<IRouter>();
 ```
 
-## ViewModel Patterns
-
 ### Simple Navigation
 
 ```csharp
-class MyViewModel : ActivatableObject<Unit> {}
-
 await router.ShowAsync<MyViewModel>();
 await router.BackAsync();
 await router.ShowDefaultViewModelAsync();
@@ -102,7 +208,7 @@ router.ShowAsync<MyViewModel, MyParameterType>(new MyParameterType() {
 });
 ```
 
-### Suspend
+### Supporting Suspend
 
 ```csharp
 class MyViewModel : ReActivatableObject<Unit, MyStateType> 
@@ -117,7 +223,7 @@ class MyViewModel : ReActivatableObject<Unit, MyStateType>
 }
 ```
 
-### Resume
+### Supporting Resume
 
 ```csharp
 class MyViewModel : ReActivatableObject<Unit, MyStateType> 
