@@ -5,7 +5,8 @@
 // Manual changes to this file may not be handled correctly.
 //
 
-using MonoTouch.Foundation;
+using Foundation;
+using UIKit;
 
 namespace ShareNavigation.Views
 {
@@ -13,7 +14,7 @@ namespace ShareNavigation.Views
 	partial class PhotoListViewController
 	{
 		[Outlet]
-		MonoTouch.UIKit.UILabel TheGuid { get; set; }
+		UILabel TheGuid { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
