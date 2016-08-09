@@ -142,14 +142,6 @@
       <Project>{341c4efa-e88e-40ba-a39c-0fa7719cdf94}</Project>
       <Name>ReactiveUI.Routing.Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
-      <Project>{7cf2ae8e-4920-41c9-b3b2-be83ec3daa7f}</Project>
-      <Name>ReactiveUI.Routing</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ShareNavigation.Core\ShareNavigation.Core.csproj">
-      <Project>{b5eb1af2-8fc7-4338-b652-323cb083b09f}</Project>
-      <Name>ShareNavigation.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <Import Project="..\..\..\..\packages\SQLitePCL.raw_basic.0.8.6\build\MonoAndroid\SQLitePCL.raw_basic.targets" Condition="Exists('..\..\..\..\packages\SQLitePCL.raw_basic.0.8.6\build\MonoAndroid\SQLitePCL.raw_basic.targets')" />

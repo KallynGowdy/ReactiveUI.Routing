@@ -83,12 +83,6 @@
     <Compile Include="SuspendableActivity.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
-      <Project>{7cf2ae8e-4920-41c9-b3b2-be83ec3daa7f}</Project>
-      <Name>ReactiveUI.Routing</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

@@ -155,22 +155,6 @@
     <InterfaceDefinition Include="Views\TestViewController_iPhone.xib" />
     <InterfaceDefinition Include="Views\TestViewController_iPad.xib" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\ReactiveUI.Routing.iOS\ReactiveUI.Routing.iOS.csproj">
-      <Project>{674e52fa-1774-444e-90a9-136bfdd4ac67}</Project>
-      <Name>ReactiveUI.Routing.iOS</Name>
-      <IsAppExtension>false</IsAppExtension>
-      <IsWatchApp>false</IsWatchApp>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
-      <Project>{7cf2ae8e-4920-41c9-b3b2-be83ec3daa7f}</Project>
-      <Name>ReactiveUI.Routing</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ShareNavigation.Core\ShareNavigation.Core.csproj">
-      <Project>{b5eb1af2-8fc7-4338-b652-323cb083b09f}</Project>
-      <Name>ShareNavigation.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.1.2.3.6257\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.1.2.3.6257\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10\Xamarin.Forms.targets')" />
   <Import Project="..\..\..\..\packages\SQLitePCL.raw_basic.0.8.6\build\Xamarin.iOS10\SQLitePCL.raw_basic.targets" Condition="Exists('..\..\..\..\packages\SQLitePCL.raw_basic.0.8.6\build\Xamarin.iOS10\SQLitePCL.raw_basic.targets')" />

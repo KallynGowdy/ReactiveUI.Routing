@@ -128,10 +128,6 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
-      <Project>{7cf2ae8e-4920-41c9-b3b2-be83ec3daa7f}</Project>
-      <Name>ReactiveUI.Routing</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\UselessProjects\ReactiveUI.Routing.Tests.AlternateAssembly\ReactiveUI.Routing.Tests.AlternateAssembly.csproj">
       <Project>{87b812a3-14fe-42fb-a904-9d04d3a553e8}</Project>
       <Name>ReactiveUI.Routing.Tests.AlternateAssembly</Name>
