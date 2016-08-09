@@ -3,7 +3,6 @@ image: Visual Studio 2015
 shallow_clone: true
 configuration: Release
 before_build:
-  - appveyor-retry dotnet restore
   - nuget restore
 build:
   project: ReactiveUI.Routing.sln
