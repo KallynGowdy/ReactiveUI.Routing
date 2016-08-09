@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ReactiveUI.Routing.iOS")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("iOS-specific helpers for ReactiveUI.Routing")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ReactiveUI.Routing.iOS")]
