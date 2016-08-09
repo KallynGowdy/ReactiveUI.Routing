@@ -6,6 +6,11 @@ before_build:
   - nuget restore
 build:
   project: ReactiveUI.Routing.sln
+  publish_nuget: true
 test:
   assemblies:
     - '**\*.Tests.dll'
+nuget:
+  project_feed: true
+artifacts:
+  - path: '**\*.nupkg'
