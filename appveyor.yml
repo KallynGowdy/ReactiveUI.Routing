@@ -13,4 +13,4 @@ test:
 nuget:
   project_feed: true
 artifacts:
-  - path: '**\*.nupkg'
+  - path: 'src\**\*.nupkg'
