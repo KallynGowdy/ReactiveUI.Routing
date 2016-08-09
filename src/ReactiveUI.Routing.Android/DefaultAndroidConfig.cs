@@ -33,7 +33,8 @@ namespace ReactiveUI.Routing.Android
         {
             resolver.RegisterConstant(mainActivity.Application, typeof(Application));
             resolver.RegisterConstant(mainActivity, typeof(Context));
-            resolver.Register(() => new AndroidActivityPresenter(), typeof(IPresenter));
+            resolver.RegisterLazySingleton(() => new AndroidActivityPresenter(), typeof(IPagePresenter));
+            resolver.RegisterLazySingleton(() => Locator.Current.GetService<IPagePresenter>(), typeof(IPresenter));
             resolver.RegisterLazySingleton(() =>
             {
                 var callbacks = new AndroidActivityCallbacks();

@@ -76,5 +76,11 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
+      <Project>{6d16600a-bf4c-4026-9b23-65b14bb64c1d}</Project>
+      <Name>ReactiveUI.Routing</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

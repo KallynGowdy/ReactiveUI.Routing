@@ -85,6 +85,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
+      <Project>{6d16600a-bf4c-4026-9b23-65b14bb64c1d}</Project>
+      <Name>ReactiveUI.Routing</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

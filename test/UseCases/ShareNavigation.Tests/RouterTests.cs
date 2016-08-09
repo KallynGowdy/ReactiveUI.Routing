@@ -25,7 +25,7 @@ namespace ShareNavigation.Tests
         [Scenario]
         public void Showing_PhotoListViewModel(IRoutedAppConfig config, 
             IRouter router, 
-            IPresenter presenter, 
+            IPagePresenter presenter, 
             IRoutedAppHost appHost,
             IBlobCache cache)
         {
@@ -38,9 +38,9 @@ namespace ShareNavigation.Tests
                 "That is registered"
                     .x(() => Resolver.RegisterConstant(cache, typeof(IBlobCache)));
                 "And a presenter for the view model"
-                    .x(() => presenter = Substitute.For<IPresenter>());
+                    .x(() => presenter = Substitute.For<IPagePresenter>());
                 "That is registered"
-                    .x(() => Resolver.RegisterConstant(presenter, typeof(IPresenter)));
+                    .x(() => Resolver.RegisterConstant(presenter, typeof(IPagePresenter)));
                 "And a IRoutedAppConfig"
                     .x(() => appHost = new RoutedAppHost(config));
                 "When the app is started"
@@ -59,16 +59,16 @@ namespace ShareNavigation.Tests
         [Scenario]
         public void Showing_ShareViewModel(
             IRouter router,
-            IPresenter presenter,
+            IPagePresenter presenter,
             IRoutedAppHost host,
             IRoutedAppConfig config)
         {
             "Given a RoutedAppConfig"
                 .x(() => config = new TestRoutedAppConfig());
             "And a presenter for the view model"
-                .x(() => presenter = Substitute.For<IPresenter>());
+                .x(() => presenter = Substitute.For<IPagePresenter>());
             "That is registered"
-                .x(() => Resolver.Register(() => presenter, typeof(IPresenter)));
+                .x(() => Resolver.Register(() => presenter, typeof(IPagePresenter)));
             "And a IRoutedAppHost"
                 .x(() => host = new RoutedAppHost(config));
             "That is started"
@@ -93,8 +93,8 @@ namespace ShareNavigation.Tests
             IRouter router, 
             PhotoListViewModel photoListViewModel, 
             ShareViewModel shareViewModel,
-            PhotoViewModel.Params parameters, 
-            IPresenter presenter, 
+            PhotoViewModel.Params parameters,
+            IPagePresenter presenter, 
             IRoutedAppHost host,
             IRoutedAppConfig config)
         {
@@ -109,9 +109,9 @@ namespace ShareNavigation.Tests
                     }
                 });
             "And a presenter for the view model"
-                .x(() => presenter = Substitute.For<IPresenter>());
+                .x(() => presenter = Substitute.For<IPagePresenter>());
             "That is registered"
-                .x(() => Resolver.Register(() => presenter, typeof(IPresenter)));
+                .x(() => Resolver.Register(() => presenter, typeof(IPagePresenter)));
             "And a IRoutedAppHost"
                 .x(() => host = new RoutedAppHost(config));
             "That is started"

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using ReactiveUI.Routing;
 using ReactiveUI.Routing.Builder;
 using ShareNavigation.Services;
@@ -21,11 +20,6 @@ namespace ShareNavigation
             resolver.Register(() => new PhotoViewModel(), typeof(PhotoViewModel));
             resolver.Register(() => new ShareViewModel(), typeof(ShareViewModel));
             resolver.Register(() => new PhotosService(), typeof(IPhotosService));
-            resolver.RegisterConstant(new JsonSerializerSettings()
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-                Formatting = Formatting.Indented
-            }, typeof(JsonSerializerSettings));
         }
 
         protected override RouterConfig BuildRouterParams()

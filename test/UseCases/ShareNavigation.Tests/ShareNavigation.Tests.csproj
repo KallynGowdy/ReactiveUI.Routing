@@ -176,6 +176,16 @@
   <ItemGroup>
     <Folder Include="Services\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
+      <Project>{6d16600a-bf4c-4026-9b23-65b14bb64c1d}</Project>
+      <Name>ReactiveUI.Routing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\UseCases\ShareNavigation\ShareNavigation.Core\ShareNavigation.Core.csproj">
+      <Project>{04a16eda-de4f-43fa-b4a2-cc4cef373536}</Project>
+      <Name>ShareNavigation.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
