@@ -7,7 +7,7 @@ using Android.App;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ReactiveUI.Routing.Android")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Android-specific helpers for ReactiveUI.Routing")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ReactiveUI.Routing.Android")]

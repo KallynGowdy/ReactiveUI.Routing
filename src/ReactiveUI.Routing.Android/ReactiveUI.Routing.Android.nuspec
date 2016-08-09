@@ -1,20 +1,20 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>KallynGowdy.ReactiveUI.Routing</id>
+    <id>KallynGowdy.ReactiveUI.Routing.Android</id>
     <version>1.0.0-alpha</version>
-    <title>ReactiveUI.Routing</title>
+    <title>ReactiveUI.Routing.Android</title>
     <authors>Kallyn Gowdy</authors>
     <owners>Kallyn Gowdy</owners>
-    <licenseUrl>https://raw.githubusercontent.com/KallynGowdy/ReactiveUI.Routing/master/LICENSE</licenseUrl>
+    <licenseUrl>https://raw.githubusercontent.com/KallynGowdy/ReactiveUI.Routing/share-navigation/LICENSE</licenseUrl>
     <projectUrl>https://github.com/KallynGowdy/ReactiveUI.Routing</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
     <copyright>Copyright 2016</copyright>
-    <tags>ReactiveUI</tags>
-    <dependencies>
-      <dependency id="reactiveui" version="6.5.0" />
-    </dependencies>
+    <tags>ReactiveUI ReactiveUI.Routing</tags>
+	<dependencies>
+		<dependency id="KallynGowdy.ReactiveUI.Routing" version="1.0.0-alpha" />
+	</dependencies>
   </metadata>
 </package>
