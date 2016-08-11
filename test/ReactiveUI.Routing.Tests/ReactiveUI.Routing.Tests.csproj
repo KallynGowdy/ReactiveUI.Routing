@@ -113,6 +113,7 @@
     <Compile Include="ActivationParamsTests.cs" />
     <Compile Include="DefaultRoutedAppConfigTests.cs" />
     <Compile Include="DefaultViewTypeLocatorTests.cs" />
+    <Compile Include="RouterActionTests.cs" />
     <Compile Include="TestReActivatableViewModel.cs" />
     <Compile Include="LocatorTest.cs" />
     <Compile Include="NavigatorTests.cs" />
