@@ -15,5 +15,7 @@ namespace ReactiveUI.Routing.Actions
         /// The parameters that should be used to activate the view model.
         /// </summary>
         public ActivationParams ActivationParams { get; set; }
+
+
     }
 }
