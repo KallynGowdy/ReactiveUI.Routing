@@ -71,7 +71,7 @@
     <Compile Include="Navigator.cs" />
     <Compile Include="NavigatorState.cs" />
     <Compile Include="ObjectState.cs" />
-    <Compile Include="Presenter.cs" />
+    <Compile Include="BasePresenter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReActivatableObject.cs" />
     <Compile Include="RootPresenterParams.cs" />

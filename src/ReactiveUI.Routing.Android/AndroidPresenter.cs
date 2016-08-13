@@ -9,7 +9,7 @@ namespace ReactiveUI.Routing.Android
     /// <summary>
     /// Defines a class that represents a presenter that can present view models inside an android application.
     /// </summary>
-    public abstract class AndroidPresenter : IPresenter
+    public abstract class AndroidPresenter : BasePresenter
     {
         protected IViewTypeLocator ViewLocator { get; }
         protected Application Application { get; }
@@ -21,7 +21,5 @@ namespace ReactiveUI.Routing.Android
             Application = application ?? Locator.Current.GetService<Application>();
             Context = context ?? Locator.Current.GetService<Context>();
         }
-
-        public abstract Task<IDisposable> PresentAsync(object viewModel, object hint);
     }
 }

@@ -12,16 +12,12 @@ namespace ReactiveUI.Routing.Android
     /// Defines an activity that implements activation and back button logic for activities.
     /// </summary>
     /// <typeparam name="TViewModel">The type of view model that this activity represents.</typeparam>
-    public class RoutableActivity<TViewModel> : SuspendableAcitivity, ICanActivate, ReactiveUI.IActivatable, IViewFor<TViewModel>, INotifyPropertyChanged
+    public class RoutableActivity<TViewModel> : SuspendableAcitivity, IViewFor<TViewModel>, INotifyPropertyChanged
         where TViewModel : class
     {
-        private readonly Subject<Unit> activated = new Subject<Unit>();
-        private readonly Subject<Unit> deactivated = new Subject<Unit>();
         private readonly IRouter router;
         private TViewModel viewModel;
         public event PropertyChangedEventHandler PropertyChanged;
-        public IObservable<Unit> Activated { get; }
-        public IObservable<Unit> Deactivated => deactivated;
 
         object IViewFor.ViewModel
         {
@@ -48,26 +44,11 @@ namespace ReactiveUI.Routing.Android
             : base(suspensionNotifier)
         {
             this.router = router ?? Locator.Current.GetService<IRouter>();
-            Activated = activated.CombineLatest(this.WhenAny(v => v.ViewModel, vm => vm.Value), (unit, vm) => vm)
-                .Where(vm => vm != null)
-                .Select(v => Unit.Default);
         }
 
         public override void OnBackPressed()
         {
             router.BackAsync();
-        }
-
-        protected override void OnPause()
-        {
-            base.OnPause();
-            deactivated.OnNext(Unit.Default);
-        }
-
-        protected override void OnResume()
-        {
-            base.OnResume();
-            activated.OnNext(Unit.Default);
         }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

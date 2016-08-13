@@ -33,6 +33,8 @@ namespace ReactiveUI.Routing.Android
             Application.RegisterActivityLifecycleCallbacks(ActivityCallbacks);
         }
 
+        public override int GetAffinityForView(Type view) => typeof(Activity).IsAssignableFrom(view) ? 1000 : 0;
+
         public override async Task<IDisposable> PresentAsync(object viewModel, object hint)
         {
             var viewModelType = viewModel.GetType();
@@ -44,12 +46,21 @@ namespace ReactiveUI.Routing.Android
                     .FirstAsync(a => a.GetType() == viewType);
                 var d = ActivityCallbacks.ActivityResumed
                     .Where(a => a.GetType() == activity.GetType())
-                    .Do(a => ((IViewFor)a).ViewModel = viewModel)
+                    .Select(a => (IViewFor)a)
+                    .Do(a => a.ViewModel = viewModel)
+                    .Do(NotifyViewActivated)
                     .Subscribe();
+                var d1 = ActivityCallbacks.ActivityPaused
+                    .Where(a => a.GetType() == activity.GetType())
+                    .Select(a => (IViewFor)a)
+                    .Do(NotifyViewDeActivated)
+                    .Subscribe();
+
                 return new ScheduledDisposable(
                     RxApp.MainThreadScheduler,
                     new CompositeDisposable(
                         d,
+                        d1,
                         new FuncDisposable(() => activity?.Finish())
                 ));
             }
