@@ -111,6 +111,7 @@
   <ItemGroup>
     <Compile Include="ActivatableObjectTests.cs" />
     <Compile Include="ActivationParamsTests.cs" />
+    <Compile Include="CompositeRoutedAppConfigTests.cs" />
     <Compile Include="DefaultRoutedAppConfigTests.cs" />
     <Compile Include="DefaultViewTypeLocatorTests.cs" />
     <Compile Include="RoutedViewModelTests.cs" />

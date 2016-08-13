@@ -68,7 +68,7 @@
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DefaultiOSConfig.cs" />
+    <Compile Include="DefaultiOSDependencies.cs" />
     <Compile Include="DefaultAppDelegate.cs" />
     <Compile Include="NSCoderObjectStateStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -11,11 +11,11 @@ namespace ReactiveUI.Routing.iOS
     /// <summary>
     /// Defines a <see cref="IRoutedAppConfig"/> that provides default iOS-specific services.
     /// </summary>
-    public class DefaultiOSConfig : IRoutedAppConfig
+    public class DefaultiOSDependencies : IRoutedAppConfig
     {
         private readonly DefaultAppDelegate appDelegate;
 
-        public DefaultiOSConfig(DefaultAppDelegate appDelegate)
+        public DefaultiOSDependencies(DefaultAppDelegate appDelegate)
         {
             if (appDelegate == null) throw new ArgumentNullException(nameof(appDelegate));
             this.appDelegate = appDelegate;
@@ -25,15 +25,13 @@ namespace ReactiveUI.Routing.iOS
         {
             resolver.RegisterConstant(appDelegate, typeof(UIApplicationDelegate));
             resolver.RegisterConstant(appDelegate, typeof(DefaultAppDelegate));
-            resolver.RegisterLazySingleton(() => resolver.GetService<IObjectStateStore>(), typeof(NSCoderObjectStateStore));
+            resolver.RegisterConstant(appDelegate, typeof(ISuspensionNotifier));
+            resolver.RegisterLazySingleton(() => new NSCoderObjectStateStore(), typeof(NSCoderObjectStateStore));
         }
 
         public void CloseApp()
         {
         }
-
-        public IObjectStateStore BuildObjectStateStore() => new NSCoderObjectStateStore();
-        public ISuspensionNotifier BuildSuspensionNotifier() => appDelegate;
     }
 }
 

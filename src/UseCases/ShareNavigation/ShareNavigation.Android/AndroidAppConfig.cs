@@ -17,23 +17,14 @@ using Splat;
 
 namespace ShareNavigation
 {
-    public class AndroidAppConfig : RoutedAppConfig
+    public class AndroidAppConfig : CompositeRoutedAppConfig
     {
-        private readonly DefaultAndroidConfig defaultAndroidConfig;
-
         public AndroidAppConfig(Activity hostActivity, Bundle savedInstanceState)
+            : base(
+                  new DefaultDependencies(),
+                  new ShareNavigationDependencies(),
+                  new DefaultAndroidConfig(hostActivity, savedInstanceState))
         {
-            defaultAndroidConfig = new DefaultAndroidConfig(hostActivity, savedInstanceState);
         }
-
-        public override void RegisterDependencies(IMutableDependencyResolver resolver)
-        {
-            base.RegisterDependencies(resolver);
-            defaultAndroidConfig.RegisterDependencies(resolver);
-        }
-
-        public override void CloseApp() => defaultAndroidConfig.CloseApp();
-        protected override ISuspensionNotifier BuildSuspensionNotifier() => defaultAndroidConfig.BuildSuspensionNotifier();
-        protected override IObjectStateStore BuildObjectStateStore() => defaultAndroidConfig.BuildObjectStateStore();
     }
 }

@@ -5,6 +5,7 @@
 
 ## Goals
 - Cross platform logic.
+- Declarative Routing
 - Strong support for page/fragment/modal navigation.
 - Async all the way.
 - Support suspend/resume.
@@ -18,70 +19,67 @@ Note that Xamarin.Forms is not currently supported. Support for it is planned.
 ## Getting Started
 
 1. Add ReactiveUI.Routing to your project. (NuGet not yet available)
-2. Inherit `DefaultRoutedAppConfig` in your cross-platform project. This is where you put all of your common registrations, router config, etc.
+2. Implement `IRegisterDependencies` in your cross-platform project. This is where you put all of your common registrations, router config, etc.
 
 ```csharp
-public abstract class CrossPlatformAppConfig : DefaultRoutedAppConfig
+public abstract class CrossPlatformDependencies : IRegisterDependencies
 {
     public override void RegisterDependencies(IMutableDependencyResolver resolver)
     {
         base.RegisterDependencies(resolver);
+        var routerConfig = new RouterBuilder().Build();
+        resolver.RegisterConstant(routerConfig, typeof(RouterConfig)); 
         resolver.Register(() => new MyViewModel(), typeof(MyViewModel));
         // ...
-    }
-
-    protected override RouterConfig BuildRouterParams()
-    {
-        // Build your router config here
-        return new RouterBuilder().Build();
     }
 }
 ```
 
-3. Inherit your `CrossPlatformAppConfig` for your platform-specific projects, registering platform-specific services.
+3. Inherit `AppConfig` for your platform-specific projects, registering platform-specific services.
 
 In Android:
 
 ```csharp
-public class AndroidAppConfig : CrossPlatformAppConfig
-{
-    private DefaultAndroidConfig androidConfig;
-    
-    public AndroidAppConfig(Activity hostActivity, Bundle savedInstanceState) 
+public class AndroidAppConfig : AppConfig
+{    
+    public AndroidAppConfig(Activity hostActivity, Bundle savedInstanceState)
+        
+        // Provide the dependencies from other projects
+        : base(
+            new DefaultDependencies(),
+            new CrossPlatformDependencies(),
+            new DefaultAndroidDependencies(hostActivity, savedInstanceState)
+        ) 
     {
-        androidConfig = new DefaultAndroidConfig(hostActivity, savedInstanceState);
     } 
 
     public override void RegisterDependencies(IMutableDependencyResolver resolver)
     {
         base.RegisterDependencies(resolver);
-        androidConfig.RegisterDependencies(resolver);
+        // Register platform-specific dependencies
     }
-
-    public override void CloseApp() => androidConfig.CloseApp();
-    protected override ISuspensionNotifier BuildSuspensionNotifier() => androidConfig.BuildSuspensionNotifier();
-    protected override IObjectStateStore BuildObjectStateStore() => androidConfig.BuildObjectStateStore();
 }
 ```
 
 In iOS:
 
 ```csharp
-public class iOSAppConfig : RoutedAppConfig
+public class iOSAppConfig : AppConfig
 {
-    private readonly DefaultiOSConfig iosAppConfig;
     public iOSAppConfig(AppDelegate appDelegate)
+        : base(
+            new DefaultDependencies(),
+            new CrossPlatformDependencies(),
+            new DefaultiOSDepdendencies(appDelegate)
+        )
     {
-        iosAppConfig = new DefaultiOSConfig(appDelegate);
     }
+
     public override void RegisterDependencies(IMutableDependencyResolver resolver)
     {
         base.RegisterDependencies(resolver);
-        iosAppConfig.RegisterDependencies(resolver);
+        // register platform-specific depenendencies
     }
-    public override void CloseApp() => iosAppConfig.CloseApp();
-    protected override ISuspensionNotifier BuildSuspensionNotifier() => iosAppConfig.BuildSuspensionNotifier();
-    protected override IObjectStateStore BuildObjectStateStore() => iosAppConfig.BuildObjectStateStore();
 }
 ```
 
@@ -122,9 +120,9 @@ public partial class AppDelegate : DefaultAppDelegate
 }
 ```
 
-## Routing Configuration
+## Declarative Routing
 
-To configure your routes, override `BuildRouterParams()` in your CrossPlatformAppConfig.
+To configure your routes, register a `RouterConfig` object in your dependencies.
 There are two key concepts for the routing configuration:
 
 1. You specify actions for view model types.
@@ -167,6 +165,10 @@ builder.When<MyViewModel>(routeBuilder =>
     // that a IPagePresenter type should be used. Semantically, this means that the 
     // view model will be presented in an Activity or UIViewController.
     r.PresentPage();
+
+    // From here, it's not hard to imagine extensions that allow you to do more complicated things.
+    // For example, a PresentNotification() extension could be added that uses a presenter specialized to
+    // present notifications.
 
     return r;
 });

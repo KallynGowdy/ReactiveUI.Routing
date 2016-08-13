@@ -7,23 +7,14 @@ using Splat;
 
 namespace ShareNavigation
 {
-    public class iOSAppConfig : RoutedAppConfig
+    public class iOSAppConfig : CompositeRoutedAppConfig
     {
-        private readonly DefaultiOSConfig iosAppConfig;
-
-        public iOSAppConfig(AppDelegate appDelegate)
+        public iOSAppConfig(AppDelegate appDelegate) 
+            : base(
+                  new DefaultDependencies(), 
+                  new ShareNavigationDependencies(), 
+                  new DefaultiOSDependencies(appDelegate))
         {
-            iosAppConfig = new DefaultiOSConfig(appDelegate);
         }
-
-        public override void RegisterDependencies(IMutableDependencyResolver resolver)
-        {
-            base.RegisterDependencies(resolver);
-            iosAppConfig.RegisterDependencies(resolver);
-        }
-
-        public override void CloseApp() => iosAppConfig.CloseApp();
-        protected override ISuspensionNotifier BuildSuspensionNotifier() => iosAppConfig.BuildSuspensionNotifier();
-        protected override IObjectStateStore BuildObjectStateStore() => iosAppConfig.BuildObjectStateStore();
     }
 }

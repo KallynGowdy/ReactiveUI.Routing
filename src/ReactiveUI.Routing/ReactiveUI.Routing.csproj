@@ -45,13 +45,15 @@
     <Compile Include="ActivatableObject.cs" />
     <Compile Include="ActivationHelpers.cs" />
     <Compile Include="ActivationParams.cs" />
+    <Compile Include="AppConfig.cs" />
     <Compile Include="Builder\IRouteBuilder.cs" />
     <Compile Include="Builder\IRouterBuilder.cs" />
     <Compile Include="Builder\RouteBuilder.cs" />
     <Compile Include="Builder\RouteBuilderExtensions.cs" />
     <Compile Include="Builder\RouterBuilder.cs" />
     <Compile Include="Builder\RouterBuilderExtensions.cs" />
-    <Compile Include="DefaultRoutedAppConfig.cs" />
+    <Compile Include="CompositeRoutedAppConfig.cs" />
+    <Compile Include="DefaultDependencies.cs" />
     <Compile Include="DefaultViewTypeLocator.cs" />
     <Compile Include="IActivatable.cs" />
     <Compile Include="INavigator.cs" />
