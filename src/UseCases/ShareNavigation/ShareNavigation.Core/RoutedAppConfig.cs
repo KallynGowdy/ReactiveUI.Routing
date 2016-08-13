@@ -31,7 +31,6 @@ namespace ShareNavigation
                 .When<PhotoListViewModel>(route => route.Navigate().PresentPage())
                 .When<ShareViewModel>(route => route.Navigate().PresentPage())
                 .When<PhotoViewModel>(route => route.NavigateFrom<PhotoListViewModel>().PresentPage())
-                .When<ToastViewModel>(route => route.PresentToast())
                 .Build();
         }
     }

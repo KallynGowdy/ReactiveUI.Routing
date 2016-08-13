@@ -26,13 +26,6 @@ namespace ReactiveUI.Routing.Builder
         public static IRouteBuilder PresentPage(this IRouteBuilder route) => route.Present<IPagePresenter>();
 
         /// <summary>
-        /// Instructs the builder to present this route with a <see cref="IToastPresenter"/>.
-        /// </summary>
-        /// <param name="route"></param>
-        /// <returns></returns>
-        public static IRouteBuilder PresentToast(this IRouteBuilder route) => route.Present<IToastPresenter>();
-
-        /// <summary>
         /// Instructs the route builder to present this route with the given <typeparamref name="TPresenter"/> type.
         /// </summary>
         /// <typeparam name="TPresenter">The type of presenter that should be used to present the route.</typeparam>

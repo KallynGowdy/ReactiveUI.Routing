@@ -22,7 +22,6 @@ namespace ReactiveUI.Routing
             resolver.RegisterLazySingleton(BuildRouterParamsSafe, typeof(RouterConfig));
             resolver.RegisterLazySingleton(() => new Navigator(), typeof(INavigator));
             resolver.Register(() => new DefaultViewTypeLocator(GetType().GetTypeInfo().Assembly), typeof(IViewTypeLocator));
-            resolver.Register(() => new ToastViewModel(), typeof(ToastViewModel));
         }
 
 

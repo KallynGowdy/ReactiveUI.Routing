@@ -41,10 +41,6 @@ namespace ShareNavigation.Core.ViewModels
                 {
                     Photo = photo
                 });
-                await Router.ShowAsync<ToastViewModel, ToastViewModel.Params>(new ToastViewModel.Params()
-                {
-                    Message = "Your photo was created!"
-                });
             });
         }
 

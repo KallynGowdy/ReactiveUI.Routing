@@ -14,7 +14,7 @@ namespace ReactiveUI.Routing
     /// <summary>
     /// Defines a class that contains common core functionality for routed apps.
     /// </summary>
-    public class RoutedAppHost : IRoutedAppHost
+    public class RoutedAppHost : IRoutedAppHost, IEnableLogger
     {
         private readonly IRoutedAppConfig config;
 
@@ -69,7 +69,7 @@ namespace ReactiveUI.Routing
             await stateStore.SaveStateAsync(state);
         }
 
-        private static async Task ResumeRouterAsync(IRouter router, RouterConfig routerConfig, RouterState routerState, IObjectStateStore stateStore)
+        private async Task ResumeRouterAsync(IRouter router, RouterConfig routerConfig, RouterState routerState, IObjectStateStore stateStore)
         {
             await ActivationHelpers.InitObjectAsync(router, routerConfig);
             try
@@ -79,23 +79,23 @@ namespace ReactiveUI.Routing
                     await ActivationHelpers.ResumeObjectStateAsync(router, routerState);
                 }
             }
-            catch
+            catch (Exception e)
             {
+                this.Log().WarnException("Could not resume the router state.", e);
                 await InvalidateStateAsync(stateStore);
-                // Make sure that the router gets started
-                // TODO: Log exceptions
             }
         }
 
-        private static async Task<RouterState> GetRouterState(IObjectStateStore stateStore)
+        private async Task<RouterState> GetRouterState(IObjectStateStore stateStore)
         {
             ObjectState existingState = null;
             try
             {
                 existingState = await stateStore.LoadStateAsync();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
+                this.Log().WarnException("Could not load state from state store.", e);
                 await InvalidateStateAsync(stateStore);
             }
             RouterState routerState = null;
@@ -103,8 +103,9 @@ namespace ReactiveUI.Routing
             {
                 routerState = (RouterState)existingState?.State;
             }
-            catch (InvalidCastException)
+            catch (InvalidCastException e)
             {
+                this.Log().WarnException($"Could not cast loaded state to {nameof(RouterState)}. Was a breaking change made to the app's stored data model?", e);
                 await InvalidateStateAsync(stateStore);
             }
             return routerState;

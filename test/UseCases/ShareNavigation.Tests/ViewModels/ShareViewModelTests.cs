@@ -56,17 +56,6 @@ namespace ShareNavigation.Tests.ViewModels
             ViewModel.PhotoUrl = url;
             ViewModel.Share.CanExecute(null).Should().BeFalse();
         }
-
-        [Fact]
-        public async Task Test_Shows_Toast_Message_After_Photo_Is_Saved_Successfully()
-        {
-            ViewModel.PhotoUrl = "URL";
-            await ViewModel.Share.ExecuteAsync();
-            Router.Received(1).ShowAsync<ToastViewModel, ToastViewModel.Params>(new ToastViewModel.Params()
-            {
-                Message = "Your photo was created!"
-            });
-        }
     }
 }
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
