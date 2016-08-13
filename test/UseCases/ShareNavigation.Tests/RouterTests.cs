@@ -19,21 +19,28 @@ namespace ShareNavigation.Tests
 {
     public class RouterTests : LocatorTest
     {
+        private IRoutedAppConfig config;
+
         public RouterTests()
         {
+            "Given a routed app config"
+                .x(() =>
+                        config =
+                            new CompositeRoutedAppConfig(
+                                new DefaultDependencies(),
+                                new ShareNavigationDependencies(),
+                                new TestRoutedAppConfig()));
         }
 
         [Scenario]
-        public void Showing_PhotoListViewModel(IRoutedAppConfig config, 
-            IRouter router, 
-            IPagePresenter presenter, 
+        public void Showing_PhotoListViewModel(
+            IRouter router,
+            IPagePresenter presenter,
             IRoutedAppHost appHost,
             IBlobCache cache)
         {
             using (Resolver.WithResolver())
             {
-                "Given a routed app config"
-                    .x(() => config = new TestRoutedAppConfig());
                 "And a IBlobCache"
                     .x(() => cache = Substitute.For<IBlobCache>());
                 "That is registered"
@@ -61,11 +68,8 @@ namespace ShareNavigation.Tests
         public void Showing_ShareViewModel(
             IRouter router,
             IPagePresenter presenter,
-            IRoutedAppHost host,
-            IRoutedAppConfig config)
+            IRoutedAppHost host)
         {
-            "Given a RoutedAppConfig"
-                .x(() => config = new TestRoutedAppConfig());
             "And a presenter for the view model"
                 .x(() => presenter = Substitute.For<IPagePresenter>());
             "That is registered"
@@ -91,16 +95,13 @@ namespace ShareNavigation.Tests
 
         [Scenario]
         public void Showing_PhotoViewModel_From_ShareViewModel(
-            IRouter router, 
-            PhotoListViewModel photoListViewModel, 
+            IRouter router,
+            PhotoListViewModel photoListViewModel,
             ShareViewModel shareViewModel,
             PhotoViewModel.Params parameters,
-            IPagePresenter presenter, 
-            IRoutedAppHost host,
-            IRoutedAppConfig config)
+            IPagePresenter presenter,
+            IRoutedAppHost host)
         {
-            "Given a RoutedAppConfig"
-                .x(() => config = new TestRoutedAppConfig());
             "And the PhotoViewModel Parameters"
                 .x(() => parameters = new PhotoViewModel.Params()
                 {

@@ -11,14 +11,18 @@ using static NSubstitute.Substitute;
 
 namespace ShareNavigation.Tests
 {
-    public class TestRoutedAppConfig : CompositeRoutedAppConfig
+    public class TestRoutedAppConfig : IRoutedAppConfig
     {
-        public TestRoutedAppConfig() : base(new DefaultDependencies(), new ShareNavigationDependencies()) { }
-
-        public override void RegisterDependencies(IMutableDependencyResolver resolver)
+        public void RegisterDependencies(IMutableDependencyResolver resolver)
         {
-            base.RegisterDependencies(resolver);
             resolver.RegisterConstant(Substitute.For<IPhotosService>(), typeof(IPhotosService));
+            resolver.RegisterConstant(Substitute.For<IObjectStateStore>(), typeof(IObjectStateStore));
+            resolver.RegisterConstant(Substitute.For<ISuspensionNotifier>(), typeof(ISuspensionNotifier));
+        }
+
+        public void CloseApp()
+        {
+            throw new NotImplementedException();
         }
     }
 }
