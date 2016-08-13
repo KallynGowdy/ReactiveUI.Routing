@@ -1,7 +1,7 @@
 
 # ReactiveUI.Routing
 
-[![Build status](https://ci.appveyor.com/api/projects/status/72dyimy7kn47gr30/branch/master?svg=true)](https://ci.appveyor.com/project/KallynGowdy/reactiveui-routing/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/mqqfu1yurd22vgk8/branch/master?svg=true)](https://ci.appveyor.com/project/KallynGowdy/reactiveui-routing/branch/master)
 
 ## Goals
 - Cross platform logic.
