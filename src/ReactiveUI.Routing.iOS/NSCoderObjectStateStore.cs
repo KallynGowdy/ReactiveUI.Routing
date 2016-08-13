@@ -9,6 +9,9 @@ using Splat;
 
 namespace ReactiveUI.Routing.iOS
 {
+    /// <summary>
+    /// Defines a <see cref="IObjectStateStore"/> that stores data in a <see cref="NSCoder"/> object.
+    /// </summary>
     public class NSCoderObjectStateStore : BaseObjectStateStore
     {
         public NSCoder Coder { get; set; }

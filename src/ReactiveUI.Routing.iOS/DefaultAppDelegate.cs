@@ -9,6 +9,9 @@ using UIKit;
 
 namespace ReactiveUI.Routing.iOS
 {
+    /// <summary>
+    /// Defines a <see cref="UIApplicationDelegate"/> that is able to start a <see cref="RoutedAppHost"/>.
+    /// </summary>
     public abstract class DefaultAppDelegate : UIApplicationDelegate, ISuspensionNotifier
     {
         private readonly IRoutedAppConfig appConfig;

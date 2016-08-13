@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NSubstitute;
-using ReactiveUI.Routing;
-using ShareNavigation.ViewModels;
 using Xunit;
 
-namespace ShareNavigation.Tests.ViewModels
+namespace ReactiveUI.Routing.Tests
 {
     public abstract class RoutedViewModelTests<TParams, TState> : LocatorTest
         where TState : new() where TParams : new()

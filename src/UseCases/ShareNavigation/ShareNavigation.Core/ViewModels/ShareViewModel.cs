@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reactive;
 using ReactiveUI;
 using ReactiveUI.Routing;
 using ShareNavigation.Services;
+using ShareNavigation.ViewModels;
 using Splat;
 
-namespace ShareNavigation.ViewModels
+namespace ShareNavigation.Core.ViewModels
 {
     public class ShareViewModel : RoutedViewModel<Unit, ShareViewModel.State>
     {
@@ -41,10 +37,14 @@ namespace ShareNavigation.ViewModels
                     PhotoUrl = PhotoUrl
                 };
                 await Service.SharePhotoAsync(photo);
-                await Router.DispatchAsync(RouterActions.ShowViewModel(typeof(PhotoViewModel), new PhotoViewModel.Params
+                await Router.ShowAsync<PhotoViewModel, PhotoViewModel.Params>(new PhotoViewModel.Params
                 {
                     Photo = photo
-                }));
+                });
+                await Router.ShowAsync<ToastViewModel, ToastViewModel.Params>(new ToastViewModel.Params()
+                {
+                    Message = "Your photo was created!"
+                });
             });
         }
 

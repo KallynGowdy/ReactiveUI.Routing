@@ -5,21 +5,24 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
+using ReactiveUI.Routing;
 using ShareNavigation.Services;
 using ShareNavigation.ViewModels;
 using Xunit;
 
 namespace ShareNavigation.Tests.ViewModels
 {
-    public class PhotoViewModelTests : RoutedViewModelTests<PhotoViewModel.Params, PhotoViewModel.State>
+    public class PhotoViewModelTests : LocatorTest
     {
-        public PhotoViewModel ViewModel => (PhotoViewModel) RoutedViewModel;
+        public PhotoViewModel ViewModel { get; set; }
         public IPhotosService Service { get; set; }
+        public IRouter Router { get; set; }
 
         public PhotoViewModelTests()
         {
             Service = Substitute.For<IPhotosService>();
-            RoutedViewModel = new PhotoViewModel(Router, Service);
+            Router = Substitute.For<IRouter>();
+            ViewModel = new PhotoViewModel(Router, Service);
         }
 
         [Fact]

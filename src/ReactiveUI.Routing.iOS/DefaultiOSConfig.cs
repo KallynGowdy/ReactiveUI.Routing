@@ -8,6 +8,9 @@ using UIKit;
 
 namespace ReactiveUI.Routing.iOS
 {
+    /// <summary>
+    /// Defines a <see cref="IRoutedAppConfig"/> that provides default iOS-specific services.
+    /// </summary>
     public class DefaultiOSConfig : IRoutedAppConfig
     {
         private readonly DefaultAppDelegate appDelegate;
@@ -33,3 +36,4 @@ namespace ReactiveUI.Routing.iOS
         public ISuspensionNotifier BuildSuspensionNotifier() => appDelegate;
     }
 }
+

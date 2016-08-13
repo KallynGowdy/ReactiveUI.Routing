@@ -8,6 +8,7 @@ using Akavache;
 using FluentAssertions;
 using NSubstitute;
 using ReactiveUI.Routing;
+using ShareNavigation.Core.ViewModels;
 using ShareNavigation.Services;
 using ShareNavigation.ViewModels;
 using Splat;

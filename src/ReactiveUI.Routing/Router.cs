@@ -256,7 +256,10 @@ namespace ReactiveUI.Routing
         {
             var p = await BuildPresenterAsync(presenter.PresenterType);
             var d = await p.PresentAsync(transition.ViewModel, presenter.Hint);
-            AddDisposable(transition, d);
+            if (d != null)
+            {
+                AddDisposable(transition, d);
+            }
         }
 
         private void AddDisposable(Transition transition, IDisposable disposable)

@@ -166,7 +166,6 @@
     <Compile Include="TestRoutedAppConfig.cs" />
     <Compile Include="ViewModels\PhotoListViewModelTests.cs" />
     <Compile Include="ViewModels\PhotoViewModelTests.cs" />
-    <Compile Include="ViewModels\RoutedViewModelTests.cs" />
     <Compile Include="ViewModels\ShareViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>

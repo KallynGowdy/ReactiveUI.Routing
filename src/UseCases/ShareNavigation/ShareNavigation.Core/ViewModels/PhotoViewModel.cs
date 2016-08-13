@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using ReactiveUI;
 using ReactiveUI.Routing;
+using ShareNavigation.Core.ViewModels;
 using ShareNavigation.Services;
 using Splat;
 

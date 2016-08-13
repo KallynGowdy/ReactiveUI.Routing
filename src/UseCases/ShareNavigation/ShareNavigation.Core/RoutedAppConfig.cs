@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI.Routing;
 using ReactiveUI.Routing.Builder;
+using ShareNavigation.Core;
+using ShareNavigation.Core.ViewModels;
 using ShareNavigation.Services;
 using ShareNavigation.ViewModels;
 using Splat;
@@ -26,9 +28,10 @@ namespace ShareNavigation
         {
             return new RouterBuilder()
                 .Default<PhotoListViewModel>()
-                .When<PhotoListViewModel>(route => route.Navigate().PresentInPage())
-                .When<ShareViewModel>(route => route.Navigate().PresentInPage())
-                .When<PhotoViewModel>(route => route.NavigateFrom<PhotoListViewModel>().PresentInPage())
+                .When<PhotoListViewModel>(route => route.Navigate().PresentPage())
+                .When<ShareViewModel>(route => route.Navigate().PresentPage())
+                .When<PhotoViewModel>(route => route.NavigateFrom<PhotoListViewModel>().PresentPage())
+                .When<ToastViewModel>(route => route.PresentToast())
                 .Build();
         }
     }

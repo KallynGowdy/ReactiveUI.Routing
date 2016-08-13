@@ -9,6 +9,7 @@ using FluentAssertions;
 using NSubstitute;
 using ReactiveUI.Routing;
 using ReactiveUI.Routing.Actions;
+using ShareNavigation.Core.ViewModels;
 using ShareNavigation.Services;
 using ShareNavigation.ViewModels;
 using Xunit;
@@ -17,14 +18,16 @@ using Xunit;
 
 namespace ShareNavigation.Tests.ViewModels
 {
-    public class ShareViewModelTests : RoutedViewModelTests<Unit, ShareViewModel.State>
+    public class ShareViewModelTests : LocatorTest
     {
-        public ShareViewModel ViewModel => (ShareViewModel)RoutedViewModel;
+        public ShareViewModel ViewModel { get; set; }
         public IPhotosService Service { get; }
+        public IRouter Router { get; set; }
         public ShareViewModelTests()
         {
             Service = Substitute.For<IPhotosService>();
-            RoutedViewModel = new ShareViewModel(Router, Service);
+            Router = Substitute.For<IRouter>();
+            ViewModel = new ShareViewModel(Router, Service);
         }
 
         [Fact]
@@ -52,6 +55,17 @@ namespace ShareNavigation.Tests.ViewModels
         {
             ViewModel.PhotoUrl = url;
             ViewModel.Share.CanExecute(null).Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task Test_Shows_Toast_Message_After_Photo_Is_Saved_Successfully()
+        {
+            ViewModel.PhotoUrl = "URL";
+            await ViewModel.Share.ExecuteAsync();
+            Router.Received(1).ShowAsync<ToastViewModel, ToastViewModel.Params>(new ToastViewModel.Params()
+            {
+                Message = "Your photo was created!"
+            });
         }
     }
 }

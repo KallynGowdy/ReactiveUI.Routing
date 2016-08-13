@@ -67,6 +67,8 @@
     <Compile Include="IRoutedAppHost.cs" />
     <Compile Include="IRouter.cs" />
     <Compile Include="ISuspensionNotifier.cs" />
+    <Compile Include="IToastPresenter.cs" />
+    <Compile Include="IToastViewModel.cs" />
     <Compile Include="IViewTypeLocator.cs" />
     <Compile Include="Navigator.cs" />
     <Compile Include="NavigatorState.cs" />
@@ -77,6 +79,7 @@
     <Compile Include="RootPresenterParams.cs" />
     <Compile Include="RouteActions.cs" />
     <Compile Include="RoutedAppHost.cs" />
+    <Compile Include="RoutedViewModel.cs" />
     <Compile Include="Router.cs" />
     <Compile Include="RouterActions.cs" />
     <Compile Include="RouterConfig.cs" />
@@ -84,6 +87,8 @@
     <Compile Include="RouterState.cs" />
     <Compile Include="Stores\BinaryObjectStateFormatter.cs" />
     <Compile Include="SuspensionNotifierHelper.cs" />
+    <Compile Include="ToastPresenterHints.cs" />
+    <Compile Include="ToastViewModel.cs" />
     <Compile Include="Transition.cs" />
     <Compile Include="TransitionEvent.cs" />
   </ItemGroup>

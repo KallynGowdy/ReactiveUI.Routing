@@ -16,7 +16,7 @@ using Splat;
 
 namespace ShareNavigation
 {
-    [Activity(Label = "MainActivity", MainLauncher = true)]
+    [Activity(Label = "Share Navigation", MainLauncher = true)]
     public class MainActivity : SuspendableAcitivity
     {
         private IRoutedAppHost host;

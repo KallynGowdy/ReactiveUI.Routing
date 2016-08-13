@@ -9,6 +9,7 @@ using FluentAssertions;
 using NSubstitute;
 using ReactiveUI.Routing;
 using ReactiveUI.Routing.Actions;
+using ShareNavigation.Core.ViewModels;
 using ShareNavigation.Services;
 using ShareNavigation.ViewModels;
 using Xunit;
@@ -16,15 +17,17 @@ using Xunit;
 
 namespace ShareNavigation.Tests.ViewModels
 {
-    public class PhotoListViewModelTests : RoutedViewModelTests<Unit, PhotoListViewModel.State>
+    public class PhotoListViewModelTests : LocatorTest
     {
-        public PhotoListViewModel ViewModel => (PhotoListViewModel)RoutedViewModel;
+        public PhotoListViewModel ViewModel { get; set; }
         public IPhotosService Service { get; }
+        public IRouter Router { get; set; }
 
         public PhotoListViewModelTests()
         {
             Service = Substitute.For<IPhotosService>();
-            RoutedViewModel = new PhotoListViewModel(Router, Service);
+            Router = Substitute.For<IRouter>();
+            ViewModel = new PhotoListViewModel(Router, Service);
         }
 
         [Fact]
