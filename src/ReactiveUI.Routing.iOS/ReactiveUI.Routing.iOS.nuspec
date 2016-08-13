@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>KallynGowdy.ReactiveUI.Routing.iOS</id>
-    <version>1.0.0-alpha</version>
+    <version>$version$</version>
     <title>ReactiveUI.Routing.iOS</title>
     <authors>Kallyn Gowdy</authors>
     <owners>Kallyn Gowdy</owners>

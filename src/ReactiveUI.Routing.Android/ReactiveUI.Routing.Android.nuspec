@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>KallynGowdy.ReactiveUI.Routing.Android</id>
-    <version>1.0.0-alpha</version>
+    <version>$version$</version>
     <title>ReactiveUI.Routing.Android</title>
     <authors>Kallyn Gowdy</authors>
     <owners>Kallyn Gowdy</owners>
