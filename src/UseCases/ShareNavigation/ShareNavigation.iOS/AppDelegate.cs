@@ -11,11 +11,21 @@ namespace ShareNavigation
     // User Interface of the application, as well as listening (and optionally responding) to 
     // application events from iOS.
     [Register ("AppDelegate")]
-    public partial class AppDelegate : DefaultAppDelegate
+    public partial class AppDelegate : UIApplicationDelegate
     {
-        protected override IRoutedAppConfig BuildAppConfig(UIApplication app, NSDictionary options)
+        public override UIWindow Window { get; set; }
+
+        //protected override IRoutedAppConfig BuildAppConfig(UIApplication app, NSDictionary options)
+        //{
+        //    return new iOSAppConfig(this);
+        //}
+
+        public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
-            return new iOSAppConfig(this);
+            Window = new UIWindow(UIScreen.MainScreen.Bounds);
+            Window.RootViewController = new PhotoListViewController();
+            Window.MakeKeyAndVisible();
+            return true;
         }
     }
 }

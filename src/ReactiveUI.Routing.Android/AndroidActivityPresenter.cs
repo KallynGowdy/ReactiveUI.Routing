@@ -9,20 +9,6 @@ namespace ReactiveUI.Routing.Android
 {
     public class AndroidActivityPresenter : AndroidPresenter, IPagePresenter
     {
-        public class FuncDisposable : IDisposable
-        {
-            private readonly Action action;
-
-            public FuncDisposable(Action action)
-            {
-                this.action = action;
-            }
-
-            public void Dispose()
-            {
-                action();
-            }
-        }
 
         private AndroidActivityCallbacks ActivityCallbacks { get; }
 
@@ -38,36 +24,29 @@ namespace ReactiveUI.Routing.Android
         public override async Task<IDisposable> PresentAsync(object viewModel, object hint)
         {
             var viewModelType = viewModel.GetType();
-            var viewType = ViewLocator.ResolveViewType(viewModelType);
-            if (viewType != null)
-            {
-                Context.StartActivity(viewType);
-                var activity = await ActivityCallbacks.ActivityCreated
-                    .FirstAsync(a => a.GetType() == viewType);
-                var d = ActivityCallbacks.ActivityResumed
-                    .Where(a => a.GetType() == activity.GetType())
-                    .Select(a => (IViewFor)a)
-                    .Do(a => a.ViewModel = viewModel)
-                    .Do(NotifyViewActivated)
-                    .Subscribe();
-                var d1 = ActivityCallbacks.ActivityPaused
-                    .Where(a => a.GetType() == activity.GetType())
-                    .Select(a => (IViewFor)a)
-                    .Do(NotifyViewDeActivated)
-                    .Subscribe();
+            var viewType = ResolveViewTypeForViewModelType(viewModelType);
+            Context.StartActivity(viewType);
+            var activity = await ActivityCallbacks.ActivityCreated
+                .FirstAsync(a => a.GetType() == viewType);
+            var d = ActivityCallbacks.ActivityResumed
+                .Where(a => a.GetType() == activity.GetType())
+                .Select(a => (IViewFor)a)
+                .Do(a => a.ViewModel = viewModel)
+                .Do(NotifyViewActivated)
+                .Subscribe();
+            var d1 = ActivityCallbacks.ActivityPaused
+                .Where(a => a.GetType() == activity.GetType())
+                .Select(a => (IViewFor)a)
+                .Do(NotifyViewDeActivated)
+                .Subscribe();
 
-                return new ScheduledDisposable(
-                    RxApp.MainThreadScheduler,
-                    new CompositeDisposable(
-                        d,
-                        d1,
-                        new FuncDisposable(() => activity?.Finish())
-                ));
-            }
-            else
-            {
-                throw new InvalidOperationException($"Could not resolve activity for {viewModelType}. Make sure that a IViewFor<{viewModelType}> exists in the current assembly.");
-            }
+            return new ScheduledDisposable(
+                RxApp.MainThreadScheduler,
+                new CompositeDisposable(
+                    d,
+                    d1,
+                    new ActionDisposable(() => activity?.Finish())
+            ));
         }
     }
 }

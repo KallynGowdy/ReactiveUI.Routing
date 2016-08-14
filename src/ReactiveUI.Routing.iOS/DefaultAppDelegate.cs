@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Subjects;
 using System.Text;
+using System.Threading.Tasks;
 using Foundation;
 using Splat;
 using UIKit;
@@ -50,10 +52,24 @@ namespace ReactiveUI.Routing.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
-            base.FinishedLaunching(app, options);
-            var host = new RoutedAppHost(BuildAppConfig(app, options));
-            host.Start();
-            return true;
+            try
+            {
+                base.FinishedLaunching(app, options);
+                Window = BuildWindow();
+                var host = new RoutedAppHost(BuildAppConfig(app, options));
+                Task.Run(host.StartAsync).Wait();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                return false;
+            }
+        }
+
+        protected virtual UIWindow BuildWindow()
+        {
+            return new UIWindow(UIScreen.MainScreen.Bounds);
         }
     }
 }

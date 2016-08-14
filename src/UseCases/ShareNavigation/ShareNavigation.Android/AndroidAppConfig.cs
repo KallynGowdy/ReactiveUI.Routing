@@ -23,7 +23,7 @@ namespace ShareNavigation
             : base(
                   new DefaultDependencies(),
                   new ShareNavigationDependencies(),
-                  new DefaultAndroidConfig(hostActivity, savedInstanceState))
+                  new DefaultAndroidDependencies(hostActivity, savedInstanceState))
         {
         }
     }

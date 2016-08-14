@@ -72,6 +72,7 @@
     <Compile Include="DefaultAppDelegate.cs" />
     <Compile Include="NSCoderObjectStateStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NavigationControllerPresenter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

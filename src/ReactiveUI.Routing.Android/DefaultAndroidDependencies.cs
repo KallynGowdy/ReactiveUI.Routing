@@ -17,12 +17,12 @@ namespace ReactiveUI.Routing.Android
     /// <summary>
     /// Defines a class that implements <see cref="IRoutedAppConfig"/> for Android.
     /// </summary>
-    public class DefaultAndroidConfig : IRoutedAppConfig
+    public class DefaultAndroidDependencies : IRoutedAppConfig
     {
         private readonly Activity mainActivity;
         private readonly Bundle savedInstanceState;
 
-        public DefaultAndroidConfig(Activity mainActivity, Bundle savedInstanceState)
+        public DefaultAndroidDependencies(Activity mainActivity, Bundle savedInstanceState)
         {
             if (mainActivity == null) throw new ArgumentNullException(nameof(mainActivity));
             this.mainActivity = mainActivity;
@@ -48,15 +48,19 @@ namespace ReactiveUI.Routing.Android
                     .StartWith(savedInstanceState),
                 typeof(IObservable<Bundle>));
             resolver.RegisterLazySingleton(
-                () => (SuspensionNotifierHelper)Locator.Current.GetService<ISuspensionNotifier>(),
+                () => new SuspensionNotifierHelper(),
                 typeof(SuspensionNotifierHelper));
+            resolver.RegisterLazySingleton(
+                () => resolver.GetService<SuspensionNotifierHelper>(),
+                typeof(ISuspensionNotifier));
+            resolver.RegisterLazySingleton(
+                () => new AndroidBundleObjectStateStore(),
+                typeof(IObjectStateStore));
             resolver.RegisterLazySingleton(() =>
                 new BooleanToViewStateTypeConverter(),
                 typeof(IBindingTypeConverter));
         }
 
         public void CloseApp() => mainActivity.FinishAffinity();
-        public IObjectStateStore BuildObjectStateStore() => new AndroidBundleObjectStateStore();
-        public ISuspensionNotifier BuildSuspensionNotifier() => new SuspensionNotifierHelper();
     }
 }

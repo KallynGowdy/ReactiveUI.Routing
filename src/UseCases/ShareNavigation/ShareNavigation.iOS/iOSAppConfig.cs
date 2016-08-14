@@ -9,7 +9,7 @@ namespace ShareNavigation
 {
     public class iOSAppConfig : CompositeRoutedAppConfig
     {
-        public iOSAppConfig(AppDelegate appDelegate) 
+        public iOSAppConfig(DefaultAppDelegate appDelegate) 
             : base(
                   new DefaultDependencies(), 
                   new ShareNavigationDependencies(), 

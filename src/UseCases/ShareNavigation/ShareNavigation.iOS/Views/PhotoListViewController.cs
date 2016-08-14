@@ -1,3 +1,4 @@
+using System;
 using System.Reactive.Linq;
 using Akavache;
 using ReactiveUI;
@@ -6,26 +7,22 @@ using UIKit;
 
 namespace ShareNavigation.Views
 {
-    public partial class PhotoListViewController : ReactiveViewController, IViewFor<PhotoListViewModel>
+    public partial class PhotoListViewController : UIViewController //, IViewFor<PhotoListViewModel>
     {
-        static bool UserInterfaceIdiomIsPhone => UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Phone;
+        //static bool UserInterfaceIdiomIsPhone => UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Phone;
 
         public PhotoListViewController()
-            : base (UserInterfaceIdiomIsPhone ? "TestViewController_iPhone" : "TestViewController_iPad", null)
+            : base("TestUI", null)
         {
-            this.WhenActivated(d =>
-            {
-                // Bindings
-            });
         }
 
-        object IViewFor.ViewModel
-        {
-            get { return ViewModel; }
-            set { ViewModel = (PhotoListViewModel) value; }
-        }
+        //object IViewFor.ViewModel
+        //{
+        //    get { return ViewModel; }
+        //    set { ViewModel = (PhotoListViewModel) value; }
+        //}
 
-        public PhotoListViewModel ViewModel { get; set; }
+        //public PhotoListViewModel ViewModel { get; set; }
     }
 }
 

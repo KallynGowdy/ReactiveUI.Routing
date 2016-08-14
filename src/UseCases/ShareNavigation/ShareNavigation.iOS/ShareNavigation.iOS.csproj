@@ -140,6 +140,7 @@
     <None Include="app.config" />
     <None Include="Info.plist" />
     <None Include="packages.config" />
+    <InterfaceDefinition Include="Views\TestUI.xib" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AkavacheSqliteLinkerOverride.cs" />
@@ -150,10 +151,6 @@
     <Compile Include="Views\PhotoListViewController.designer.cs">
       <DependentUpon>PhotoListViewController.cs</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <InterfaceDefinition Include="Views\TestViewController_iPhone.xib" />
-    <InterfaceDefinition Include="Views\TestViewController_iPad.xib" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\ReactiveUI.Routing.iOS\ReactiveUI.Routing.iOS.csproj">

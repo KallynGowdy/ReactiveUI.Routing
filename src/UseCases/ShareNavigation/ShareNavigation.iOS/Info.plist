@@ -27,8 +27,10 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.kallyngowdy.sharenavigation</string>
 	<key>CFBundleShortVersionString</key>
-	<string></string>
+	<string>1.0.0</string>
 	<key>CFBundleVersion</key>
-	<string></string>
+	<string>1</string>
+	<key>NSMainNibFile</key>
+	<string>TestUI</string>
 </dict>
 </plist>
