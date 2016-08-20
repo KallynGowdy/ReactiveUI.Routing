@@ -87,7 +87,7 @@
     <Compile Include="iOSAppConfig.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="Views\TestViewController.cs" />
+    <Compile Include="Views\PhotoListViewController.cs" />
     <None Include="GettingStarted.Xamarin" />
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -21,7 +21,7 @@ namespace ShareNavigation.iOS
         public override void RegisterDependencies(IMutableDependencyResolver resolver)
         {
             base.RegisterDependencies(resolver);
-            resolver.Register(() => new TestViewController(), typeof(TestViewController));
+            resolver.Register(() => new PhotoListViewController(), typeof(PhotoListViewController));
         }
     }
 }
