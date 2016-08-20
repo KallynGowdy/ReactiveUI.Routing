@@ -58,5 +58,15 @@ namespace ReactiveUI.Routing
             }
             return viewType;
         }
+
+        protected IViewFor CreateViewFromType(Type viewType)
+        {
+            var view = (IViewFor)Locator.Current.GetService(viewType);
+            if (view == null)
+            {
+                throw new InvalidOperationException($"Could not resolve view for type {viewType}. Make sure that a {viewType} has been registered with the Locator via {nameof(IRegisterDependencies.RegisterDependencies)}.");
+            }
+            return view;
+        }
     }
 }

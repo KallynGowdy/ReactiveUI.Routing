@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 using Android.App;
@@ -21,7 +22,7 @@ namespace ShareNavigation
     {
         public AndroidAppConfig(Activity hostActivity, Bundle savedInstanceState)
             : base(
-                  new DefaultDependencies(),
+                  new DefaultDependencies(Assembly.GetExecutingAssembly()),
                   new ShareNavigationDependencies(),
                   new DefaultAndroidDependencies(hostActivity, savedInstanceState))
         {

@@ -20,8 +20,10 @@ namespace ReactiveUI.Routing.iOS
         private readonly Subject<Unit> onSaveState = new Subject<Unit>();
         private readonly Subject<Unit> onSuspend = new Subject<Unit>();
         readonly Lazy<NSCoderObjectStateStore> stateStore = new Lazy<NSCoderObjectStateStore>(() => Locator.Current.GetService<NSCoderObjectStateStore>());
+
         public IObservable<Unit> OnSaveState => onSaveState;
         public IObservable<Unit> OnSuspend => onSuspend;
+        public override UIWindow Window { get; set; }
 
         public override bool ShouldSaveApplicationState(UIApplication application, NSCoder coder)
         {
@@ -52,19 +54,10 @@ namespace ReactiveUI.Routing.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
-            try
-            {
-                base.FinishedLaunching(app, options);
-                Window = BuildWindow();
-                var host = new RoutedAppHost(BuildAppConfig(app, options));
-                Task.Run(host.StartAsync).Wait();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                return false;
-            }
+            Window = BuildWindow();
+            var host = new RoutedAppHost(BuildAppConfig(app, options));
+            host.Start();
+            return true;
         }
 
         protected virtual UIWindow BuildWindow()

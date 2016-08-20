@@ -29,8 +29,10 @@ namespace ReactiveUI.Routing.iOS
             resolver.RegisterConstant(appDelegate, typeof(ISuspensionNotifier));
             resolver.RegisterLazySingleton(() => new NSCoderObjectStateStore(), typeof(NSCoderObjectStateStore));
             resolver.RegisterLazySingleton(() => new NavigationControllerPresenter(), typeof(NavigationControllerPresenter));
+            resolver.RegisterLazySingleton(() => resolver.GetService<NavigationControllerPresenter>(), typeof(IActivationForViewFetcher));
             resolver.RegisterLazySingleton(() => resolver.GetService<NavigationControllerPresenter>(), typeof(IPresenter));
             resolver.RegisterLazySingleton(() => resolver.GetService<NavigationControllerPresenter>(), typeof(IPagePresenter));
+            resolver.RegisterLazySingleton(() => resolver.GetService<NSCoderObjectStateStore>(), typeof(IObjectStateStore));
         }
 
         public void CloseApp()

@@ -2,8 +2,11 @@ using System;
 using System.Drawing;
 
 using CoreFoundation;
+using CoreGraphics;
 using UIKit;
 using Foundation;
+using ReactiveUI;
+using ShareNavigation.ViewModels;
 
 namespace ShareNavigation.iOS.Views
 {
@@ -27,10 +30,17 @@ namespace ShareNavigation.iOS.Views
     }
 
     [Register("TestViewController")]
-    public class TestViewController : UIViewController
+    public class TestViewController : UIViewController, IViewFor<PhotoListViewModel>
     {
+        private UILabel label;
+        private UIButton share;
+
         public TestViewController()
         {
+            this.WhenActivated(d =>
+            {
+                d(this.BindCommand(ViewModel, vm => vm.Share, view => view.share));
+            });
         }
 
         public override void DidReceiveMemoryWarning()
@@ -43,11 +53,35 @@ namespace ShareNavigation.iOS.Views
 
         public override void ViewDidLoad()
         {
-            View = new UniversalView();
+            label = new UILabel()
+            {
+                Text = "Hello, iOS!",
+                BackgroundColor = UIColor.Clear,
+                TextColor = UIColor.Black,
+                Frame = new CGRect(20, 200, 280, 44)
+            };
+            share = UIButton.FromType(UIButtonType.System);
+            share.Frame = new CGRect(20, 300, 100, 44);
+            share.SetTitle("Share!", UIControlState.Normal);
+            View = new UniversalView()
+            {
+                label,
+                share
+            };
+            View.BackgroundColor = UIColor.White;
+            Title = "Test";
 
             base.ViewDidLoad();
 
             // Perform any additional setup after loading the view
         }
+
+        object IViewFor.ViewModel
+        {
+            get { return ViewModel; }
+            set { ViewModel = (PhotoListViewModel)value; }
+        }
+
+        public PhotoListViewModel ViewModel { get; set; }
     }
 }

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Text;
 using System.Threading.Tasks;
 using Splat;
@@ -30,17 +33,21 @@ namespace ReactiveUI.Routing.iOS
         {
             var viewModelType = viewModel.GetType();
             var viewType = ResolveViewTypeForViewModelType(viewModelType);
-            var view = (IViewFor)Locator.Current.GetService(viewType);
+            var view = CreateViewFromType(viewType);
             view.ViewModel = viewModel;
             var viewController = (UIViewController)view;
-            PushViewController(viewController);
-            NotifyViewActivated(view);
-
-            return Task.FromResult<IDisposable>(new ActionDisposable(() =>
+            return Observable.Start(() =>
             {
-                NotifyViewDeActivated(view);
-                navigationController.PopViewController(true);
-            }));
+                PushViewController(viewController);
+                NotifyViewActivated(view);
+                return (IDisposable)new ScheduledDisposable(
+                    RxApp.MainThreadScheduler,
+                    new ActionDisposable(() =>
+                    {
+                        NotifyViewDeActivated(view);
+                        navigationController.PopViewController(true);
+                    }));
+            }, RxApp.MainThreadScheduler).ToTask();
         }
 
         private void PushViewController(UIViewController viewController)

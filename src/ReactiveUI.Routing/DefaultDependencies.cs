@@ -12,13 +12,20 @@ namespace ReactiveUI.Routing
     /// </summary>
     public class DefaultDependencies : IRegisterDependencies
     {
+        private readonly Assembly[] viewAssemblies;
+
+        public DefaultDependencies(params Assembly[] viewAssemblies)
+        {
+            this.viewAssemblies = viewAssemblies;
+        }
+
         public void RegisterDependencies(IMutableDependencyResolver resolver)
         {
             if (resolver == null) throw new ArgumentNullException(nameof(resolver));
             
             resolver.RegisterLazySingleton(() => new Router(), typeof(IRouter));
             resolver.RegisterLazySingleton(() => new Navigator(), typeof(INavigator));
-            resolver.Register(() => new DefaultViewTypeLocator(GetType().GetTypeInfo().Assembly), typeof(IViewTypeLocator));
+            resolver.Register(() => new DefaultViewTypeLocator(viewAssemblies), typeof(IViewTypeLocator));
         }
     }
 }
