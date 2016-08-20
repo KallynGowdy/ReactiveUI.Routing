@@ -14,7 +14,7 @@
     <copyright>Copyright 2016</copyright>
     <tags>ReactiveUI ReactiveUI.Routing</tags>
 	<dependencies>
-		<dependency id="KallynGowdy.ReactiveUI.Routing" version="1.0.0-alpha" />
+		<dependency id="KallynGowdy.ReactiveUI.Routing" version="$version$" />
 	</dependencies>
   </metadata>
 </package>
