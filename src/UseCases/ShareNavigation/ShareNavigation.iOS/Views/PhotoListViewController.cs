@@ -11,30 +11,11 @@ using System.Reactive.Linq;
 
 namespace ShareNavigation.iOS.Views
 {
-    [Register("UniversalView")]
-    public class UniversalView : UIView
-    {
-        public UniversalView()
-        {
-            Initialize();
-        }
-
-        public UniversalView(RectangleF bounds) : base(bounds)
-        {
-            Initialize();
-        }
-
-        void Initialize()
-        {
-            BackgroundColor = UIColor.Red;
-        }
-    }
-
     [Register("TestViewController")]
     public class PhotoListViewController : UIViewController, IViewFor<PhotoListViewModel>, IUICollectionViewDataSource, IUICollectionViewDelegate
     {
-        private UIButton share;
-        private UICollectionView photos;
+        public UIButton Share { get; private set; }
+        public UICollectionView Photos { get; private set; }
         private UIImage[] images = new UIImage[0];
 
         public UIImage[] Images
@@ -43,7 +24,7 @@ namespace ShareNavigation.iOS.Views
             set
             {
                 images = value;
-                photos.ReloadData();
+                Photos.ReloadData();
             }
         }
 
@@ -55,7 +36,7 @@ namespace ShareNavigation.iOS.Views
                     .Where(data => data != null)
                     .Select(data => data.Select(p => new UIImage(NSData.FromArray(p))))
                     .Subscribe(i => Images = i.ToArray()));
-                d(this.BindCommand(ViewModel, vm => vm.Share, view => view.share));
+                d(this.BindCommand(ViewModel, vm => vm.Share, view => view.Share));
                 ViewModel.LoadPhotos.Execute(null);
             });
         }
@@ -70,34 +51,41 @@ namespace ShareNavigation.iOS.Views
 
         public override void ViewDidLoad()
         {
-            var layout = new UICollectionViewFlowLayout
-            {
-                EstimatedItemSize = new CGSize(75, 75),
-                MinimumInteritemSpacing = 5,
-                ItemSize = new CGSize(75, 75)
-            };
-            photos = new UICollectionView(new CGRect(View.Frame.X, View.Frame.Y, View.Frame.Width, View.Frame.Height - 50),
-                layout)
-            {
-                DataSource = this,
-                Delegate = this
-            };
-            photos.RegisterClassForCell(typeof(UICollectionViewCell), "Cell");
-            photos.BackgroundColor = UIColor.White;
-            share = UIButton.FromType(UIButtonType.System);
-            share.Frame = new CGRect(View.Frame.X, View.Frame.Y + View.Frame.Height - 50, View.Frame.Width, 50);
-            share.SetTitle("Share!", UIControlState.Normal);
-            View = new UniversalView()
-            {
-                photos,
-                share
-            };
+            BuildPhotosList();
+            BuildShareButton();
+            View.Add(Photos);
+            View.Add(Share);
             View.BackgroundColor = UIColor.White;
             Title = "Photos!";
 
             base.ViewDidLoad();
 
             // Perform any additional setup after loading the view
+        }
+
+        private void BuildShareButton()
+        {
+            Share = UIButton.FromType(UIButtonType.System);
+            Share.Frame = new CGRect(View.Frame.X, View.Frame.Y + View.Frame.Height - 50, View.Frame.Width, 50);
+            Share.SetTitle("Share!", UIControlState.Normal);
+        }
+
+        private void BuildPhotosList()
+        {
+            var layout = new UICollectionViewFlowLayout
+            {
+                EstimatedItemSize = new CGSize(75, 75),
+                MinimumInteritemSpacing = 5,
+                ItemSize = new CGSize(75, 75)
+            };
+            Photos = new UICollectionView(new CGRect(View.Frame.X, View.Frame.Y, View.Frame.Width, View.Frame.Height - 50),
+                layout)
+            {
+                DataSource = this,
+                Delegate = this
+            };
+            Photos.RegisterClassForCell(typeof(UICollectionViewCell), "Cell");
+            Photos.BackgroundColor = UIColor.White;
         }
 
         object IViewFor.ViewModel
