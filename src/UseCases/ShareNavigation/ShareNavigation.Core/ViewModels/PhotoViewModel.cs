@@ -37,7 +37,7 @@ namespace ShareNavigation.ViewModels
                 .Select(p => p != null);
             LoadPhotoData = ReactiveCommand.CreateAsyncTask(canLoadData, async o => await LoadPhotoDataImpl());
             photo = OnActivated.Select(p => p.Photo)
-                .ToProperty(this, vm => vm.Photo, scheduler: RxApp.MainThreadScheduler);
+                .ToProperty(this, vm => vm.Photo);
             photoData = LoadPhotoData
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, vm => vm.PhotoData);

@@ -29,6 +29,7 @@ namespace ShareNavigation.Services
 
         public Task<byte[]> GetPhotoDataAsync(Photo photo)
         {
+            if (photo == null) throw new ArgumentNullException(nameof(photo));
             return Client.GetByteArrayAsync(photo.PhotoUrl);
         }
 

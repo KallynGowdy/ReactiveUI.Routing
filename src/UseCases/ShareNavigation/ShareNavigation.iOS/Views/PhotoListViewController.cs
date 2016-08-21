@@ -11,7 +11,7 @@ using System.Reactive.Linq;
 
 namespace ShareNavigation.iOS.Views
 {
-    [Register("TestViewController")]
+    [Register(nameof(PhotoListViewController))]
     public class PhotoListViewController : UIViewController, IViewFor<PhotoListViewModel>, IUICollectionViewDataSource, IUICollectionViewDelegate
     {
         public UIButton Share { get; private set; }
@@ -39,14 +39,6 @@ namespace ShareNavigation.iOS.Views
                 d(this.BindCommand(ViewModel, vm => vm.Share, view => view.Share));
                 ViewModel.LoadPhotos.Execute(null);
             });
-        }
-
-        public override void DidReceiveMemoryWarning()
-        {
-            // Releases the view if it doesn't have a superview.
-            base.DidReceiveMemoryWarning();
-
-            // Release any cached data, images, etc that aren't in use.
         }
 
         public override void ViewDidLoad()

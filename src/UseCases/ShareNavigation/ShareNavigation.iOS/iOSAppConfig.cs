@@ -23,6 +23,7 @@ namespace ShareNavigation.iOS
             base.RegisterDependencies(resolver);
             resolver.Register(() => new PhotoListViewController(), typeof(PhotoListViewController));
             resolver.Register(() => new ShareViewController(), typeof(ShareViewController));
+            resolver.Register(() => new PhotoViewController(), typeof(PhotoViewController));
         }
     }
 }

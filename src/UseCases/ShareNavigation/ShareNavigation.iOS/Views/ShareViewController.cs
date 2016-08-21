@@ -1,11 +1,13 @@
 using System;
 using CoreGraphics;
+using Foundation;
 using ReactiveUI;
 using ShareNavigation.Core.ViewModels;
 using UIKit;
 
 namespace ShareNavigation.iOS.Views
 {
+    [Register(nameof(ShareViewController))]
     public class ShareViewController : UIViewController, IViewFor<ShareViewModel>
     {
         private UITextField PhotoUrl { get; set; }
