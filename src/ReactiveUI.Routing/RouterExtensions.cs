@@ -9,6 +9,11 @@ namespace ReactiveUI.Routing
 {
     public static class RouterExtensions
     {
+        public static Task ShowAsync(this IRouter router, Type viewModel, object parameters)
+        {
+            return router.DispatchAsync(RouterActions.ShowViewModel(viewModel, parameters));
+        }
+
         public static Task ShowAsync<TViewModel>(this IRouter router)
             where TViewModel : IActivatable<Unit>
         {
@@ -23,7 +28,7 @@ namespace ReactiveUI.Routing
             {
                 parameters = new TState();
             }
-            return router.DispatchAsync(RouterActions.ShowViewModel(typeof(TViewModel), parameters));
+            return router.ShowAsync(typeof(TViewModel), parameters);
         }
 
         public static Task ShowDefaultViewModelAsync(this IRouter router)

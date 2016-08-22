@@ -43,6 +43,31 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
+        public async Task Test_ShowAsync_Works_With_Unit_Params()
+        {
+            Locator.CurrentMutable.Register(() => new UnitViewModel(), typeof(UnitViewModel));
+            var initParams = new RouterConfig()
+            {
+                ViewModelMap = new Dictionary<Type, RouteActions>()
+                {
+                    {
+                        typeof(UnitViewModel),
+                        new RouteActions()
+                        {
+                            Actions = new [] { RouteActions.Navigate() }
+                        }
+                    }
+                }
+            };
+
+            await Router.InitAsync(initParams);
+            await Router.ShowAsync<UnitViewModel>();
+
+            Navigator.Received(1)
+                .PushAsync(Arg.Is<Transition>(t => t.ViewModel is UnitViewModel));
+        }
+
+        [Fact]
         public async Task Test_ShowAsync_Pipes_Transition_To_Navigator_If_Router_Actions_Specify_Navigate()
         {
             Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
@@ -61,7 +86,7 @@ namespace ReactiveUI.Routing.Tests
             };
 
             await Router.InitAsync(initParams);
-            await Router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
+            await Router.ShowAsync(typeof(TestViewModel), new TestParams());
 
             Navigator.Received(1)
                 .PushAsync(Arg.Is<Transition>(t => t.ViewModel is TestViewModel));
@@ -83,7 +108,7 @@ namespace ReactiveUI.Routing.Tests
             };
 
             await Router.InitAsync(initParams);
-            await Router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
+            await Router.ShowAsync(typeof(TestViewModel), new TestParams());
 
             Navigator.DidNotReceive()
                 .PushAsync(Arg.Any<Transition>());
@@ -100,7 +125,7 @@ namespace ReactiveUI.Routing.Tests
             await Router.InitAsync(initParams);
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                await Router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
+                await Router.ShowAsync(typeof(TestViewModel), new TestParams());
             });
         }
 
@@ -129,7 +154,7 @@ namespace ReactiveUI.Routing.Tests
             };
 
             await Router.InitAsync(initParams);
-            await Router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
+            await Router.ShowAsync(typeof(TestViewModel), new TestParams());
 
             presenterConstructor.Received(1)();
         }
@@ -164,7 +189,7 @@ namespace ReactiveUI.Routing.Tests
             });
 
             await Router.InitAsync(initParams);
-            await Router.DispatchAsync(RouterActions.ShowViewModel(typeof(TestViewModel), new TestParams()));
+            await Router.ShowAsync(typeof(TestViewModel), new TestParams());
 
             presenter.Received(1).PresentAsync(Arg.Any<object>(), Arg.Any<object>());
         }
