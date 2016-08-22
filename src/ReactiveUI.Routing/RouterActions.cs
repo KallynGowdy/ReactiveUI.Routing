@@ -9,6 +9,12 @@ namespace ReactiveUI.Routing
     /// </summary>
     public static class RouterActions
     {
+        /// <summary>
+        /// Creates a new <see cref="ShowViewModelAction"/>, which instructs the router to route to the given view model type.
+        /// </summary>
+        /// <param name="viewModel">The view model that should be routed to.</param>
+        /// <param name="parameters">The parameters that should be passed to the view model.</param>
+        /// <returns>A new <see cref="ShowViewModelAction"/>.</returns>
         public static ShowViewModelAction ShowViewModel(Type viewModel, object parameters)
         {
             if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
@@ -23,12 +29,20 @@ namespace ReactiveUI.Routing
             };
         }
 
-        public static IRouterAction Back()
+        /// <summary>
+        /// Creates a new <see cref="NavigateBackAction"/>, which instructs the router to navigate backwards.
+        /// </summary>
+        /// <returns></returns>
+        public static NavigateBackAction Back()
         {
             return new NavigateBackAction();
         }
 
-        public static IRouterAction ShowDefaultViewModel()
+        /// <summary>
+        /// Creates a new <see cref="ShowDefaultViewModelAction"/>, which instructs the router to route to the default view model.
+        /// </summary>
+        /// <returns></returns>
+        public static ShowDefaultViewModelAction ShowDefaultViewModel()
         {
             return new ShowDefaultViewModelAction();
         }

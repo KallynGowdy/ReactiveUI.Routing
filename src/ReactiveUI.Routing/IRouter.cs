@@ -14,13 +14,17 @@ namespace ReactiveUI.Routing
     /// </summary>
     public interface IRouter : IReActivatable<RouterConfig, RouterState>
     {
+        /// <summary>
+        /// Gets an observable that, when a value is resolved, notifies that the app should be closed.
+        /// Typically triggered when navigating back from the root view model.
+        /// </summary>
         IObservable<Unit> CloseApp { get; }
 
         /// <summary>
         /// Dispatches the given action to the router.
         /// </summary>
         /// <param name="action">The action that the router should perform.</param>
-        /// <returns></returns>
+        /// <returns>Returns a task that represents the async operation.</returns>
         Task DispatchAsync(IRouterAction action);
     }
 }
