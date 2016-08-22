@@ -62,13 +62,12 @@ namespace ReactiveUI.Routing.iOS
                 return Observable.Start(() =>
                 {
                     PushViewController(viewController);
-                    NotifyViewActivated(view);
                     return (IDisposable)new ScheduledDisposable(RxApp.MainThreadScheduler,
                         new ActionDisposable(() =>
                         {
                             NotifyViewDeActivated(view);
                             if (!controllers.Remove(viewController)) return;
-                            navigationController.SetViewControllers(controllers.ToArray(), true);
+                            UpdateNavigationController();
                         }));
                 }, RxApp.MainThreadScheduler).ToTask();
             }
@@ -85,13 +84,23 @@ namespace ReactiveUI.Routing.iOS
             {
                 InitializeNavigationController(viewController);
             }
-            navigationController.SetViewControllers(controllers.ToArray(), true);
+            UpdateNavigationController();
         }
 
         private void InitializeNavigationController(UIViewController view)
         {
             window.RootViewController = navigationController = new NavigationController(view);
             window.MakeKeyAndVisible();
+        }
+
+        private void UpdateNavigationController()
+        {
+            foreach (var c in controllers.Take(controllers.Count - 1))
+            {
+                NotifyViewDeActivated((ReactiveUI.IActivatable)c);
+            }
+            NotifyViewActivated((ReactiveUI.IActivatable)controllers.Last());
+            navigationController.SetViewControllers(controllers.ToArray(), true);
         }
     }
 }
