@@ -42,6 +42,6 @@ namespace ReactiveUI.Routing.Builder
         /// <param name="route"></param>
         /// <returns></returns>
         public static IRouteBuilder NavigateFrom<TParentViewModel>(this IRouteBuilder route) =>
-            route.NavigateBackWhile(vm => !(vm.ViewModel is TParentViewModel)).Navigate();
+            route.NavigateBackWhile(vm => vm.ViewModel.GetType() != typeof(TParentViewModel)).Navigate();
     }
 }

@@ -114,6 +114,8 @@
     <Compile Include="CompositeRoutedAppConfigTests.cs" />
     <Compile Include="DefaultRoutedAppConfigTests.cs" />
     <Compile Include="DefaultViewTypeLocatorTests.cs" />
+    <Compile Include="MiddleViewModel.cs" />
+    <Compile Include="OtherViewModel.cs" />
     <Compile Include="RoutedViewModelTests.cs" />
     <Compile Include="RouterActionTests.cs" />
     <Compile Include="TestReActivatableViewModel.cs" />

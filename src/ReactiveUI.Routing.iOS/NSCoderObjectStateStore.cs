@@ -32,7 +32,8 @@ namespace ReactiveUI.Routing.iOS
 
         protected override Task SaveStateAsyncCore(ObjectState state)
         {
-            if(Coder == null) throw new Exception("Cannot save state with a null coder.");
+            if (Coder == null) return Task.FromResult(1);
+            //if (Coder == null) throw new Exception("Cannot save state with a null coder.");
             var str = JsonConvert.SerializeObject(state, Locator.Current.GetService<JsonSerializerSettings>());
             Coder.Encode((NSString)str, "__state");
             return Task.FromResult(0);

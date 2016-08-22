@@ -151,7 +151,7 @@ namespace ReactiveUI.Routing
             var transition = await Navigator.PopAsync();
             await DisposeTransitionAsync(transition);
             var current = Navigator.Peek();
-            if (current != null)
+            if (current?.ViewModel != null)
             {
                 var actions = GetActionsForViewModelType(current.ViewModel.GetType());
                 await HandleRoutePresentation(actions.Actions, current);
@@ -236,7 +236,7 @@ namespace ReactiveUI.Routing
             {
                 while (Navigator.TransitionStack.Count > 0 && n.GoBackWhile(Navigator.Peek()))
                 {
-                    await Navigator.PopAsync();
+                    await this.BackAsync();
                 }
             });
         }

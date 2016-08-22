@@ -555,6 +555,40 @@ namespace ReactiveUI.Routing.Tests
 
             viewModel.Destroyed.Should().BeTrue();
         }
+
+        [Fact]
+        public async Task Test_NavigateBackWhile_Disposes_Of_Presenters_For_ViewModel()
+        {
+            Navigator = new Navigator();
+            Router = new Router(Navigator);
+            var testViewModel = new TestViewModel();
+            var middleViewModel = new MiddleViewModel();
+            var otherViewModel = new OtherViewModel();
+            var middlePresenter = Substitute.For<IPresenter>();
+            var disposable = new BooleanDisposable();
+            Resolver.RegisterConstant(testViewModel, typeof(TestViewModel));
+            Resolver.RegisterConstant(middleViewModel, typeof(MiddleViewModel));
+            Resolver.RegisterConstant(otherViewModel, typeof(OtherViewModel));
+            Resolver.RegisterConstant(middlePresenter, typeof(IPresenter));
+            var routerParams = new RouterBuilder()
+                .When<TestViewModel>(r => r.Navigate())
+                .When<MiddleViewModel>(r => r.Navigate().Present<IPresenter>())
+                .When<OtherViewModel>(r => r.NavigateFrom<TestViewModel>())
+                .Build();
+            middlePresenter.PresentAsync(middleViewModel, null).Returns(disposable);
+
+            await Router.InitAsync(routerParams);
+
+            await Router.ShowAsync<TestViewModel, TestParams>();
+            await Router.ShowAsync<MiddleViewModel, TestParams>();
+
+            disposable.IsDisposed.Should().BeFalse();
+
+            await Router.ShowAsync<OtherViewModel, TestParams>();
+            
+            disposable.IsDisposed.Should().BeTrue();
+
+        }
     }
 }
 #pragma warning restore 4014
