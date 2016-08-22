@@ -29,15 +29,21 @@ namespace ShareNavigation.iOS.Views
 
         public override void ViewDidLoad()
         {
+            BuildPhotoView();
+            Title = "Photo!";
+            base.ViewDidLoad();
+
+            // Perform any additional setup after loading the view
+        }
+
+        private void BuildPhotoView()
+        {
             var navFrame = NavigationController.NavigationBar.Frame;
             Photo = new UIImageView(new CGRect(navFrame.X, navFrame.Y + navFrame.Height, View.Frame.Width, View.Frame.Height))
             {
                 ContentMode = UIViewContentMode.ScaleAspectFill
             };
             View.Add(Photo);
-            base.ViewDidLoad();
-
-            // Perform any additional setup after loading the view
         }
 
         object IViewFor.ViewModel

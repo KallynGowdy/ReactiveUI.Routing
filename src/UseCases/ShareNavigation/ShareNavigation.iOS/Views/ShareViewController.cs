@@ -34,6 +34,13 @@ namespace ShareNavigation.iOS.Views
             base.ViewDidLoad();
             View.BackgroundColor = UIColor.White;
             Title = "Share!";
+            BuildPhotoUrlField();
+            BuildShareButton();
+            // Perform any additional setup after loading the view, typically from a nib.
+        }
+
+        private void BuildPhotoUrlField()
+        {
             var navbarFrame = NavigationController.NavigationBar.Frame;
             PhotoUrl = new UITextField(new CGRect(10, navbarFrame.Y + navbarFrame.Height + 10, View.Frame.Width - 20, 40))
             {
@@ -46,13 +53,15 @@ namespace ShareNavigation.iOS.Views
                 field.ResignFirstResponder();
                 return true;
             };
+            View.Add(PhotoUrl);
+        }
+
+        private void BuildShareButton()
+        {
             Share = UIButton.FromType(UIButtonType.RoundedRect);
             Share.Frame = new CGRect(View.Frame.X, View.Frame.Y + View.Frame.Height - 50, View.Frame.Width, 50);
-            Share.SetTitle("Share!", UIControlState.Normal);
+            Share.SetTitle("Share Photo!", UIControlState.Normal);
             View.Add(Share);
-            View.Add(PhotoUrl);
-
-            // Perform any additional setup after loading the view, typically from a nib.
         }
 
         object IViewFor.ViewModel

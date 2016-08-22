@@ -12,8 +12,23 @@ using System.Reactive.Linq;
 namespace ShareNavigation.iOS.Views
 {
     [Register(nameof(PhotoListViewController))]
-    public class PhotoListViewController : UIViewController, IViewFor<PhotoListViewModel>, IUICollectionViewDataSource, IUICollectionViewDelegate
+    public class PhotoListViewController : UIViewController, IViewFor<PhotoListViewModel>, IUICollectionViewDataSource
     {
+        private class CollectionViewDelegate : UICollectionViewDelegate
+        {
+            private readonly PhotoListViewController controller;
+
+            public CollectionViewDelegate(PhotoListViewController controller)
+            {
+                this.controller = controller;
+            }
+
+            public override void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
+            {
+                controller.ViewModel.ShowPhoto.Execute(indexPath.Row);
+            }
+        }
+
         public UIButton Share { get; private set; }
         public UICollectionView Photos { get; private set; }
         private UIImage[] images = new UIImage[0];
@@ -35,7 +50,9 @@ namespace ShareNavigation.iOS.Views
                 d(ViewModel.WhenAnyValue(vm => vm.LoadedPhotoData)
                     .Where(data => data != null)
                     .Select(data => data.Select(p => new UIImage(NSData.FromArray(p))))
-                    .Subscribe(i => Images = i.ToArray()));
+                    .Do(i => Images = i.ToArray())
+                    .Do(i => Photos.ReloadData())
+                    .Subscribe());
                 d(this.BindCommand(ViewModel, vm => vm.Share, view => view.Share));
                 ViewModel.LoadPhotos.Execute(null);
             });
@@ -70,12 +87,14 @@ namespace ShareNavigation.iOS.Views
                 MinimumInteritemSpacing = 5,
                 ItemSize = new CGSize(75, 75)
             };
-            Photos = new UICollectionView(new CGRect(View.Frame.X, View.Frame.Y, View.Frame.Width, View.Frame.Height - 50),
-                layout)
-            {
-                DataSource = this,
-                Delegate = this
-            };
+            Photos =
+                new UICollectionView(new CGRect(View.Frame.X, View.Frame.Y, View.Frame.Width, View.Frame.Height - 50),
+                    layout)
+                {
+                    DataSource = this,
+                    Delegate = new CollectionViewDelegate(this),
+                    AllowsSelection = true
+                };
             Photos.RegisterClassForCell(typeof(UICollectionViewCell), "Cell");
             Photos.BackgroundColor = UIColor.White;
         }

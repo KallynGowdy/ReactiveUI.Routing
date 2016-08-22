@@ -67,11 +67,8 @@ namespace ReactiveUI.Routing.iOS
                         new ActionDisposable(() =>
                         {
                             NotifyViewDeActivated(view);
-                            if (controllers.Remove(viewController))
-                            {
-                                Console.WriteLine("Removed {0}", viewType);
-                                navigationController.SetViewControllers(controllers.ToArray(), true);
-                            }
+                            if (!controllers.Remove(viewController)) return;
+                            navigationController.SetViewControllers(controllers.ToArray(), true);
                         }));
                 }, RxApp.MainThreadScheduler).ToTask();
             }
@@ -84,7 +81,6 @@ namespace ReactiveUI.Routing.iOS
         private void PushViewController(UIViewController viewController)
         {
             controllers.Add(viewController);
-            Console.WriteLine("Added {0}", viewController.GetType());
             if (window.RootViewController == null)
             {
                 InitializeNavigationController(viewController);
