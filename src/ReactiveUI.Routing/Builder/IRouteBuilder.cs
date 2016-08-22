@@ -34,7 +34,7 @@ namespace ReactiveUI.Routing.Builder
         /// </summary>
         /// <param name="goBackWhile">A function that, given a parent view model object, returns whether the given view model should be removed from the transition stack.</param>
         /// <returns></returns>
-        IRouteBuilder NavigateBackWhile(Func<object, bool> goBackWhile);
+        IRouteBuilder NavigateBackWhile(Func<Transition, bool> goBackWhile);
 
         /// <summary>
         /// Instructs the router to transition to the configured view model type.

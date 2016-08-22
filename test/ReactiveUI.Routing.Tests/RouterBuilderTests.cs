@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -57,10 +59,29 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public void Test_Build_Returns_A_Router()
+        public void Test_Build_Returns_RouterParams()
         {
-            var router = builder.Build();
-            router.Should().NotBeNull();
+            var routerParams = builder.Build();
+            routerParams.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void Test_Default_Returns_RouteBuilder()
+        {
+            var returned = builder.Default(route => route, Unit.Default);
+            returned.Should().Be(builder);
+        }
+
+        [Fact]
+        public void Test_Build_Sets_Default_Route_Actions()
+        {
+            var p = new TestParams();
+            var parameters = builder
+                .Default(route => route.SetViewModel(typeof(TestViewModel)), p)
+                .Build();
+
+            parameters.DefaultViewModelType.Should().Be(typeof(TestViewModel));
+            parameters.DefaultParameters.Should().Be(p);
         }
     }
 }

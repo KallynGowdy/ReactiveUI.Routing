@@ -16,7 +16,7 @@ namespace ReactiveUI.Routing
         /// suspension. If null is returned, an exception is thrown.
         /// </summary>
         /// <returns></returns>
-        Task<object> SuspendAsync();
+        Task<object> GetStateAsync();
 
         /// <summary>
         /// Resumes the view model state by restoring the stored state.
@@ -29,7 +29,7 @@ namespace ReactiveUI.Routing
     /// <summary>
     /// Defines a generic interface that represents objects that can be suspended and resumed.
     /// </summary>
-    public interface IReActivatable<in TParams, TState> : IActivatable<TParams>, IReActivatable
+    public interface IReActivatable<TParams, TState> : IActivatable<TParams>, IReActivatable
         where TParams : new()
         where TState : new()
     {
@@ -38,7 +38,7 @@ namespace ReactiveUI.Routing
         /// suspension. If null is returned, an exception is thrown.
         /// </summary>
         /// <returns></returns>
-        new Task<TState> SuspendAsync();
+        new Task<TState> GetStateAsync();
 
         /// <summary>
         /// Resumes the view model state by restoring the stored state.

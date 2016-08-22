@@ -2,5 +2,6 @@
 {
     public class TestParams
     {
+        public string Value { get; set; }
     }
 }

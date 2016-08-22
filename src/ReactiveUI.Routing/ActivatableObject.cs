@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace ReactiveUI.Routing
@@ -10,12 +12,17 @@ namespace ReactiveUI.Routing
     public class ActivatableObject<TParams> : ReactiveObject, IActivatable<TParams>
         where TParams : new()
     {
-        private bool initialized;
+        private readonly BehaviorSubject<TParams> onActivated;
 
-        protected bool Initialized
+        public virtual bool SaveInitParams => true;
+        public bool Initialized => InitParams != null;
+        public TParams InitParams { get; private set; }
+        public IObservable<TParams> OnActivated => onActivated
+            .Where(p => p != null);
+
+        public ActivatableObject()
         {
-            get { return initialized; }
-            private set { this.RaiseAndSetIfChanged(ref initialized, value); }
+            onActivated = new BehaviorSubject<TParams>(default(TParams));
         }
 
         protected virtual void InitCoreSync(TParams parameters)
@@ -32,7 +39,8 @@ namespace ReactiveUI.Routing
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             InitCoreSync(parameters);
             await InitCoreAsync(parameters);
-            Initialized = true;
+            InitParams = parameters;
+            onActivated.OnNext(parameters);
         }
 
         protected virtual void DestroyCoreSync()
@@ -43,6 +51,8 @@ namespace ReactiveUI.Routing
         {
             return Task.FromResult(0);
         }
+
+        object IActivatable.InitParams => InitParams;
 
         Task IActivatable.InitAsync(object parameters)
         {

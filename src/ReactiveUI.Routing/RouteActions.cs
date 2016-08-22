@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive;
 using System.Threading.Tasks;
+using ReactiveUI.Routing.Actions;
 
 namespace ReactiveUI.Routing
 {
@@ -11,12 +12,36 @@ namespace ReactiveUI.Routing
     public sealed class RouteActions
     {
         /// <summary>
-        /// Gets or sets the navigation action that should be run when the route is hit.
+        /// Gets or sets the array of actions that the router should perform.
         /// </summary>
-        public Func<INavigator, Transition, Task> NavigationAction { get; set; }
+        public IRouteAction[] Actions { get; set; }
+
         /// <summary>
-        /// Gets or sets the array of presenter types that should be used to present the view model.
+        /// Gets or sets the type of the view model that these actions are for.
         /// </summary>
-        public Type[] Presenters { get; set; }
+        public Type ViewModelType { get; set; }
+
+        public static PresentRouteAction Present(Type presenterType, object hint = null)
+        {
+            if (presenterType == null) throw new ArgumentNullException(nameof(presenterType));
+            return new PresentRouteAction()
+            {
+                PresenterType = presenterType,
+                Hint = hint
+            };
+        }
+
+        public static NavigateRouteAction Navigate()
+        {
+            return new NavigateRouteAction();
+        }
+
+        public static IRouteAction NavigateBackWhile(Func<Transition, bool> goBackWhile)
+        {
+            return new NavigateBackWhileRouteAction()
+            {
+                GoBackWhile = goBackWhile
+            };
+        }
     }
 }

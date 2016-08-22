@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
+using NSubstitute;
 using Xunit;
 
 namespace ReactiveUI.Routing.Tests
@@ -11,6 +13,8 @@ namespace ReactiveUI.Routing.Tests
     {
         public class TestSyncReActivatablObject : ReActivatableObject<TestParams, TestState>
         {
+            public new IObservable<TestState> Resumed => base.Resumed;
+
             protected override TestState SuspendCoreSync()
             {
                 return null;
@@ -53,7 +57,7 @@ namespace ReactiveUI.Routing.Tests
             Obj = new TestSyncReActivatablObject();
             await Assert.ThrowsAsync<InvalidReturnValueException>(async () =>
             {
-                await ReObj.SuspendAsync();
+                await ReObj.GetStateAsync();
             });
         }
 
@@ -63,14 +67,50 @@ namespace ReactiveUI.Routing.Tests
             Obj = new TestAsyncReActivatablObject();
             await Assert.ThrowsAsync<InvalidReturnValueException>(async () =>
             {
-                await ReObj.SuspendAsync();
+                await ReObj.GetStateAsync();
             });
         }
 
         [Fact]
         public async Task Test_SuspendAsync_Does_Not_Throw_If_Returns_Non_Null_State()
         {
-            await ReObj.SuspendAsync();
+            await ReObj.GetStateAsync();
+        }
+
+        [Fact]
+        public async Task Test_Resumed_Emits_State_After_ResumeCoreAsync_Is_Called()
+        {
+            var obj = new TestSyncReActivatablObject();
+            var first = new TestState();
+            var second = new TestState();
+            List<TestState> resumedStates = new List<TestState>(2);
+            obj.Resumed.Subscribe(state => resumedStates.Add(state));
+
+            await obj.ResumeAsync(first);
+            await obj.ResumeAsync(second);
+
+            Assert.Collection(resumedStates,
+                s => s.Should().Be(first),
+                s => s.Should().Be(second));
+        }
+
+        [Fact]
+        public async Task Test_Resumed_Emits_Most_Recent_State_For_Additional_Subscriptions()
+        {
+            var obj = new TestSyncReActivatablObject();
+            var first = new TestState();
+            List<TestState> resumedStates = new List<TestState>(2);
+            Action subscribe = () => obj.Resumed.Subscribe(state => resumedStates.Add(state));
+            await obj.ResumeAsync(first);
+
+            subscribe();
+            subscribe();
+            subscribe();
+
+            Assert.Collection(resumedStates,
+                s => s.Should().Be(first),
+                s => s.Should().Be(first),
+                s => s.Should().Be(first));
         }
     }
 }

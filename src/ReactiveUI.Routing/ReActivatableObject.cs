@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +17,15 @@ namespace ReactiveUI.Routing
         where TParams : new()
         where TState : new()
     {
+        private readonly BehaviorSubject<TState> resumed;
+
+        public ReActivatableObject()
+        {
+            this.resumed = new BehaviorSubject<TState>(default(TState));
+        }
+
+        protected IObservable<TState> Resumed => resumed.Where(s => s != null);
+
         protected virtual TState SuspendCoreSync()
         {
             return new TState();
@@ -25,7 +36,7 @@ namespace ReactiveUI.Routing
             return Task.FromResult(SuspendCoreSync());
         }
 
-        public async Task<TState> SuspendAsync()
+        public async Task<TState> GetStateAsync()
         {
             var state = await SuspendCoreAsync();
             if (state == null) throw new InvalidReturnValueException($"{nameof(SuspendCoreAsync)} or {nameof(SuspendCoreSync)} must not return a null value.");
@@ -51,11 +62,12 @@ namespace ReactiveUI.Routing
         {
             if (storedState == null) throw new ArgumentNullException(nameof(storedState));
             await ResumeCoreAsync(storedState);
+            resumed.OnNext(storedState);
         }
 
-        async Task<object> IReActivatable.SuspendAsync()
+        async Task<object> IReActivatable.GetStateAsync()
         {
-            return await SuspendAsync();
+            return await GetStateAsync();
         }
     }
 }

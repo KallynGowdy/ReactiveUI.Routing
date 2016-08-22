@@ -89,3 +89,16 @@ In this respect, whenever the app is suspended, the router will need to kick off
 
 ## Router - [Full Article](./router.md)
 The router is in charge of managing the tight dance between `NavigationState` and `PresentationState`. In particular, it is able to resolve requests for `Show(vm)` and pipe them to either `NavigationState`, `PresentationState`, or both. In most cases, the router should obey custom rules which can be defined by a `RouterBuilder`.
+
+
+## Platform Assumptions
+
+In order to simplify the abstractions as much as possible, ReactiveUI.Routing will have to make several assumptions about the type of platforms that it will run on.
+This relates mostly to how view models are constructed and how views are presented.
+
+- ReactiveUI.Routing controls the navigation scheme. This means that navigation only occurs when ReactiveUI.Routing says it should.
+- ReactiveUI.Routing controls the presentation scheme. This means that views are only shown when ReactiveUI.Routing says they should be.
+
+These assumptions can become difficult to enforce for some platforms, most notably on Android where each Activity is treated like it's own Application. 
+The solution is to provide bindings that replace/ignore the platform specific navigation/presentation code where it collides with ReactiveUI.Routing, and use the native ReactiveUI.Routing logic instead.
+For example, replacing the native Android back button navigation to hook into ReactiveUI.
