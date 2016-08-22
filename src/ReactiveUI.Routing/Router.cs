@@ -57,6 +57,10 @@ namespace ReactiveUI.Routing
 
         private async Task DispatchAsync(StoredRouterAction action)
         {
+            // TODO: Cleanup to represent unidirectional dataflow
+            // Rework to manipulate state through reducers and then
+            // present based on the current state.
+
             await When<ShowViewModelAction>(action.Action, async showViewModelAction =>
             {
                 await ShowViewModelAsync(showViewModelAction, action.ViewModelState);
