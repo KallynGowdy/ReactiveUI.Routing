@@ -65,7 +65,6 @@ namespace ReactiveUI.Routing.iOS
                     return (IDisposable)new ScheduledDisposable(RxApp.MainThreadScheduler,
                         new ActionDisposable(() =>
                         {
-                            NotifyViewDeActivated(view);
                             if (!controllers.Remove(viewController)) return;
                             UpdateNavigationController();
                         }));
