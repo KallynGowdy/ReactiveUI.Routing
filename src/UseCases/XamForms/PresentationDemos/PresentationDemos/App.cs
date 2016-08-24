@@ -22,7 +22,8 @@ namespace PresentationDemos
             return new CompositeRoutedAppConfig(
                 new DefaultDependencies(),
                 platformDependencies,
-                new DefaultXamFormsDependencies(this));
+                new DefaultXamFormsDependencies(this),
+                new PresentationDemosDepedencies());
         }
     }
 }

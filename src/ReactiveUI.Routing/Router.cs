@@ -83,9 +83,9 @@ namespace ReactiveUI.Routing
             });
         }
 
-        protected override async Task<RouterState> SuspendCoreAsync()
+        protected override async Task<RouterState> GetStateCoreAsync()
         {
-            var state = await base.SuspendCoreAsync();
+            var state = await base.GetStateCoreAsync();
             List<StoredRouterAction> outputActions = new List<StoredRouterAction>();
             foreach (var action in Actions)
             {

@@ -26,20 +26,20 @@ namespace ReactiveUI.Routing
 
         protected IObservable<TState> Resumed => resumed.Where(s => s != null);
 
-        protected virtual TState SuspendCoreSync()
+        protected virtual TState GetStateCoreSync()
         {
             return new TState();
         }
 
-        protected virtual Task<TState> SuspendCoreAsync()
+        protected virtual Task<TState> GetStateCoreAsync()
         {
-            return Task.FromResult(SuspendCoreSync());
+            return Task.FromResult(GetStateCoreSync());
         }
 
         public async Task<TState> GetStateAsync()
         {
-            var state = await SuspendCoreAsync();
-            if (state == null) throw new InvalidReturnValueException($"{nameof(SuspendCoreAsync)} or {nameof(SuspendCoreSync)} must not return a null value.");
+            var state = await GetStateCoreAsync();
+            if (state == null) throw new InvalidReturnValueException($"{nameof(GetStateCoreAsync)} or {nameof(GetStateCoreSync)} must not return a null value.");
             return state;
         }
 
