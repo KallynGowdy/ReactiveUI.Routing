@@ -6,6 +6,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using ReactiveUI.Routing.Android;
 
 namespace PresentationDemos.Droid
 {
@@ -17,7 +18,7 @@ namespace PresentationDemos.Droid
             base.OnCreate(bundle);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
-            LoadApplication(new App());
+            LoadApplication(new App(new DefaultAndroidDependencies(this, bundle)));
         }
     }
 }

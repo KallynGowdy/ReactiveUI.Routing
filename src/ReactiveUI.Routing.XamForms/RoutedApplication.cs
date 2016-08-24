@@ -12,28 +12,27 @@ namespace ReactiveUI.Routing.XamForms
     /// <summary>
     /// Defines a class that represents a <see cref="Application"/> that builds a <see cref="IRoutedAppConfig"/> and starts the <see cref="RoutedAppHost"/>.
     /// </summary>
-    public class RoutedApplication : Application, ISuspensionNotifier
+    public abstract class RoutedApplication : Application, ISuspensionNotifier
     {
         private readonly Subject<Unit> onSaveState = new Subject<Unit>();
         private readonly Subject<Unit> onSuspend = new Subject<Unit>();
-        private readonly RoutedAppHost host;
 
-        public RoutedApplication(IRoutedAppConfig appConfig)
+        protected RoutedApplication()
         {
-            if (appConfig == null) throw new ArgumentNullException(nameof(appConfig));
-            host = new RoutedAppHost(appConfig);
         }
+
+        protected abstract IRoutedAppConfig BuildAppConfig();
 
         protected override void OnStart()
         {
             base.OnStart();
-            host.Start();
+            StartHost();
         }
 
         protected override void OnResume()
         {
             base.OnResume();
-            host.Start();
+            StartHost();
         }
 
         protected override void OnSleep()
@@ -41,6 +40,12 @@ namespace ReactiveUI.Routing.XamForms
             onSaveState.OnNext(Unit.Default);
             base.OnSleep();
             onSuspend.OnNext(Unit.Default);
+        }
+
+        private void StartHost()
+        {
+            var host = new RoutedAppHost(BuildAppConfig());
+            host.Start();
         }
 
         public IObservable<Unit> OnSaveState => onSaveState;

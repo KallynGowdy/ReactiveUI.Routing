@@ -2,44 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using ReactiveUI.Routing;
+using ReactiveUI.Routing.XamForms;
 using Xamarin.Forms;
 
 namespace PresentationDemos
 {
-    public class App : Application
+    public class App : RoutedApplication
     {
-        public App()
+        private readonly IRoutedAppConfig platformDependencies;
+
+        public App(IRoutedAppConfig platformDependencies)
         {
-            // The root page of your application
-            MainPage = new ContentPage
-            {
-                Content = new StackLayout
-                {
-                    VerticalOptions = LayoutOptions.Center,
-                    Children = {
-                        new Label {
-                            HorizontalTextAlignment = TextAlignment.Center,
-                            Text = "Welcome to Xamarin Forms!"
-                        }
-                    }
-                }
-            };
+            this.platformDependencies = platformDependencies;
         }
 
-        protected override void OnStart()
+        protected override IRoutedAppConfig BuildAppConfig()
         {
-            // Handle when your app starts
-        }
-
-        protected override void OnSleep()
-        {
-            // Handle when your app sleeps
-        }
-
-        protected override void OnResume()
-        {
-            // Handle when your app resumes
+            return new CompositeRoutedAppConfig(
+                new DefaultDependencies(),
+                platformDependencies,
+                new DefaultXamFormsDependencies(this));
         }
     }
 }
