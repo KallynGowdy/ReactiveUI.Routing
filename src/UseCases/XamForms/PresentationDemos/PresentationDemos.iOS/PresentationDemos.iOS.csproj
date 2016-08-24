@@ -161,6 +161,26 @@
     </Reference>
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\ReactiveUI.Routing.iOS\ReactiveUI.Routing.iOS.csproj">
+      <Project>{674e52fa-1774-444e-90a9-136bfdd4ac67}</Project>
+      <Name>ReactiveUI.Routing.iOS</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ReactiveUI.Routing.XamForms\ReactiveUI.Routing.XamForms.csproj">
+      <Project>{67f9d3a8-f71e-4428-913f-c37ae82cdb24}</Project>
+      <Name>ReactiveUI.Routing.XamForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
+      <Project>{6d16600a-bf4c-4026-9b23-65b14bb64c1d}</Project>
+      <Name>ReactiveUI.Routing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PresentationDemos\PresentationDemos.csproj">
+      <Project>{e88dfd9c-16ac-4db8-aa21-a0cd62fda289}</Project>
+      <Name>PresentationDemos</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\..\..\..\..\packages\Xamarin.Forms.2.3.1.114\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets" Condition="Exists('..\..\..\..\..\packages\Xamarin.Forms.2.3.1.114\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

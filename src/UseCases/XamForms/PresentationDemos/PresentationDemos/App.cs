@@ -12,7 +12,7 @@ namespace PresentationDemos
     {
         private readonly IRoutedAppConfig platformDependencies;
 
-        public App(IRoutedAppConfig platformDependencies)
+        public App(IRoutedAppConfig platformDependencies = null)
         {
             this.platformDependencies = platformDependencies;
         }
