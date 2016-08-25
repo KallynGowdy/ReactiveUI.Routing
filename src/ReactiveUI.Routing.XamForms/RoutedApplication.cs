@@ -23,18 +23,6 @@ namespace ReactiveUI.Routing.XamForms
 
         protected abstract IRoutedAppConfig BuildAppConfig();
 
-        protected override void OnStart()
-        {
-            base.OnStart();
-            StartHost();
-        }
-
-        protected override void OnResume()
-        {
-            base.OnResume();
-            StartHost();
-        }
-
         protected override void OnSleep()
         {
             onSaveState.OnNext(Unit.Default);
@@ -42,7 +30,7 @@ namespace ReactiveUI.Routing.XamForms
             onSuspend.OnNext(Unit.Default);
         }
 
-        private void StartHost()
+        protected void StartHost()
         {
             var host = new RoutedAppHost(BuildAppConfig());
             host.Start();

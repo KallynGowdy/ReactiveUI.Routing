@@ -51,7 +51,10 @@ namespace ReactiveUI.Routing.XamForms
             {
                 NavigationPage = new NavigationPage();
                 await PushPageCoreAsync(page);
-                application.MainPage = NavigationPage;
+                await Observable.Start(() =>
+                {
+                    application.MainPage = NavigationPage;
+                }, RxApp.MainThreadScheduler);
             }
             else
             {

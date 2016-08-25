@@ -15,6 +15,7 @@ namespace PresentationDemos
         public App(IRoutedAppConfig platformDependencies = null)
         {
             this.platformDependencies = platformDependencies;
+            StartHost();
         }
 
         protected override IRoutedAppConfig BuildAppConfig()
