@@ -48,12 +48,24 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Akavache, Version=4.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\akavache.core.4.1.2\lib\MonoAndroid\Akavache.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akavache.Sqlite3, Version=4.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\akavache.sqlite3.4.1.2\lib\Portable-Net45+Win8+WP8+Wpa81\Akavache.Sqlite3.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FormsViewGroup, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\Xamarin.Forms.2.3.1.114\lib\MonoAndroid10\FormsViewGroup.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ReactiveUI, Version=6.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\reactiveui-core.6.5.0\lib\MonoAndroid\ReactiveUI.dll</HintPath>
       <Private>True</Private>
@@ -133,6 +145,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AkavacheSqliteLinkerOverride.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -178,8 +191,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\..\..\..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets'))" />
     <Error Condition="!Exists('..\..\..\..\..\packages\Xamarin.Forms.2.3.1.114\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Xamarin.Forms.2.3.1.114\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets'))" />
+    <Error Condition="!Exists('..\..\..\..\..\packages\SQLitePCL.raw_basic.0.8.6\build\MonoAndroid\SQLitePCL.raw_basic.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\SQLitePCL.raw_basic.0.8.6\build\MonoAndroid\SQLitePCL.raw_basic.targets'))" />
   </Target>
   <Import Project="..\..\..\..\..\packages\Xamarin.Forms.2.3.1.114\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets" Condition="Exists('..\..\..\..\..\packages\Xamarin.Forms.2.3.1.114\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" />
+  <Import Project="..\..\..\..\..\packages\SQLitePCL.raw_basic.0.8.6\build\MonoAndroid\SQLitePCL.raw_basic.targets" Condition="Exists('..\..\..\..\..\packages\SQLitePCL.raw_basic.0.8.6\build\MonoAndroid\SQLitePCL.raw_basic.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
      Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

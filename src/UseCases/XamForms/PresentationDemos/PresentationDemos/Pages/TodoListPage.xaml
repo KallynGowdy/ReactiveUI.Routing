@@ -1,17 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="PresentationDemos.Pages.TodoListPage">
-  <ListView x:Name="Todos">
-    <ListView.ItemTemplate>
-      <DataTemplate>
-        <ViewCell>
-          <StackLayout Orientation="Horizontal">
-            <Switch IsToggled="{Binding Completed}"></Switch>
-            <Label Text="{Binding Name}"></Label>
-          </StackLayout>
-        </ViewCell>
-      </DataTemplate>
-    </ListView.ItemTemplate>
-  </ListView>
+             x:Class="PresentationDemos.Pages.TodoListPage"
+             Title="Todos">
+  <StackLayout Orientation="Vertical">
+    <Label Text="Todos" FontSize="20"></Label>
+    <ListView x:Name="Todos">
+      <ListView.ItemTemplate>
+        <DataTemplate>
+          <ViewCell>
+            <StackLayout Orientation="Horizontal">
+              <Switch IsToggled="{Binding Completed}"></Switch>
+              <Label Text="{Binding Name}"></Label>
+            </StackLayout>
+          </ViewCell>
+        </DataTemplate>
+      </ListView.ItemTemplate>
+    </ListView>
+    <Entry x:Name="NewTodo"></Entry>
+  </StackLayout>
 </ContentPage>

@@ -92,6 +92,7 @@ namespace PresentationDemos.ViewModels
                 Completed = false
             };
             Todos.Add(todo);
+            NewTodo = "";
             return Task.FromResult(Unit.Default);
         }
 

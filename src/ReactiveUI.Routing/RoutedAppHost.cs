@@ -26,11 +26,11 @@ namespace ReactiveUI.Routing
 
         public void Start()
         {
-            var task = Task.Run(StartAsync);
-            if (ModeDetector.InUnitTestRunner())
-            {
-                task.Wait();
-            }
+            StartAsync().Wait();
+            //if (ModeDetector.InUnitTestRunner())
+            //{
+            //    task.Wait();
+            //}
         }
 
         public virtual async Task StartAsync()

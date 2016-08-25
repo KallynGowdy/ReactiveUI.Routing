@@ -1,5 +1,6 @@
 ﻿{
   "dependencies": {
+    "akavache": "4.1.2",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
     "reactiveui": "6.5.0",
     "Splat": "1.6.2",

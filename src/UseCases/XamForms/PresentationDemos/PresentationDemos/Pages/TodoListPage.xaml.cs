@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PresentationDemos.ViewModels;
@@ -16,7 +17,11 @@ namespace PresentationDemos.Pages
             InitializeComponent();
             this.WhenActivated(d =>
             {
+                d(this.Bind(ViewModel, vm => vm.NewTodo, view => view.NewTodo.Text));
                 d(this.OneWayBind(ViewModel, vm => vm.Todos, view => view.Todos.ItemsSource));
+                d(Observable.FromEventPattern(h => NewTodo.Completed += h, h => NewTodo.Completed -= h)
+                    .InvokeCommand(ViewModel, vm => vm.CreateTodo));
+                ViewModel.Load.Execute(null);
             });
         }
 
