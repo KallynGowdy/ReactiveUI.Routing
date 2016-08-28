@@ -16,7 +16,8 @@ namespace PresentationDemos.Pages
             InitializeComponent();
             this.WhenActivated(d =>
             {
-                
+                this.Bind(ViewModel, vm => vm.MaxTodos, view => view.MaxTodos.Text);
+                ViewModel.Load.Execute(null);
             });
         }
 

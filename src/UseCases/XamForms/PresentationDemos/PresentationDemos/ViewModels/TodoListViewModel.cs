@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PresentationDemos.Models;
@@ -17,6 +18,7 @@ namespace PresentationDemos.ViewModels
         private ReactiveList<Todo> todos = new ReactiveList<Todo>();
         private int maxTodos;
         private string newTodo = "";
+        private ObservableAsPropertyHelper<bool> canAddTodo;
 
         public class State
         {
@@ -41,6 +43,8 @@ namespace PresentationDemos.ViewModels
             private set { this.RaiseAndSetIfChanged(ref maxTodos, value); }
         }
 
+        public bool CanAddTodo => canAddTodo.Value;
+
         public ISettingsService Settings { get; }
         public IRouter Router { get; }
 
@@ -55,11 +59,15 @@ namespace PresentationDemos.ViewModels
             Router = router ?? Locator.Current.GetService<IRouter>();
             Settings = settings ?? Locator.Current.GetService<ISettingsService>();
             Load = ReactiveCommand.CreateAsyncTask(o => LoadImpl());
-            var canCreateTodo = this.WhenAny(
-                vm => vm.NewTodo,
+            var notTooManyTodos = this.WhenAny(
                 vm => vm.MaxTodos,
                 vm => vm.Todos.Count,
-                (newTodo, max, todosCount) => !string.IsNullOrEmpty(newTodo.Value) && todosCount.Value < max.Value);
+                (max, count) => count.Value < max.Value);
+            var canCreateTodo = this.WhenAny(
+                vm => vm.NewTodo,
+                newTodo => !string.IsNullOrEmpty(newTodo.Value))
+                .CombineLatest(notTooManyTodos, (hasText, notTooMany) => hasText && notTooMany);
+            canAddTodo = notTooManyTodos.ToProperty(this, vm => vm.CanAddTodo);
             CreateTodo = ReactiveCommand.CreateAsyncTask(canCreateTodo, o => CreateTodoImpl());
             DeleteTodo = ReactiveCommand.CreateAsyncTask(o => DeleteTodoImpl((int)o));
             ToggleTodo = ReactiveCommand.CreateAsyncTask(o => ToggleTodoImpl((int)o));

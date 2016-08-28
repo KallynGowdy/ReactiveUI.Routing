@@ -19,12 +19,14 @@ namespace ReactiveUI.Routing.XamForms
     /// </summary>
     public class NavigationPagePresenter : BasePresenter, IPagePresenter
     {
+        private readonly IRouter router;
         private readonly Application application;
         public NavigationPage NavigationPage { get; private set; }
         private readonly List<Page> pages = new List<Page>(2);
 
-        public NavigationPagePresenter(Application application = null)
+        public NavigationPagePresenter(IRouter router = null, Application application = null)
         {
+            this.router = router ?? Locator.Current.GetService<IRouter>();
             this.application = application ?? Locator.Current.GetService<Application>();
         }
 
@@ -35,11 +37,12 @@ namespace ReactiveUI.Routing.XamForms
 
         public override async Task<IDisposable> PresentAsync(object viewModel, object hint)
         {
+            if (pages.Any(p => ((IViewFor) p).ViewModel == viewModel)) return null;
             var viewModelType = viewModel.GetType();
             var viewType = ResolveViewTypeForViewModelType(viewModelType);
             var view = CreateViewFromType(viewType);
             view.ViewModel = viewModel;
-            var page = (Page)view;
+            var page = (Page) view;
             await PushPageAsync(page);
             return new ScheduledDisposable(RxApp.MainThreadScheduler, new ActionDisposable(() => PopPage(page)));
         }
@@ -58,7 +61,7 @@ namespace ReactiveUI.Routing.XamForms
                 }
                 else
                 {
-                    NavigationPage = (NavigationPage) application.MainPage;
+                    NavigationPage = (NavigationPage)application.MainPage;
                     SetupNavigationPage();
                     NotifyCurrentPage();
                 }
@@ -89,6 +92,7 @@ namespace ReactiveUI.Routing.XamForms
         private void NavigationPageOnPopped(object sender, NavigationEventArgs navigationEventArgs)
         {
             if (!pages.Remove(navigationEventArgs.Page)) return;
+            router.BackAsync();
             NotifyViews();
         }
 

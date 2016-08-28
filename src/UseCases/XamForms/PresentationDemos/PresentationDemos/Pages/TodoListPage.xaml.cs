@@ -18,6 +18,7 @@ namespace PresentationDemos.Pages
             this.WhenActivated(d =>
             {
                 d(this.Bind(ViewModel, vm => vm.NewTodo, view => view.NewTodo.Text));
+                d(this.Bind(ViewModel, vm => vm.CanAddTodo, view => view.NewTodo.IsEnabled));
                 d(this.OneWayBind(ViewModel, vm => vm.Todos, view => view.Todos.ItemsSource));
                 d(this.BindCommand(ViewModel, vm => vm.ViewSettings, view => view.SettingsLink,
                     nameof(ToolbarItem.Clicked)));

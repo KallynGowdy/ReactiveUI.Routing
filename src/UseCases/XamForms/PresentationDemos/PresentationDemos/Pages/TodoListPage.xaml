@@ -7,19 +7,23 @@
     <ToolbarItem x:Name="SettingsLink" Text="Settings"/>
   </ContentPage.ToolbarItems>
   <StackLayout Orientation="Vertical">
-    <Label Text="Todos" FontSize="20"></Label>
+    <Entry x:Name="NewTodo" Placeholder="Add Todo..." Margin="10, 10, 10, 0"/>
+    <Label Text="Todos" FontSize="20" Margin="10, 10"></Label>
     <ListView x:Name="Todos">
       <ListView.ItemTemplate>
         <DataTemplate>
           <ViewCell>
-            <StackLayout Orientation="Horizontal">
-              <Switch IsToggled="{Binding Completed}"></Switch>
-              <Label Text="{Binding Name}"></Label>
-            </StackLayout>
+            <Grid Padding="10, 0">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+              <Label Grid.Column="0" FontSize="16" Text="{Binding Name}" VerticalOptions="Center" VerticalTextAlignment="Center"></Label>
+              <Switch Grid.Column="1" IsToggled="{Binding Completed}" VerticalOptions="Center"></Switch>
+            </Grid>
           </ViewCell>
         </DataTemplate>
       </ListView.ItemTemplate>
     </ListView>
-    <Entry x:Name="NewTodo"></Entry>
   </StackLayout>
 </ContentPage>
