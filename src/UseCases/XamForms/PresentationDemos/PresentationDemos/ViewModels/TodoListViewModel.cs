@@ -16,6 +16,7 @@ namespace PresentationDemos.ViewModels
     {
         private ReactiveList<Todo> todos = new ReactiveList<Todo>();
         private int maxTodos;
+        private string newTodo = "";
 
         public class State
         {
@@ -28,7 +29,11 @@ namespace PresentationDemos.ViewModels
             set { this.RaiseAndSetIfChanged(ref todos, value); }
         }
 
-        public string NewTodo { get; set; } = "";
+        public string NewTodo
+        {
+            get { return newTodo; }
+            set { this.RaiseAndSetIfChanged(ref newTodo, value); }
+        }
 
         public int MaxTodos
         {

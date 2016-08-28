@@ -248,6 +248,31 @@ namespace ReactiveUI.Routing.Tests
 
             stateStore.Received(1).SaveStateAsync(Arg.Is<ObjectState>(os => os.State == routerState));
         }
+
+        [Fact]
+        public async Task Test_Only_Registers_Dependencies_On_The_First_Start()
+        {
+            var router = Substitute.For<IRouter>();
+            var stateStore = Substitute.For<IObjectStateStore>();
+            var suspensionNotifier = Substitute.For<ISuspensionNotifier>();
+            var routerParams = new RouterBuilder()
+                .When<TestViewModel>(r => r.Navigate())
+                .Build();
+            
+            suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
+            suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
+            Register(() => new TestViewModel());
+            Register(routerParams);
+            Register(suspensionNotifier);
+            Register(stateStore);
+            Register(router);
+
+            Config.Received(0).RegisterDependencies(Resolver);
+            await AppHost.StartAsync();
+            Config.Received(1).RegisterDependencies(Resolver);
+            await AppHost.StartAsync();
+            Config.Received(1).RegisterDependencies(Resolver);
+        }
     }
 }
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed

@@ -19,6 +19,8 @@ namespace PresentationDemos.Pages
             {
                 d(this.Bind(ViewModel, vm => vm.NewTodo, view => view.NewTodo.Text));
                 d(this.OneWayBind(ViewModel, vm => vm.Todos, view => view.Todos.ItemsSource));
+                d(this.BindCommand(ViewModel, vm => vm.ViewSettings, view => view.SettingsLink,
+                    nameof(ToolbarItem.Clicked)));
                 d(Observable.FromEventPattern(h => NewTodo.Completed += h, h => NewTodo.Completed -= h)
                     .InvokeCommand(ViewModel, vm => vm.CreateTodo));
                 ViewModel.Load.Execute(null);

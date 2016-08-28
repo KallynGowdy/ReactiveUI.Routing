@@ -612,7 +612,6 @@ namespace ReactiveUI.Routing.Tests
             await Router.ShowAsync<OtherViewModel, TestParams>();
             
             disposable.IsDisposed.Should().BeTrue();
-
         }
     }
 }

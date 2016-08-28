@@ -17,8 +17,15 @@ namespace ReactiveUI.Routing.XamForms
         private readonly Subject<Unit> onSaveState = new Subject<Unit>();
         private readonly Subject<Unit> onSuspend = new Subject<Unit>();
 
+        // Needed because a new Xamarin.Forms application will be created
+        // each time that the application is re-entered
+        private Lazy<IRoutedAppHost> host;
+        public int Id { get; set; }
+        private static int c;
         protected RoutedApplication()
         {
+            host = new Lazy<IRoutedAppHost>(() => new RoutedAppHost(BuildAppConfig()));
+            Id = c++;
         }
 
         protected abstract IRoutedAppConfig BuildAppConfig();
@@ -30,10 +37,15 @@ namespace ReactiveUI.Routing.XamForms
             onSuspend.OnNext(Unit.Default);
         }
 
+        protected override void OnResume()
+        {
+            base.OnResume();
+            
+        }
+
         protected void StartHost()
         {
-            var host = new RoutedAppHost(BuildAppConfig());
-            host.Start();
+            host.Value.Start();
         }
 
         public IObservable<Unit> OnSaveState => onSaveState;

@@ -27,8 +27,6 @@ namespace ReactiveUI.Routing.XamForms
             resolver.RegisterLazySingleton(() => resolver.GetService<NavigationPagePresenter>(), typeof(IActivationForViewFetcher));
             resolver.RegisterLazySingleton(() => resolver.GetService<NavigationPagePresenter>(), typeof(IPresenter));
             resolver.RegisterLazySingleton(() => resolver.GetService<NavigationPagePresenter>(), typeof(IPagePresenter));
-            //resolver.RegisterLazySingleton(() => new NSCoderObjectStateStore(), typeof(NSCoderObjectStateStore));
-            //resolver.RegisterLazySingleton(() => resolver.GetService<NSCoderObjectStateStore>(), typeof(IObjectStateStore));
         }
 
         public void CloseApp()

@@ -3,6 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PresentationDemos.Pages.TodoListPage"
              Title="Todos">
+  <ContentPage.ToolbarItems>
+    <ToolbarItem x:Name="SettingsLink" Text="Settings"/>
+  </ContentPage.ToolbarItems>
   <StackLayout Orientation="Vertical">
     <Label Text="Todos" FontSize="20"></Label>
     <ListView x:Name="Todos">

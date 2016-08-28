@@ -19,12 +19,14 @@ namespace PresentationDemos
             var routerConfig = new RouterBuilder()
                 .Default<TodoListViewModel>()
                 .When<TodoListViewModel>(r => r.Navigate().PresentPage())
+                .When<SettingsViewModel>(r => r.Navigate().PresentPage())
                 .Build();
             resolver.RegisterConstant(routerConfig, typeof(RouterConfig));
             resolver.Register(() => new SettingsService(), typeof(ISettingsService));
             resolver.Register(() => new TodoListViewModel(), typeof(TodoListViewModel));
             resolver.Register(() => new SettingsViewModel(), typeof(SettingsViewModel));
             resolver.Register(() => new TodoListPage(), typeof(TodoListPage));
+            resolver.Register(() => new SettingsPage(), typeof(SettingsPage));
         }
     }
 }

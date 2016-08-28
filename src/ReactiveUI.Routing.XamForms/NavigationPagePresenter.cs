@@ -49,14 +49,47 @@ namespace ReactiveUI.Routing.XamForms
             pages.Add(page);
             if (NavigationPage == null)
             {
-                NavigationPage = new NavigationPage();
-                await PushPageCoreAsync(page);
-                application.MainPage = NavigationPage;
+                if (application.MainPage == null)
+                {
+                    NavigationPage = new NavigationPage();
+                    SetupNavigationPage();
+                    await PushPageCoreAsync(page);
+                    application.MainPage = NavigationPage;
+                }
+                else
+                {
+                    NavigationPage = (NavigationPage) application.MainPage;
+                    SetupNavigationPage();
+                    NotifyCurrentPage();
+                }
             }
             else
             {
                 await PushPageCoreAsync(page);
             }
+        }
+
+        private void SetupNavigationPage()
+        {
+            NavigationPage.Popped += NavigationPageOnPopped;
+            NavigationPage.Disappearing += NavigationPageOnDisappearing;
+            NavigationPage.Appearing += NavigationPageOnAppearing;
+        }
+
+        private void NavigationPageOnAppearing(object sender, EventArgs eventArgs)
+        {
+            NotifyCurrentPage();
+        }
+
+        private void NavigationPageOnDisappearing(object sender, EventArgs eventArgs)
+        {
+            NotifyPages(pages);
+        }
+
+        private void NavigationPageOnPopped(object sender, NavigationEventArgs navigationEventArgs)
+        {
+            if (!pages.Remove(navigationEventArgs.Page)) return;
+            NotifyViews();
         }
 
         private async Task PushPageCoreAsync(Page page)
@@ -74,10 +107,20 @@ namespace ReactiveUI.Routing.XamForms
 
         private void NotifyViews()
         {
-            foreach (var p in pages.Take(pages.Count - 1))
+            NotifyPages(pages.Take(pages.Count - 1));
+            NotifyCurrentPage();
+        }
+
+        private void NotifyPages(IEnumerable<Page> pagesToNotify)
+        {
+            foreach (var p in pagesToNotify)
             {
                 NotifyViewDeActivated((ReactiveUI.IActivatable)p);
             }
+        }
+
+        private void NotifyCurrentPage()
+        {
             NotifyViewActivated((ReactiveUI.IActivatable)pages.Last());
         }
     }
