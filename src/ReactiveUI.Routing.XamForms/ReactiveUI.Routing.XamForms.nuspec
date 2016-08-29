@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>KallynGowdy.ReactiveUI.Routing.XamForms</id>
+    <version>$version$</version>
+    <title>ReactiveUI.Routing.XamForms</title>
+    <authors>Kallyn Gowdy</authors>
+    <owners>Kallyn Gowdy</owners>
+    <licenseUrl>https://raw.githubusercontent.com/KallynGowdy/ReactiveUI.Routing/share-navigation/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/KallynGowdy/ReactiveUI.Routing</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>ReactiveUI ReactiveUI.Routing</tags>
+	<dependencies>
+		<dependency id="KallynGowdy.ReactiveUI.Routing" version="$version$" />
+	</dependencies>
+  </metadata>
+</package>
