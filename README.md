@@ -18,36 +18,103 @@ Note that Xamarin.Forms is not currently supported. Support for it is planned.
 
 ## Getting Started
 
-1. Add ReactiveUI.Routing to your project. (NuGet not yet available)
-2. Implement `IRegisterDependencies` in your cross-platform project. This is where you put all of your common registrations, router config, etc.
+### NuGet
+
+Project Feed: `https://ci.appveyor.com/nuget/reactiveui-routing-7x2h1i9nn69m`
+
+### Cross-Platform
+
+1. Add `ReactiveUI.Routing` to each of your projects.
+2. Implement `IRegisterDependencies` in your cross-platform project. This is where all of your common registrations go. (router config, services, view models)
 
 ```csharp
-public abstract class CrossPlatformDependencies : IRegisterDependencies
+public class ProjectDependencies : IRegisterDependencies
 {
-    public override void RegisterDependencies(IMutableDependencyResolver resolver)
+    public void RegisterDependencies(IMutableDependencyResolver resolver) 
     {
-        base.RegisterDependencies(resolver);
+        // Build your router configuration. This is explained more in the
+        // "Declarative Routing" section, but essentially what it allows
+        // you to do is map your view models to presenters and define whether they should
+        // affect the navigation stack.  
         var routerConfig = new RouterBuilder().Build();
+
         resolver.RegisterConstant(routerConfig, typeof(RouterConfig)); 
         resolver.Register(() => new MyViewModel(), typeof(MyViewModel));
         // ...
     }
+} 
+```
+
+### Xamarin.Forms
+
+If you're using Xamarin.Forms you need to make sure you do the following:
+
+- Add `ReactiveUI.Routing.XamForms` to each of your projects.
+- In your cross-platform project, inherit your `App` class from `RoutedApplication`, and implement `BuildAppConfig`.
+
+```csharp
+using ReactiveUI.Routing;
+using ReactiveUI.Routing.XamForms;
+
+public class App : RoutedApplication
+{
+    private readonly IRoutedAppConfig platformDependencies;
+
+    // When you are creating your app class from MainActivity or AppDelegate,
+    // you can pass in platform dependencies.
+    public App(IRoutedAppConfig platformDependencies = null)
+    {
+        this.platformDependencies = platformDependencies;
+        StartHost();
+    }
+
+    protected override IRoutedAppConfig BuildAppConfig()
+    {
+        // Build the IRoutedAppConfig that the application
+        // should use.
+        // CompositeRoutedAppConfig is a helper class that allows you to 
+        // combine multiple IRegisterDependencies or IRoutedAppConfig instances
+        // into a single config.
+        // Dependencies passed in later will override earlier ones.
+        return new CompositeRoutedAppConfig(
+            // Include the default dependencies for ReactiveUI.Routing
+            new DefaultDependencies(),
+            // Include your platform-specific dependencies
+            platformDependencies,
+            // Include the default ReactiveUI.Routing.XamForms dependencies 
+            new DefaultXamFormsDependencies(this),
+            // Include your cross platform dependencies
+            new ProjectDependencies());
+    }
 }
 ```
 
-3. Inherit `AppConfig` for your platform-specific projects, registering platform-specific services.
+- For your platform-specific projects, make sure you add references to `ReactiveUI.Routing.Android`, and `ReactiveUI.Routing.iOS` as needed.
+- In your Android project, in `MainActivity`, make sure you are passing in the `DefaultAndroidDependencies` to your `App` constructor.
+- In your iOS project, in `MainActivity`, make sure you are passing in the `DefaultiOSDepdendencies` to your `App` constructor.
+- For UWP or WinPhone, you either need to make sure that you are registering `IObjectStateStore`, as a default `IObjectStateStore` does not currently exist for UWP. 
+
+### Separate UI
+
+If you are not using Xamarin.Forms, you can add `ReactiveUI.Routing` to your application like this: 
+
+1. Add references `ReactiveUI.Routing` to your projects, adding `ReactiveUI.Routing.Android` for Android and `ReactiveUI.Routing.iOS` for iOS.
+2. Then create a platform-specific app config:
 
 In Android:
 
 ```csharp
-public class AndroidAppConfig : AppConfig
+using ReactiveUI.Routing;
+using ReactiveUI.Routing.Android;
+
+public class AndroidAppConfig : CompositeRoutedAppConfig
 {    
     public AndroidAppConfig(Activity hostActivity, Bundle savedInstanceState)
         
         // Provide the dependencies from other projects
         : base(
             new DefaultDependencies(),
-            new CrossPlatformDependencies(),
+            new ProjectDependencies(),
             new DefaultAndroidDependencies(hostActivity, savedInstanceState)
         ) 
     {
@@ -64,12 +131,15 @@ public class AndroidAppConfig : AppConfig
 In iOS:
 
 ```csharp
-public class iOSAppConfig : AppConfig
+using ReactiveUI.Routing;
+using ReactiveUI.Routing.iOS;
+
+public class iOSAppConfig : CompositeRoutedAppConfig
 {
     public iOSAppConfig(AppDelegate appDelegate)
         : base(
             new DefaultDependencies(),
-            new CrossPlatformDependencies(),
+            new ProjectDependencies(),
             new DefaultiOSDepdendencies(appDelegate)
         )
     {
@@ -88,6 +158,10 @@ public class iOSAppConfig : AppConfig
 In Android:
 
 ```csharp
+using ReactiveUI.Routing;
+using ReactiveUI.Routing.Android;
+
+// SuspendableAcitivity implements ISuspensionNotifier for you
 [Activity(Label = "MainActivity", MainLauncher = true)]
 public class MainActivity : SuspendableAcitivity
 {
@@ -109,6 +183,9 @@ public class MainActivity : SuspendableAcitivity
 In iOS:
 
 ```csharp
+using ReactiveUI.Routing;
+using ReactiveUI.Routing.iOS;
+
 // DefaultAppDelegate handles the creation of RoutedAppHost for you. 
 [Register ("AppDelegate")]
 public partial class AppDelegate : DefaultAppDelegate
@@ -173,6 +250,9 @@ builder.When<MyViewModel>(routeBuilder =>
     return r;
 });
 
+// A common route might look something like this:
+builder.When<MyViewModel>(r => r.Navigate().PresentPage());
+
 RouterConfig config = builder.Build();
 ```
 
@@ -189,6 +269,10 @@ var router = Locator.Current.GetService<IRouter>();
 ### Simple Navigation
 
 ```csharp
+// you don't have to await these, but it is
+// generally a good idea so that your method
+// won't continue until the target view model has been
+// created and displayed.
 await router.ShowAsync<MyViewModel>();
 await router.BackAsync();
 await router.ShowDefaultViewModelAsync();
