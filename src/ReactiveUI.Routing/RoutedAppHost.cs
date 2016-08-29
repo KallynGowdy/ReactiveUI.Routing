@@ -17,6 +17,7 @@ namespace ReactiveUI.Routing
     public class RoutedAppHost : IRoutedAppHost, IEnableLogger
     {
         private readonly IRoutedAppConfig config;
+        private bool started = false;
 
         public RoutedAppHost(IRoutedAppConfig config)
         {
@@ -26,41 +27,50 @@ namespace ReactiveUI.Routing
 
         public void Start()
         {
-            var task = Task.Run(StartAsync);
-            if (ModeDetector.InUnitTestRunner())
-            {
-                task.Wait();
-            }
+            StartAsync().Wait();
         }
 
         public virtual async Task StartAsync()
         {
-            config.RegisterDependencies(Locator.CurrentMutable);
+            RegisterDependencies();
             var stateStore = GetService<IObjectStateStore>();
             var notifier = GetService<ISuspensionNotifier>();
             var routerParams = GetService<RouterConfig>();
             var router = GetService<IRouter>();
 
-            router.CloseApp
-                .Do(async u => await SaveRouterStateAsync(router, stateStore))
-                .Do(u => config.CloseApp())
-                .Subscribe();
+            SetupSubscriptions(router, stateStore, notifier);
 
             var routerState = await GetRouterState(stateStore);
             await ResumeRouterAsync(router, routerParams, routerState, stateStore);
             await router.ShowDefaultViewModelAsync();
+            
+            started = true;
+        }
 
-            notifier.OnSaveState
-                .Do(async u => await SaveRouterStateAsync(router, stateStore))
-                .Subscribe();
+        private void SetupSubscriptions(IRouter router, IObjectStateStore stateStore, ISuspensionNotifier notifier)
+        {
+            if (!started)
+            {
+                router.CloseApp
+                    .Do(async u => await SaveRouterStateAsync(router, stateStore))
+                    .Do(u => config.CloseApp())
+                    .Subscribe();
+                notifier.OnSaveState
+                    .Do(async u => await SaveRouterStateAsync(router, stateStore))
+                    .Subscribe();
+                notifier.OnSuspend
+                    .FirstAsync()
+                    .Do(async u => { await ActivationHelpers.DestroyObjectAsync(router); })
+                    .Subscribe();
+            }
+        }
 
-            notifier.OnSuspend
-                .FirstAsync()
-                .Do(async u =>
-                {
-                    await ActivationHelpers.DestroyObjectAsync(router);
-                })
-                .Subscribe();
+        private void RegisterDependencies()
+        {
+            if (!started)
+            {
+                config.RegisterDependencies(Locator.CurrentMutable);
+            }
         }
 
         private static async Task SaveRouterStateAsync(IRouter router, IObjectStateStore stateStore)

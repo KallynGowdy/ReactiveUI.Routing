@@ -15,7 +15,7 @@ namespace ReactiveUI.Routing.Tests
         {
             public new IObservable<TestState> Resumed => base.Resumed;
 
-            protected override TestState SuspendCoreSync()
+            protected override TestState GetStateCoreSync()
             {
                 return null;
             }
@@ -23,7 +23,7 @@ namespace ReactiveUI.Routing.Tests
 
         public class TestAsyncReActivatablObject : ReActivatableObject<TestParams, TestState>
         {
-            protected override Task<TestState> SuspendCoreAsync()
+            protected override Task<TestState> GetStateCoreAsync()
             {
                 return Task.FromResult<TestState>(null);
             }

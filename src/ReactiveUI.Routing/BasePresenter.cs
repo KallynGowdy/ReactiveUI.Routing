@@ -14,7 +14,7 @@ namespace ReactiveUI.Routing
     /// </summary>
     public abstract class BasePresenter : IPresenter, IActivationForViewFetcher
     {
-        private readonly Dictionary<ReactiveUI.IActivatable, BehaviorSubject<bool>> activationMap = new Dictionary<ReactiveUI.IActivatable, BehaviorSubject<bool>>();
+        private static readonly Dictionary<ReactiveUI.IActivatable, BehaviorSubject<bool>> ActivationMap = new Dictionary<ReactiveUI.IActivatable, BehaviorSubject<bool>>();
         protected IViewTypeLocator ViewLocator { get; }
 
         /// <summary>
@@ -31,9 +31,9 @@ namespace ReactiveUI.Routing
         public IObservable<bool> GetActivationForView(ReactiveUI.IActivatable view)
         {
             BehaviorSubject<bool> activation;
-            if (activationMap.TryGetValue(view, out activation)) return activation;
+            if (ActivationMap.TryGetValue(view, out activation)) return activation;
             activation = new BehaviorSubject<bool>(false);
-            activationMap.Add(view, activation);
+            ActivationMap.Add(view, activation);
             return activation.DistinctUntilChanged();
         }
 
@@ -41,12 +41,12 @@ namespace ReactiveUI.Routing
         {
             if (view == null) throw new ArgumentNullException(nameof(view));
             BehaviorSubject<bool> activation;
-            if (activationMap.TryGetValue(view, out activation))
+            if (ActivationMap.TryGetValue(view, out activation))
                 activation.OnNext(activated);
             else
             {
                 activation = new BehaviorSubject<bool>(activated);
-                activationMap.Add(view, activation);
+                ActivationMap.Add(view, activation);
             }
         }
 

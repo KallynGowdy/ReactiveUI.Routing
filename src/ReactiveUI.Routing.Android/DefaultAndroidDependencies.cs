@@ -10,6 +10,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Newtonsoft.Json;
 using Splat;
 
 namespace ReactiveUI.Routing.Android
@@ -59,6 +60,10 @@ namespace ReactiveUI.Routing.Android
             resolver.RegisterLazySingleton(() =>
                 new BooleanToViewStateTypeConverter(),
                 typeof(IBindingTypeConverter));
+            resolver.RegisterConstant(new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            }, typeof(JsonSerializerSettings));
         }
 
         public void CloseApp() => mainActivity.FinishAffinity();

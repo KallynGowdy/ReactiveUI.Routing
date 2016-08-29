@@ -4,7 +4,7 @@ namespace ReactiveUI.Routing.Tests
     {
         public TestState State { get; set; } = new TestState();
 
-        protected override TestState SuspendCoreSync()
+        protected override TestState GetStateCoreSync()
         {
             return State;
         }

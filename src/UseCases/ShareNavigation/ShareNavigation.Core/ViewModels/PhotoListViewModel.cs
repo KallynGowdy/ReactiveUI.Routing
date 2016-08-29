@@ -79,7 +79,7 @@ namespace ShareNavigation.ViewModels
             return Router.ShowAsync<ShareViewModel>();
         }
 
-        protected override State SuspendCoreSync()
+        protected override State GetStateCoreSync()
         {
             return new State
             {

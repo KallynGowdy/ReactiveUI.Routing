@@ -50,9 +50,9 @@ namespace ShareNavigation.Core.ViewModels
             PhotoUrl = storedState.PhotoUrl;
         }
 
-        protected override State SuspendCoreSync()
+        protected override State GetStateCoreSync()
         {
-            var state = base.SuspendCoreSync();
+            var state = base.GetStateCoreSync();
             state.PhotoUrl = PhotoUrl;
             return state;
         }
