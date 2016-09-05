@@ -222,7 +222,7 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public async Task Test_Saves_State_When_Router_Notifies_CloseApp()
+        public async Task Test_Does_Not_Save_State_When_Router_Notifies_CloseApp()
         {
             var closeApp = new Subject<Unit>();
             var router = Substitute.For<IRouter>();
@@ -246,7 +246,7 @@ namespace ReactiveUI.Routing.Tests
             await AppHost.StartAsync();
             closeApp.OnNext(Unit.Default);
 
-            stateStore.Received(1).SaveStateAsync(Arg.Is<ObjectState>(os => os.State == routerState));
+            stateStore.DidNotReceive().SaveStateAsync(Arg.Is<ObjectState>(os => os.State == routerState));
         }
 
         [Fact]
