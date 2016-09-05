@@ -115,7 +115,10 @@ namespace ReactiveUI.Routing.XamForms
         private void NotifyViews()
         {
             NotifyPages(pages.Take(pages.Count - 1));
-            NotifyCurrentPage();
+            if (pages.Count > 0)
+            {
+                NotifyCurrentPage();
+            }
         }
 
         private void NotifyPages(IEnumerable<Page> pagesToNotify)
