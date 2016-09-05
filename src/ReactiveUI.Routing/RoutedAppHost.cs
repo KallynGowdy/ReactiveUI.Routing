@@ -51,12 +51,12 @@ namespace ReactiveUI.Routing
         {
             if (!started)
             {
-                router.CloseApp
+                notifier.OnSaveState.Throttle(TimeSpan.FromMilliseconds(10))
                     .Do(async u => await SaveRouterStateAsync(router, stateStore))
-                    .Do(u => config.CloseApp())
                     .Subscribe();
-                notifier.OnSaveState
-                    .Do(async u => await SaveRouterStateAsync(router, stateStore))
+
+                router.CloseApp
+                    .Do(u => config.CloseApp())
                     .Subscribe();
                 notifier.OnSuspend
                     .FirstAsync()

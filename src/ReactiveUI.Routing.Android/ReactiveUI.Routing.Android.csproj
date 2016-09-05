@@ -75,6 +75,7 @@
     <Compile Include="AndroidActivityPresenter.cs" />
     <Compile Include="AndroidBundleObjectStateStore.cs" />
     <Compile Include="AndroidPresenter.cs" />
+    <Compile Include="AndroidSuspensionNotifierHelper.cs" />
     <Compile Include="BooleanToViewStateTypeConverter.cs" />
     <Compile Include="ISuspendableActivity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

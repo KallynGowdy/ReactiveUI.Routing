@@ -42,17 +42,14 @@ namespace ReactiveUI.Routing.Android
                 mainActivity.Application.RegisterActivityLifecycleCallbacks(callbacks);
                 return callbacks;
             }, typeof(AndroidActivityCallbacks));
-            resolver.RegisterLazySingleton(() =>
-                Locator.Current.GetService<AndroidActivityCallbacks>().SaveInstanceState
-                    .Where(e => e.Activity == mainActivity)
-                    .Select(e => e.Bundle)
-                    .StartWith(savedInstanceState),
+            resolver.RegisterLazySingleton(
+                () => Locator.Current.GetService<AndroidSuspensionNotifierHelper>().LatestBundle,
                 typeof(IObservable<Bundle>));
             resolver.RegisterLazySingleton(
-                () => new SuspensionNotifierHelper(),
-                typeof(SuspensionNotifierHelper));
+                () => new AndroidSuspensionNotifierHelper(savedInstanceState),
+                typeof(AndroidSuspensionNotifierHelper));
             resolver.RegisterLazySingleton(
-                () => resolver.GetService<SuspensionNotifierHelper>(),
+                () => resolver.GetService<AndroidSuspensionNotifierHelper>(),
                 typeof(ISuspensionNotifier));
             resolver.RegisterLazySingleton(
                 () => new AndroidBundleObjectStateStore(),

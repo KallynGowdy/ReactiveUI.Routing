@@ -8,7 +8,7 @@ using Xamarin.Forms;
 
 namespace ReactiveUI.Routing.XamForms
 {
-    public class DefaultXamFormsDependencies : IRoutedAppConfig
+    public class DefaultXamFormsDependencies : IRegisterDependencies
     {
         public const string RootPageContract = "RootPage";
         private readonly RoutedApplication application;
@@ -23,16 +23,11 @@ namespace ReactiveUI.Routing.XamForms
         {
             resolver.RegisterConstant(application, typeof(Application));
             resolver.RegisterConstant(application, application.GetType());
-            resolver.RegisterConstant(application, typeof(ISuspensionNotifier));
             resolver.RegisterLazySingleton(() => new NavigationPagePresenter(), typeof(NavigationPagePresenter));
             resolver.RegisterLazySingleton(() => resolver.GetService<NavigationPagePresenter>(), typeof(IActivationForViewFetcher));
             resolver.RegisterLazySingleton(() => resolver.GetService<NavigationPagePresenter>(), typeof(IPresenter));
             resolver.RegisterLazySingleton(() => resolver.GetService<NavigationPagePresenter>(), typeof(IPagePresenter));
             resolver.RegisterLazySingleton(() => new DefaultRootPage(), typeof(Page), RootPageContract);
-        }
-
-        public void CloseApp()
-        {
         }
     }
 }

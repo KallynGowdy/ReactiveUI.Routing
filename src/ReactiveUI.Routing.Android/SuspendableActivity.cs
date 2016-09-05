@@ -7,20 +7,20 @@ namespace ReactiveUI.Routing.Android
 {
     public class SuspendableAcitivity : Activity
     {
-        private readonly Lazy<SuspensionNotifierHelper> suspensionNotifier;
-        protected SuspensionNotifierHelper SuspensionNotifier => suspensionNotifier.Value;
+        private readonly Lazy<AndroidSuspensionNotifierHelper> suspensionNotifier;
+        protected AndroidSuspensionNotifierHelper SuspensionNotifier => suspensionNotifier.Value;
 
         public SuspendableAcitivity() : this(null) { }
-        public SuspendableAcitivity(SuspensionNotifierHelper suspensionNotifier)
+        public SuspendableAcitivity(AndroidSuspensionNotifierHelper suspensionNotifier)
         {
-            this.suspensionNotifier = new Lazy<SuspensionNotifierHelper>(() =>
-                suspensionNotifier ?? Locator.Current.GetService<SuspensionNotifierHelper>());
+            this.suspensionNotifier = new Lazy<AndroidSuspensionNotifierHelper>(() =>
+                suspensionNotifier ?? Locator.Current.GetService<AndroidSuspensionNotifierHelper>());
         }
 
         protected override void OnSaveInstanceState(Bundle outState)
         {
             base.OnSaveInstanceState(outState);
-            SuspensionNotifier?.TriggerSaveState();
+            SuspensionNotifier?.TriggerSaveState(outState);
         }
     }
 }

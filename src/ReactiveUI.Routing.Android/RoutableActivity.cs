@@ -40,7 +40,7 @@ namespace ReactiveUI.Routing.Android
 
         public RoutableActivity() : this(null, null) { }
 
-        public RoutableActivity(IRouter router, SuspensionNotifierHelper suspensionNotifier)
+        public RoutableActivity(IRouter router, AndroidSuspensionNotifierHelper suspensionNotifier)
             : base(suspensionNotifier)
         {
             this.router = router ?? Locator.Current.GetService<IRouter>();
