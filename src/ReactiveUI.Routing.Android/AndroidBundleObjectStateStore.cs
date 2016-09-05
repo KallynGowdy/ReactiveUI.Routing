@@ -30,6 +30,7 @@ namespace ReactiveUI.Routing.Android
             if (BundleObservable == null) throw new ArgumentNullException(nameof(bundleObservable));
 
             latestBundle = this.WhenAnyObservable(vm => vm.BundleObservable)
+                .Where(b => b != null)
                 .ToProperty(this, vm => vm.LatestBundle);
         }
 
@@ -50,7 +51,7 @@ namespace ReactiveUI.Routing.Android
 
         protected override Task SaveStateAsyncCore(ObjectState state)
         {
-            if (LatestBundle == null) throw new Exception("Cannot save state in a null bundle.");
+            if (LatestBundle == null) throw new InvalidOperationException("Cannot save state in a null bundle.");
             var json = JsonConvert.SerializeObject(state, Locator.Current.GetService<JsonSerializerSettings>());
             LatestBundle.PutString("__state", json);
             return Task.FromResult(0);

@@ -10,6 +10,7 @@ namespace ReactiveUI.Routing.XamForms
 {
     public class DefaultXamFormsDependencies : IRoutedAppConfig
     {
+        public const string RootPageContract = "RootPage";
         private readonly RoutedApplication application;
 
         public DefaultXamFormsDependencies(RoutedApplication application)
@@ -27,6 +28,7 @@ namespace ReactiveUI.Routing.XamForms
             resolver.RegisterLazySingleton(() => resolver.GetService<NavigationPagePresenter>(), typeof(IActivationForViewFetcher));
             resolver.RegisterLazySingleton(() => resolver.GetService<NavigationPagePresenter>(), typeof(IPresenter));
             resolver.RegisterLazySingleton(() => resolver.GetService<NavigationPagePresenter>(), typeof(IPagePresenter));
+            resolver.RegisterLazySingleton(() => new DefaultRootPage(), typeof(Page), RootPageContract);
         }
 
         public void CloseApp()

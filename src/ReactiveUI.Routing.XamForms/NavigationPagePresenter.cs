@@ -19,13 +19,16 @@ namespace ReactiveUI.Routing.XamForms
     /// </summary>
     public class NavigationPagePresenter : BasePresenter, IPagePresenter
     {
+
+        private readonly Page rootPage;
         private readonly IRouter router;
         private readonly Application application;
         public NavigationPage NavigationPage { get; private set; }
         private readonly List<Page> pages = new List<Page>(2);
 
-        public NavigationPagePresenter(IRouter router = null, Application application = null)
+        public NavigationPagePresenter(IRouter router = null, Application application = null, Page rootPage = null)
         {
+            this.rootPage = rootPage ?? Locator.Current.GetService<Page>(DefaultXamFormsDependencies.RootPageContract);
             this.router = router ?? Locator.Current.GetService<IRouter>();
             this.application = application ?? Locator.Current.GetService<Application>();
         }
@@ -37,12 +40,12 @@ namespace ReactiveUI.Routing.XamForms
 
         public override async Task<IDisposable> PresentAsync(object viewModel, object hint)
         {
-            if (pages.Any(p => ((IViewFor) p).ViewModel == viewModel)) return null;
+            if (pages.Any(p => ((IViewFor)p).ViewModel == viewModel)) return null;
             var viewModelType = viewModel.GetType();
             var viewType = ResolveViewTypeForViewModelType(viewModelType);
             var view = CreateViewFromType(viewType);
             view.ViewModel = viewModel;
-            var page = (Page) view;
+            var page = (Page)view;
             await PushPageAsync(page);
             return new ScheduledDisposable(RxApp.MainThreadScheduler, new ActionDisposable(() => PopPage(page)));
         }
@@ -54,9 +57,8 @@ namespace ReactiveUI.Routing.XamForms
             {
                 if (application.MainPage == null)
                 {
-                    NavigationPage = new NavigationPage();
+                    NavigationPage = new NavigationPage(rootPage);
                     SetupNavigationPage();
-                    await PushPageCoreAsync(page);
                     application.MainPage = NavigationPage;
                 }
                 else
@@ -66,10 +68,7 @@ namespace ReactiveUI.Routing.XamForms
                     NotifyCurrentPage();
                 }
             }
-            else
-            {
-                await PushPageCoreAsync(page);
-            }
+            await PushPageCoreAsync(page);
         }
 
         private void SetupNavigationPage()
@@ -99,6 +98,10 @@ namespace ReactiveUI.Routing.XamForms
         private async Task PushPageCoreAsync(Page page)
         {
             await NavigationPage.Navigation.PushAsync(page, true);
+            if (pages.Count == 1)
+            {
+                NavigationPage.SetHasBackButton(page, false);
+            }
             NotifyViews();
         }
 
