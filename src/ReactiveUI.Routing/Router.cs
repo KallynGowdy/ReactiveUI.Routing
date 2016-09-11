@@ -160,7 +160,7 @@ namespace ReactiveUI.Routing
                 var actions = GetActionsForViewModelType(current.ViewModel.GetType());
                 await HandleRoutePresentation(actions.Actions, current);
             }
-            else
+            else if(navigateBackAction.CloseAppIfNeeded)
             {
                 closeApp.OnNext(Unit.Default);
             }
@@ -220,14 +220,16 @@ namespace ReactiveUI.Routing
         {
             if (actions.Actions != null && !Presenters.ContainsKey(transition))
             {
+                var shouldCloseAppIfNeeded = actions.Actions.Any(a => a is NavigateBackWhileRouteAction) &&
+                                     actions.Actions.All(a => !(a is NavigateRouteAction));
                 foreach (var action in actions.Actions)
                 {
-                    await HandleRouteActionAsync(action, transition);
+                    await HandleRouteActionAsync(action, transition, shouldCloseAppIfNeeded);
                 }
             }
         }
 
-        private async Task HandleRouteNavigationAsync(IRouteAction action, Transition transition)
+        private async Task HandleRouteNavigationAsync(IRouteAction action, Transition transition, bool shouldCloseAppIfNeeded)
         {
             await WhenAction<NavigateRouteAction>(action, async n =>
             {
@@ -240,14 +242,14 @@ namespace ReactiveUI.Routing
             {
                 while (Navigator.TransitionStack.Count > 0 && n.GoBackWhile(Navigator.Peek()))
                 {
-                    await this.BackAsync();
+                    await this.BackAsync(shouldCloseAppIfNeeded);
                 }
             });
         }
 
-        private async Task HandleRouteActionAsync(IRouteAction action, Transition transition)
+        private async Task HandleRouteActionAsync(IRouteAction action, Transition transition, bool shouldCloseAppIfNeeded)
         {
-            await HandleRouteNavigationAsync(action, transition);
+            await HandleRouteNavigationAsync(action, transition, shouldCloseAppIfNeeded);
             await HandleRoutePresentation(action, transition);
         }
 

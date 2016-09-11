@@ -43,5 +43,14 @@ namespace ReactiveUI.Routing.Builder
         /// <returns></returns>
         public static IRouteBuilder NavigateFrom<TParentViewModel>(this IRouteBuilder route) =>
             route.NavigateBackWhile(vm => vm.ViewModel.GetType() != typeof(TParentViewModel)).Navigate();
+
+        /// <summary>
+        /// Instructs the route builder that this route should be presented as the new root view model for the application.
+        /// This effectively removes all other view models from the navigation stack, acting as a "navigate and reset" action.
+        /// </summary>
+        /// <param name="route"></param>
+        /// <returns></returns>
+        public static IRouteBuilder NavigateAsRoot(this IRouteBuilder route) =>
+            route.NavigateBackWhile(t => true).Navigate();
     }
 }

@@ -11,6 +11,17 @@ namespace ReactiveUI.Routing.Actions
     /// </summary>
     public class NavigateBackAction : IRouterAction, IEquatable<NavigateBackAction>
     {
+        public bool CloseAppIfNeeded { get; }
+
+        public NavigateBackAction() : this(true)
+        {
+        }
+
+        public NavigateBackAction(bool closeAppIfNeeded)
+        {
+            CloseAppIfNeeded = closeAppIfNeeded;
+        }
+
         public bool Equals(NavigateBackAction other)
         {
             return true;
@@ -21,7 +32,7 @@ namespace ReactiveUI.Routing.Actions
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((NavigateBackAction) obj);
+            return Equals((NavigateBackAction)obj);
         }
 
         public override int GetHashCode()

@@ -32,10 +32,11 @@ namespace ReactiveUI.Routing
         /// <summary>
         /// Creates a new <see cref="NavigateBackAction"/>, which instructs the router to navigate backwards.
         /// </summary>
+        /// <param name="closeAppIfNeeded"></param>
         /// <returns></returns>
-        public static NavigateBackAction Back()
+        public static NavigateBackAction Back(bool closeAppIfNeeded)
         {
-            return new NavigateBackAction();
+            return new NavigateBackAction(closeAppIfNeeded);
         }
 
         /// <summary>

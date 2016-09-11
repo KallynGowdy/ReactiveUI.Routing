@@ -66,10 +66,14 @@ namespace ReactiveUI.Routing
         /// Navigates backwards toward the previous view model.
         /// </summary>
         /// <param name="router">The router.</param>
+        /// <param name="closeAppIfNeeded">
+        /// Whether the application should be closed if navigating back from the root view model.
+        /// Only applicable on devices that have OS-integrated back buttons.
+        /// </param>
         /// <returns>Returns a task that represents the async operation.</returns>
-        public static Task BackAsync(this IRouter router)
+        public static Task BackAsync(this IRouter router, bool closeAppIfNeeded = true)
         {
-            return router.DispatchAsync(RouterActions.Back());
+            return router.DispatchAsync(RouterActions.Back(closeAppIfNeeded));
         }
     }
 }

@@ -335,6 +335,81 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
+        public async Task Test_NavigateBackWhileAction_Does_Not_Close_App_If_Navigating_Past_The_Last_ViewModel()
+        {
+            Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
+            Resolver.Register(() => new OtherViewModel(), typeof(OtherViewModel));
+            var initParams = new RouterBuilder()
+                .When<OtherViewModel>(r => r.Navigate())
+                .When<TestViewModel>(r => r.NavigateBackWhile(t => true).Navigate())
+                .Build();
+            var closeAppEvents = new List<Unit>();
+            Navigator = new Navigator();
+            Router = new Router(Navigator);
+            using (Router.CloseApp.Subscribe(u => closeAppEvents.Add(u)))
+            {
+
+                await Router.InitAsync(initParams);
+                await Router.ShowAsync<OtherViewModel, TestParams>();
+                await Router.ShowAsync<TestViewModel, TestParams>();
+
+                closeAppEvents.Should()
+                    .BeEmpty("the router should not attempt to close app when navigating back past the last view model.");
+                Navigator.TransitionStack.Single().ViewModel.Should().BeOfType<TestViewModel>();
+            }
+        }
+
+        [Fact]
+        public async Task Test_NavigateAsRoot_Acts_Like_NavigateBackWhile_True_And_Navigate()
+        {
+            Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
+            Resolver.Register(() => new OtherViewModel(), typeof(OtherViewModel));
+            var initParams = new RouterBuilder()
+                .When<OtherViewModel>(r => r.Navigate())
+                .When<TestViewModel>(r => r.NavigateAsRoot())
+                .Build();
+            var closeAppEvents = new List<Unit>();
+            Navigator = new Navigator();
+            Router = new Router(Navigator);
+            using (Router.CloseApp.Subscribe(u => closeAppEvents.Add(u)))
+            {
+
+                await Router.InitAsync(initParams);
+                await Router.ShowAsync<OtherViewModel, TestParams>();
+                await Router.ShowAsync<TestViewModel, TestParams>();
+
+                closeAppEvents.Should()
+                    .BeEmpty("the router should not attempt to close app when navigating back past the last view model.");
+                Navigator.TransitionStack.Single().ViewModel.Should().BeOfType<TestViewModel>();
+            }
+        }
+
+        [Fact]
+        public async Task Test_NavigateBackWhileAction_Closes_App_If_Navigating_Past_The_Last_ViewModel_Without_Navigating_To_Another_ViewModel()
+        {
+            Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
+            Resolver.Register(() => new OtherViewModel(), typeof(OtherViewModel));
+            var initParams = new RouterBuilder()
+                .When<OtherViewModel>(r => r.Navigate())
+                .When<TestViewModel>(r => r.NavigateBackWhile(t => true))
+                .Build();
+            var closeAppEvents = new List<Unit>();
+            Navigator = new Navigator();
+            Router = new Router(Navigator);
+            using (Router.CloseApp.Subscribe(u => closeAppEvents.Add(u)))
+            {
+
+                await Router.InitAsync(initParams);
+                await Router.ShowAsync<OtherViewModel, TestParams>();
+                await Router.ShowAsync<TestViewModel, TestParams>();
+
+                closeAppEvents.Should()
+                    .NotBeEmpty(
+                        "the router should close the app when navigating past the last view model without pushing a new view model");
+            }
+        }
+
+        [Fact]
         public async Task Test_SuspendAsync_Returns_RouterState()
         {
             Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
