@@ -19,7 +19,6 @@ namespace ReactiveUI.Routing.XamForms
     /// </summary>
     public class NavigationPagePresenter : BasePresenter, IPagePresenter
     {
-
         private readonly Page rootPage;
         private readonly IRouter router;
         private readonly Application application;
@@ -98,10 +97,6 @@ namespace ReactiveUI.Routing.XamForms
         private async Task PushPageCoreAsync(Page page)
         {
             await NavigationPage.Navigation.PushAsync(page, true);
-            if (pages.Count == 1)
-            {
-                NavigationPage.SetHasBackButton(page, false);
-            }
             NotifyViews();
         }
 
@@ -114,6 +109,10 @@ namespace ReactiveUI.Routing.XamForms
 
         private void NotifyViews()
         {
+            if (pages.Count == 1)
+            {
+                NavigationPage.SetHasBackButton(pages.First(), false);
+            }
             NotifyPages(pages.Take(pages.Count - 1));
             NotifyCurrentPage();
         }
@@ -130,7 +129,7 @@ namespace ReactiveUI.Routing.XamForms
         {
             if (pages.Any())
             {
-                NotifyViewActivated((ReactiveUI.IActivatable)pages.Last());
+                NotifyViewActivated((ReactiveUI.IActivatable) pages.Last());
             }
         }
     }
