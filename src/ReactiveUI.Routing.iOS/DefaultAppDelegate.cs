@@ -14,15 +14,11 @@ namespace ReactiveUI.Routing.iOS
     /// <summary>
     /// Defines a <see cref="UIApplicationDelegate"/> that is able to start a <see cref="RoutedAppHost"/>.
     /// </summary>
-    public abstract class DefaultAppDelegate : UIApplicationDelegate, ISuspensionNotifier
+    public abstract class DefaultAppDelegate : UIApplicationDelegate
     {
         private readonly IRoutedAppConfig appConfig;
-        private readonly Subject<Unit> onSaveState = new Subject<Unit>();
-        private readonly Subject<Unit> onSuspend = new Subject<Unit>();
         readonly Lazy<NSCoderObjectStateStore> stateStore = new Lazy<NSCoderObjectStateStore>(() => Locator.Current.GetService<NSCoderObjectStateStore>());
-
-        public IObservable<Unit> OnSaveState => onSaveState;
-        public IObservable<Unit> OnSuspend => onSuspend;
+        
         public override UIWindow Window { get; set; }
 
         public override bool ShouldSaveApplicationState(UIApplication application, NSCoder coder)
@@ -39,7 +35,7 @@ namespace ReactiveUI.Routing.iOS
 
         public override void OnResignActivation(UIApplication application)
         {
-            onSuspend.OnNext(Unit.Default);
+            Locator.Current.GetService<RoutedAppHost>().SaveState();
             base.OnResignActivation(application);
         }
 
