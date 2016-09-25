@@ -49,8 +49,7 @@ namespace ReactiveUI.Routing
             AssertContainsTypes(proxy, 
                 typeof(RouterConfig),
                 typeof(IRouter),
-                typeof(IObjectStateStore),
-                typeof(ISuspensionNotifier));
+                typeof(IObjectStateStore));
         }
 
         private void AssertContainsTypes(DependencyResolverProxy proxy, params Type[] types)

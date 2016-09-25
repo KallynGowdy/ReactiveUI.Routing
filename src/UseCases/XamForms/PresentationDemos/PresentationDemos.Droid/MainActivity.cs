@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using ReactiveUI.Routing;
 using ReactiveUI.Routing.Android;
 using Splat;
 
@@ -19,8 +20,9 @@ namespace PresentationDemos.Droid
 
         protected override void OnSaveInstanceState(Bundle outState)
         {
+            Locator.Current.GetService<AndroidSuspensionNotifierHelper>().SendBundle(outState);
+            Locator.Current.GetService<IRoutedAppHost>().SaveState();
             base.OnSaveInstanceState(outState);
-            Locator.Current.GetService<AndroidSuspensionNotifierHelper>()?.TriggerSaveState(outState);
         }
     }
 }

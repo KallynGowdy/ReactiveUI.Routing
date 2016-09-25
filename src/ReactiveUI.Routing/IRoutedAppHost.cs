@@ -22,5 +22,16 @@ namespace ReactiveUI.Routing
         /// </summary>
         /// <returns></returns>
         Task StartAsync();
+
+        /// <summary>
+        /// Causes the application to save its state.
+        /// </summary>
+        void SaveState();
+
+        /// <summary>
+        /// Causes the application to save its state.
+        /// </summary>
+        /// <returns></returns>
+        Task SaveStateAsync();
     }
 }

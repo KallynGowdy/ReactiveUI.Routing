@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 
@@ -13,11 +14,15 @@ using Android.Widget;
 
 namespace ReactiveUI.Routing.Android
 {
-    public class AndroidSuspensionNotifierHelper : SuspensionNotifierHelper
+    public class AndroidSuspensionNotifierHelper
     {
-        Subject<Bundle> bundleSubject = new Subject<Bundle>();
+        private Bundle latestBundle;
 
-        public IObservable<Bundle> LatestBundle => bundleSubject;
+        public Bundle LatestBundle
+        {
+            get { return latestBundle; }
+            private set { latestBundle = value; }
+        }
 
         public AndroidSuspensionNotifierHelper(Bundle savedInstanceState = null)
         {
@@ -26,14 +31,10 @@ namespace ReactiveUI.Routing.Android
 
         public void SendBundle(Bundle bundle)
         {
-            if (bundle == null) return;
-            bundleSubject.OnNext(bundle);
-        }
-
-        public void TriggerSaveState(Bundle bundle)
-        {
-            SendBundle(bundle);
-            base.TriggerSaveState();
+            if (bundle != null)
+            {
+                LatestBundle = bundle;
+            }
         }
     }
 }

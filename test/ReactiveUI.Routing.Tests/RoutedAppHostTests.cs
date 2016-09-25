@@ -45,7 +45,6 @@ namespace ReactiveUI.Routing.Tests
         {
             Register(new RouterConfig());
             Register(Substitute.For<IRouter>());
-            Register(Substitute.For<ISuspensionNotifier>());
             Register(Substitute.For<IObjectStateStore>());
             AppHost.Start();
             Config.Received(1).RegisterDependencies(Arg.Any<IMutableDependencyResolver>());
@@ -58,7 +57,6 @@ namespace ReactiveUI.Routing.Tests
             buildRouterParams().Returns(new RouterConfig());
             Register(buildRouterParams);
             Register(Substitute.For<IRouter>());
-            Register(Substitute.For<ISuspensionNotifier>());
             Register(Substitute.For<IObjectStateStore>());
             AppHost.Start();
             buildRouterParams.Received(1)();
@@ -89,7 +87,6 @@ namespace ReactiveUI.Routing.Tests
             var router = Substitute.For<IRouter>();
             var routerParams = new RouterConfig();
             Register(routerParams);
-            Register(Substitute.For<ISuspensionNotifier>());
             Register(Substitute.For<IObjectStateStore>());
             Register(router);
             await AppHost.StartAsync();
@@ -111,7 +108,6 @@ namespace ReactiveUI.Routing.Tests
 
             stateStore.LoadStateAsync().Returns(state);
             Register(routerParams);
-            Register(Substitute.For<ISuspensionNotifier>());
             Register(stateStore);
             Register(router);
             await AppHost.StartAsync();
@@ -124,21 +120,17 @@ namespace ReactiveUI.Routing.Tests
         {
             var router = Substitute.For<IRouter>();
             var stateStore = Substitute.For<IObjectStateStore>();
-            var suspensionNotifier = Substitute.For<ISuspensionNotifier>();
             var routerParams = new RouterConfig();
             var routerState = new RouterState();
             var state = new ObjectState()
             {
                 State = routerState
             };
-
-            suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
-            suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
+            
             router.CloseApp.Returns(Observable.Never<Unit>());
             stateStore.LoadStateAsync().Returns(state);
             router.ResumeAsync(Arg.Any<object>()).Throws<Exception>();
             Register(routerParams);
-            Register(suspensionNotifier);
             Register(stateStore);
             Register(router);
             await AppHost.StartAsync();
@@ -151,20 +143,16 @@ namespace ReactiveUI.Routing.Tests
         {
             var router = Substitute.For<IRouter>();
             var stateStore = Substitute.For<IObjectStateStore>();
-            var suspensionNotifier = Substitute.For<ISuspensionNotifier>();
             var routerParams = new RouterConfig();
             var notCastable = new object();
             var state = new ObjectState()
             {
                 State = notCastable
             };
-
-            suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
-            suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
+            
             router.CloseApp.Returns(Observable.Never<Unit>());
             stateStore.LoadStateAsync().Returns(state);
             Register(routerParams);
-            Register(suspensionNotifier);
             Register(stateStore);
             Register(router);
             await AppHost.StartAsync();
@@ -177,15 +165,11 @@ namespace ReactiveUI.Routing.Tests
         {
             var router = Substitute.For<IRouter>();
             var stateStore = Substitute.For<IObjectStateStore>();
-            var suspensionNotifier = Substitute.For<ISuspensionNotifier>();
             var routerParams = new RouterConfig();
-
-            suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
-            suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
+            
             router.CloseApp.Returns(Observable.Never<Unit>());
             stateStore.LoadStateAsync().Throws<Exception>();
             Register(routerParams);
-            Register(suspensionNotifier);
             Register(stateStore);
             Register(router);
             await AppHost.StartAsync();
@@ -199,16 +183,12 @@ namespace ReactiveUI.Routing.Tests
             var navigator = new Navigator();
             var router = new Router(navigator);
             var stateStore = Substitute.For<IObjectStateStore>();
-            var suspensionNotifier = Substitute.For<ISuspensionNotifier>();
             var routerParams = new RouterBuilder()
                 .When<TestViewModel>(r => r.Navigate())
                 .Build();
-
-            suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
-            suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
+            
             Register(() => new TestViewModel());
             Register(routerParams);
-            Register(suspensionNotifier);
             Register(stateStore);
             Register<IRouter>(router);
 
@@ -227,19 +207,15 @@ namespace ReactiveUI.Routing.Tests
             var closeApp = new Subject<Unit>();
             var router = Substitute.For<IRouter>();
             var stateStore = Substitute.For<IObjectStateStore>();
-            var suspensionNotifier = Substitute.For<ISuspensionNotifier>();
             var routerParams = new RouterBuilder()
                 .When<TestViewModel>(r => r.Navigate())
                 .Build();
             var routerState = new RouterState();
 
             router.CloseApp.Returns(closeApp);
-            suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
-            suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
             ((IReActivatable)router).GetStateAsync().Returns(routerState);
             Register(() => new TestViewModel());
             Register(routerParams);
-            Register(suspensionNotifier);
             Register(stateStore);
             Register(router);
 
@@ -254,16 +230,12 @@ namespace ReactiveUI.Routing.Tests
         {
             var router = Substitute.For<IRouter>();
             var stateStore = Substitute.For<IObjectStateStore>();
-            var suspensionNotifier = Substitute.For<ISuspensionNotifier>();
             var routerParams = new RouterBuilder()
                 .When<TestViewModel>(r => r.Navigate())
                 .Build();
             
-            suspensionNotifier.OnSaveState.Returns(Observable.Never<Unit>());
-            suspensionNotifier.OnSuspend.Returns(Observable.Never<Unit>());
             Register(() => new TestViewModel());
             Register(routerParams);
-            Register(suspensionNotifier);
             Register(stateStore);
             Register(router);
 

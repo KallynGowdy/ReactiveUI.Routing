@@ -17,7 +17,6 @@ namespace ShareNavigation.Tests
         {
             resolver.RegisterConstant(Substitute.For<IPhotosService>(), typeof(IPhotosService));
             resolver.RegisterConstant(Substitute.For<IObjectStateStore>(), typeof(IObjectStateStore));
-            resolver.RegisterConstant(Substitute.For<ISuspensionNotifier>(), typeof(ISuspensionNotifier));
         }
 
         public void CloseApp()

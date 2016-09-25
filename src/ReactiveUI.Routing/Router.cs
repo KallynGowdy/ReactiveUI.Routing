@@ -118,13 +118,13 @@ namespace ReactiveUI.Routing
             {
                 await reActivatable.ResumeAsync(state);
             }
+            var routeActions = GetActionsForViewModelType(action.ActivationParams.Type);
+            await HandleRouteActionsAsync(routeActions, transition);
             Actions.Add(new ActiveRouterAction()
             {
                 Action = action,
                 Transition = transition
             });
-            var routeActions = GetActionsForViewModelType(action.ActivationParams.Type);
-            await HandleRouteActionsAsync(routeActions, transition);
         }
 
         public async Task DispatchAsync(IRouterAction action)
@@ -151,18 +151,21 @@ namespace ReactiveUI.Routing
 
         private async Task NavigateBackAsync(NavigateBackAction navigateBackAction)
         {
-            Actions.RemoveAt(Actions.Count - 1);
-            var transition = await Navigator.PopAsync();
-            await DisposeTransitionAsync(transition);
-            var current = Navigator.Peek();
-            if (current?.ViewModel != null)
+            if (Actions.Any())
             {
-                var actions = GetActionsForViewModelType(current.ViewModel.GetType());
-                await HandleRoutePresentation(actions.Actions, current);
-            }
-            else if(navigateBackAction.CloseAppIfNeeded)
-            {
-                closeApp.OnNext(Unit.Default);
+                Actions.RemoveAt(Actions.Count - 1);
+                var transition = await Navigator.PopAsync();
+                await DisposeTransitionAsync(transition);
+                var current = Navigator.Peek();
+                if (current?.ViewModel != null)
+                {
+                    var actions = GetActionsForViewModelType(current.ViewModel.GetType());
+                    await HandleRoutePresentation(actions.Actions, current);
+                }
+                else if (navigateBackAction.CloseAppIfNeeded)
+                {
+                    closeApp.OnNext(Unit.Default);
+                }
             }
         }
 

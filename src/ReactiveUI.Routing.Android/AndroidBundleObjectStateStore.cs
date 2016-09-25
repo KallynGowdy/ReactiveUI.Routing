@@ -20,40 +20,34 @@ namespace ReactiveUI.Routing.Android
 {
     public class AndroidBundleObjectStateStore : BaseObjectStateStore, IObjectStateStore
     {
-        private readonly ObservableAsPropertyHelper<Bundle> latestBundle;
-        private IObservable<Bundle> BundleObservable { get; }
-        private Bundle LatestBundle => latestBundle.Value;
-
-        public AndroidBundleObjectStateStore(IObservable<Bundle> bundleObservable = null)
-        {
-            BundleObservable = bundleObservable ?? Locator.Current.GetService<IObservable<Bundle>>();
-            if (BundleObservable == null) throw new ArgumentNullException(nameof(bundleObservable));
-
-            latestBundle = this.WhenAnyObservable(vm => vm.BundleObservable)
-                .Where(b => b != null)
-                .ToProperty(this, vm => vm.LatestBundle);
-        }
-
         public override Task<ObjectState> LoadStateAsync()
         {
-            if (LatestBundle == null) return Task.FromResult<ObjectState>(null);
-            var json = LatestBundle.GetString("__state");
+            var latestBundle = GetLatestBundle();
+            if (latestBundle == null) return Task.FromResult<ObjectState>(null);
+            var json = latestBundle.GetString("__state");
             var state = JsonConvert.DeserializeObject<ObjectState>(json,
                 Locator.Current.GetService<JsonSerializerSettings>());
             return Task.FromResult(state);
         }
 
+        private static Bundle GetLatestBundle()
+        {
+            return Locator.Current.GetService<Bundle>();
+        }
+
         protected override Task ClearStateAsync()
         {
-            LatestBundle?.Remove("__state");
+            var latestBundle = GetLatestBundle();
+            latestBundle?.Remove("__state");
             return Task.FromResult(0);
         }
 
         protected override Task SaveStateAsyncCore(ObjectState state)
         {
-            if (LatestBundle == null) throw new InvalidOperationException("Cannot save state in a null bundle.");
+            var latestBundle = GetLatestBundle();
+            if (latestBundle == null) throw new InvalidOperationException("Cannot save state in a null bundle.");
             var json = JsonConvert.SerializeObject(state, Locator.Current.GetService<JsonSerializerSettings>());
-            LatestBundle.PutString("__state", json);
+            latestBundle.PutString("__state", json);
             return Task.FromResult(0);
         }
     }
