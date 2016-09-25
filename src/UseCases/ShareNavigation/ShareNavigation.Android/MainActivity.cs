@@ -29,8 +29,8 @@ namespace ShareNavigation
 
         protected override void OnDestroy()
         {
+            host.SaveState();
             base.OnDestroy();
-            SuspensionNotifier?.TriggerSuspension();
         }
     }
 }

@@ -73,8 +73,14 @@ namespace ReactiveUI.Routing.XamForms
         private void SetupNavigationPage()
         {
             NavigationPage.Popped += NavigationPageOnPopped;
+            NavigationPage.Pushed += NavigationPageOnPushed;
             NavigationPage.Disappearing += NavigationPageOnDisappearing;
             NavigationPage.Appearing += NavigationPageOnAppearing;
+        }
+
+        private void NavigationPageOnPushed(object sender, NavigationEventArgs e)
+        {
+            NotifyViews();
         }
 
         private void NavigationPageOnAppearing(object sender, EventArgs eventArgs)
@@ -89,30 +95,28 @@ namespace ReactiveUI.Routing.XamForms
 
         private void NavigationPageOnPopped(object sender, NavigationEventArgs navigationEventArgs)
         {
-            if (!pages.Remove(navigationEventArgs.Page)) return;
-            router.BackAsync();
+            if (pages.Remove(navigationEventArgs.Page))
+            {
+                router.BackAsync();
+            }
             NotifyViews();
         }
 
         private async Task PushPageCoreAsync(Page page)
         {
             await NavigationPage.Navigation.PushAsync(page, true);
-            NotifyViews();
+            //NotifyViews();
         }
 
         private void PopPage(Page page)
         {
             if (!pages.Remove(page)) return;
             NavigationPage.Navigation.RemovePage(page);
-            NotifyViews();
+            //NotifyViews();
         }
 
         private void NotifyViews()
         {
-            if (pages.Count == 1)
-            {
-                NavigationPage.SetHasBackButton(pages.First(), false);
-            }
             NotifyPages(pages.Take(pages.Count - 1));
             NotifyCurrentPage();
         }
@@ -129,7 +133,11 @@ namespace ReactiveUI.Routing.XamForms
         {
             if (pages.Any())
             {
-                NotifyViewActivated((ReactiveUI.IActivatable) pages.Last());
+                if (pages.Count == 1)
+                {
+                    NavigationPage.SetHasBackButton(pages.Last(), false);
+                }
+                NotifyViewActivated((ReactiveUI.IActivatable)pages.Last());
             }
         }
     }

@@ -93,6 +93,29 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
+        public async Task Test_ShowAsync_With_NavigateBackWhile_Preserves_Current_ShowViewAction()
+        {
+            Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
+            Locator.CurrentMutable.Register(() => new OtherViewModel(), typeof(OtherViewModel));
+
+            Router = new Router(new Navigator());
+
+            var initParams = new RouterBuilder()
+                .When<TestViewModel>(r => r.NavigateAsRoot())
+                .When<OtherViewModel>(r => r.Navigate())
+                .Build();
+
+            await Router.InitAsync(initParams);
+            await Router.ShowAsync(typeof(OtherViewModel), new TestParams());
+            await Router.ShowAsync(typeof(TestViewModel), new TestParams());
+
+            var state = (RouterState)(await ActivationHelpers.GetObjectStateAsync(Router)).State;
+
+            Assert.Collection(state.Actions,
+                a => a.Action.As<ShowViewModelAction>().ActivationParams.Type.Should().Be<TestViewModel>());
+        }
+
+        [Fact]
         public async Task Test_ShowAsync_Does_Not_Pipe_Transition_To_Navigator_If_Router_Actions_Specify_Navigate()
         {
             Locator.CurrentMutable.Register(() => new TestViewModel(), typeof(TestViewModel));
@@ -302,6 +325,8 @@ namespace ReactiveUI.Routing.Tests
         public async Task Test_NavigateBackWhileAction_Causes_Rotuer_To_Navigate_Backwards_While_The_Func_Is_True()
         {
             Resolver.Register(() => new TestViewModel(), typeof(TestViewModel));
+            var navigator = new Navigator();
+            Router = new Router(navigator);
             var initParams = new RouterConfig()
             {
                 ViewModelMap = new Dictionary<Type, RouteActions>()
@@ -319,19 +344,13 @@ namespace ReactiveUI.Routing.Tests
                     }
                 }
             };
-            Navigator.TransitionStack.Count.Returns(1);
-            Navigator.Peek().Returns(new Transition()
-            {
-                ViewModel = new TestViewModel()
-            }, new Transition()
-            {
 
-            });
             await Router.InitAsync(initParams);
             await Router.ShowAsync<TestViewModel, TestParams>();
             await Router.ShowAsync<TestViewModel, TestParams>();
 
-            Navigator.Received(1).PopAsync();
+            Assert.Collection(navigator.TransitionStack,
+                t => t.ViewModel.Should().BeAssignableTo<TestViewModel>());
         }
 
         [Fact]

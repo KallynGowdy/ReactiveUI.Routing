@@ -19,8 +19,9 @@ namespace ReactiveUI.Routing.Android
 
         protected override void OnSaveInstanceState(Bundle outState)
         {
+            SuspensionNotifier.SendBundle(outState);
+            Locator.Current.GetService<IRoutedAppHost>().SaveStateAsync();
             base.OnSaveInstanceState(outState);
-            SuspensionNotifier?.TriggerSaveState(outState);
         }
     }
 }
