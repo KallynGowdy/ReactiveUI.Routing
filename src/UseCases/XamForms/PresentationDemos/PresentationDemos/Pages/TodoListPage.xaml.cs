@@ -24,7 +24,7 @@ namespace PresentationDemos.Pages
                     nameof(ToolbarItem.Clicked)));
                 d(Observable.FromEventPattern(h => NewTodo.Completed += h, h => NewTodo.Completed -= h)
                     .InvokeCommand(ViewModel, vm => vm.CreateTodo));
-                ViewModel.Load.Execute(null);
+                ViewModel.Load.Execute();
             });
         }
 

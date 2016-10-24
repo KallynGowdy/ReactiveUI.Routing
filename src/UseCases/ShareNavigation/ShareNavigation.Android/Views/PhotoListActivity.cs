@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Akavache;
@@ -28,7 +29,7 @@ namespace ShareNavigation.Views
                     h => this.PhotosList.ItemClick -= h)
                     .Select(args => args.EventArgs.Position)
                     .InvokeCommand(ViewModel, vm => vm.ShowPhoto));
-                ViewModel.LoadPhotos.Execute(null);
+                ViewModel.LoadPhotos.Execute(Unit.Default);
             });
         }
 

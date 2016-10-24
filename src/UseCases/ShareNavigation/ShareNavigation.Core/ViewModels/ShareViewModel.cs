@@ -23,14 +23,14 @@ namespace ShareNavigation.Core.ViewModels
             set { this.RaiseAndSetIfChanged(ref photoUrl, value); }
         }
 
-        public ReactiveCommand<Unit> Share { get; }
+        public ReactiveCommand<Unit, Unit> Share { get; }
 
         public ShareViewModel(IRouter router = null, IPhotosService service = null)
             : base(router)
         {
             Service = service ?? Locator.Current.GetService<IPhotosService>();
             var canShare = this.WhenAny(vm => vm.PhotoUrl, url => !string.IsNullOrEmpty(url.Value));
-            Share = ReactiveCommand.CreateAsyncTask(canShare, async o =>
+            Share = ReactiveCommand.CreateFromTask(async o =>
             {
                 var photo = new Photo
                 {
@@ -41,7 +41,7 @@ namespace ShareNavigation.Core.ViewModels
                 {
                     Photo = photo
                 });
-            });
+            }, canShare);
         }
 
         protected override void ResumeCoreSync(State storedState)

@@ -41,7 +41,7 @@ namespace ShareNavigation.Tests.ViewModels
         [Fact]
         public async Task Test_Share_Navigates_To_ShareViewModel()
         {
-            await ViewModel.Share.ExecuteAsync();
+            await ViewModel.Share.Execute();
 
             Router.Received(1).DispatchAsync(Arg.Is<ShowViewModelAction>(a =>
                 a.ActivationParams.Type == typeof(ShareViewModel) &&

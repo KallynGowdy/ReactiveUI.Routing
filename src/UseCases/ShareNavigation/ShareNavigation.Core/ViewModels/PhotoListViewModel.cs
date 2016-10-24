@@ -26,10 +26,10 @@ namespace ShareNavigation.ViewModels
         }
 
         public IPhotosService Service { get; }
-        public ReactiveCommand<Photo[]> LoadPhotos { get; }
-        public ReactiveCommand<byte[][]> LoadPhotoData { get; }
-        public ReactiveCommand<Unit> Share { get; }
-        public IReactiveCommand<Unit> ShowPhoto { get; }
+        public ReactiveCommand<Unit, Photo[]> LoadPhotos { get; }
+        public ReactiveCommand<Unit, byte[][]> LoadPhotoData { get; }
+        public ReactiveCommand<Unit, Unit> Share { get; }
+        public ReactiveCommand<int, Unit> ShowPhoto { get; }
         public Photo[] LoadedPhotos => loadedPhotos.Value;
         public byte[][] LoadedPhotoData => loadedPhotoBytes.Value;
         public bool IsLoading => isLoading.Value;
@@ -39,15 +39,15 @@ namespace ShareNavigation.ViewModels
         {
             Service = service ?? Locator.Current.GetService<IPhotosService>();
             var canLoad = Resumed.FirstAsync().Select(r => r?.LoadedPhotos == null);
-            LoadPhotos = ReactiveCommand.CreateAsyncTask(canLoad, async o => await Service.GetPhotosAsync());
+            LoadPhotos = ReactiveCommand.CreateFromTask(async o => await Service.GetPhotosAsync(), canLoad);
             var canLoadData = this.WhenAnyValue(vm => vm.LoadedPhotos)
                 .Select(p => p != null);
-            LoadPhotoData = ReactiveCommand.CreateAsyncTask(canLoadData, async o => await LoadPhotoDataImpl());
-            Share = ReactiveCommand.CreateAsyncTask(async o => await ShareImpl());
-            ShowPhoto = ReactiveCommand.CreateAsyncTask(async p => await ShowPhotoImpl((int) p));
             loadedPhotos = Resumed.Select(state => state?.LoadedPhotos).Merge(LoadPhotos)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, vm => vm.LoadedPhotos, new Photo[0]);
+            LoadPhotoData = ReactiveCommand.CreateFromTask(async o => await LoadPhotoDataImpl(), canLoadData);
+            Share = ReactiveCommand.CreateFromTask(async o => await ShareImpl());
+            ShowPhoto = ReactiveCommand.CreateFromTask<int>(async p => await ShowPhotoImpl(p));
             loadedPhotoBytes = LoadPhotoData
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, vm => vm.LoadedPhotoData);
@@ -57,6 +57,7 @@ namespace ShareNavigation.ViewModels
                 .ToProperty(this, vm => vm.IsLoading);
 
             this.WhenAnyValue(vm => vm.LoadedPhotos)
+                .Select(x => Unit.Default)
                 .InvokeCommand(this, vm => vm.LoadPhotoData);
         }
 

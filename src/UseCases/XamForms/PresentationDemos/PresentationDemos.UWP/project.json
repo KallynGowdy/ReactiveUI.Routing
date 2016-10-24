@@ -2,7 +2,7 @@
   "dependencies": {
     "akavache": "4.1.2",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
-    "reactiveui": "6.5.0",
+    "reactiveui": "7.0.0.1474320879",
     "Splat": "1.6.2",
     "Xamarin.Forms": "2.3.1.114"
   },
