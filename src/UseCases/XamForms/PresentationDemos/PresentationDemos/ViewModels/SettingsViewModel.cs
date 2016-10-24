@@ -23,15 +23,15 @@ namespace PresentationDemos.ViewModels
             set { this.RaiseAndSetIfChanged(ref maxTodos, value); }
         }
 
-        public ReactiveCommand<Unit> Save { get; }
-        public ReactiveCommand<Unit> Load { get; }
+        public ReactiveCommand<Unit, Unit> Save { get; }
+        public ReactiveCommand<Unit, Unit> Load { get; }
 
         public SettingsViewModel(ISettingsService settings = null)
         {
             Settings = settings ?? Locator.Current.GetService<ISettingsService>();
-            Load = ReactiveCommand.CreateAsyncTask(o => LoadImpl());
+            Load = ReactiveCommand.CreateFromTask(o => LoadImpl());
             var canSave = this.WhenAny(vm => vm.MaxTodos, max => max.Value > 0);
-            Save = ReactiveCommand.CreateAsyncTask(canSave, o => SaveImpl());
+            Save = ReactiveCommand.CreateFromTask(o => SaveImpl(), canSave);
 
             this.WhenAnyValue(vm => vm.MaxTodos)
                 .Throttle(TimeSpan.FromSeconds(1), RxApp.MainThreadScheduler)

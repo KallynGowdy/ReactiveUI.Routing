@@ -34,7 +34,7 @@ namespace ShareNavigation.Tests.ViewModels
         public async Task Test_Share_Shows_PhotoViewModel()
         {
             ViewModel.PhotoUrl = "URL";
-            await ViewModel.Share.ExecuteAsync();
+            await ViewModel.Share.Execute();
             Router.Received(1).DispatchAsync(Arg.Is<ShowViewModelAction>(
                 a => a.ActivationParams.Type == typeof(PhotoViewModel) &&
                 ((PhotoViewModel.Params)a.ActivationParams.Params).Photo.PhotoUrl == "URL"));
@@ -44,17 +44,17 @@ namespace ShareNavigation.Tests.ViewModels
         public async Task Test_Share_Saves_Photo_To_Service()
         {
             ViewModel.PhotoUrl = "URL";
-            await ViewModel.Share.ExecuteAsync();
+            await ViewModel.Share.Execute();
             Service.Received(1).SharePhotoAsync(Arg.Is<Photo>(p => p.PhotoUrl == "URL"));
         }
 
         [Theory]
         [InlineData("")]
         [InlineData(null)]
-        public void Test_Cannot_Share_When_Url_Is_Invalid(string url)
+        public async Task Test_Cannot_Share_When_Url_Is_Invalid(string url)
         {
             ViewModel.PhotoUrl = url;
-            ViewModel.Share.CanExecute(null).Should().BeFalse();
+            (await ViewModel.Share.CanExecute.FirstAsync()).Should().BeFalse();
         }
     }
 }

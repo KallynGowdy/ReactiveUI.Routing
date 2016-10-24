@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using ReactiveUI;
 using ReactiveUI.Routing;
@@ -28,16 +29,16 @@ namespace ShareNavigation.ViewModels
         public byte[] PhotoData => photoData.Value;
         public bool IsLoading => isLoading.Value;
 
-        public ReactiveCommand<byte[]> LoadPhotoData { get; }
+        public ReactiveCommand<Unit, byte[]> LoadPhotoData { get; }
 
         public PhotoViewModel(IRouter router = null, IPhotosService service = null) : base(router)
         {
             Service = service ?? Locator.Current.GetService<IPhotosService>();
-            var canLoadData = this.WhenAnyValue(vm => vm.Photo)
-                .Select(p => p != null);
-            LoadPhotoData = ReactiveCommand.CreateAsyncTask(canLoadData, async o => await LoadPhotoDataImpl());
             photo = OnActivated.Select(p => p.Photo)
                 .ToProperty(this, vm => vm.Photo);
+            var canLoadData = this.WhenAnyValue(vm => vm.Photo)
+                .Select(p => p != null);
+            LoadPhotoData = ReactiveCommand.CreateFromTask(async o => await LoadPhotoDataImpl(), canLoadData);
             photoData = LoadPhotoData
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, vm => vm.PhotoData);
@@ -45,6 +46,7 @@ namespace ShareNavigation.ViewModels
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, vm => vm.IsLoading);
             this.WhenAnyValue(vm => vm.Photo)
+                .Select(x => Unit.Default)
                 .InvokeCommand(this, vm => vm.LoadPhotoData);
         }
 

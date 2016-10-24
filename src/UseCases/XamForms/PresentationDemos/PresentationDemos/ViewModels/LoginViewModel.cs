@@ -15,10 +15,10 @@ namespace PresentationDemos.ViewModels
         public LoginViewModel(IRouter router = null)
         {
             Router = router ?? Locator.Current.GetService<IRouter>();
-            Login = ReactiveCommand.CreateAsyncTask(async o => await Router.ShowAsync<TodoListViewModel>());
+            Login = ReactiveCommand.CreateFromTask(async o => await Router.ShowAsync<TodoListViewModel>());
         }
 
         public IRouter Router { get; set; }
-        public ReactiveCommand<Unit> Login { get; }
+        public ReactiveCommand<Unit, Unit> Login { get; }
     }
 }

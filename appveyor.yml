@@ -2,6 +2,8 @@ version: '1.0.0-alpha{build}'
 image: Visual Studio 2015
 shallow_clone: true
 configuration: Release
+install:
+  - nuget sources add -Name ReactiveUI -Source https://www.myget.org/F/reactiveui/api/v3/index.json
 before_build:
   - nuget restore
 build:

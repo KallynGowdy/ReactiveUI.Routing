@@ -48,17 +48,17 @@ namespace PresentationDemos.ViewModels
         public ISettingsService Settings { get; }
         public IRouter Router { get; }
 
-        public ReactiveCommand<Unit> ToggleTodo { get; }
-        public ReactiveCommand<Unit> DeleteTodo { get; }
-        public ReactiveCommand<Unit> CreateTodo { get; }
-        public ReactiveCommand<Unit> Load { get; }
-        public ReactiveCommand<Unit> ViewSettings { get; }
+        public ReactiveCommand<int, Unit> ToggleTodo { get; }
+        public ReactiveCommand<int, Unit> DeleteTodo { get; }
+        public ReactiveCommand<Unit, Unit> CreateTodo { get; }
+        public ReactiveCommand<Unit, Unit> Load { get; }
+        public ReactiveCommand<Unit, Unit> ViewSettings { get; }
 
         public TodoListViewModel(IRouter router = null, ISettingsService settings = null)
         {
             Router = router ?? Locator.Current.GetService<IRouter>();
             Settings = settings ?? Locator.Current.GetService<ISettingsService>();
-            Load = ReactiveCommand.CreateAsyncTask(o => LoadImpl());
+            Load = ReactiveCommand.CreateFromTask(o => LoadImpl());
             var notTooManyTodos = this.WhenAny(
                 vm => vm.MaxTodos,
                 vm => vm.Todos.Count,
@@ -68,10 +68,10 @@ namespace PresentationDemos.ViewModels
                 newTodo => !string.IsNullOrEmpty(newTodo.Value))
                 .CombineLatest(notTooManyTodos, (hasText, notTooMany) => hasText && notTooMany);
             canAddTodo = notTooManyTodos.ToProperty(this, vm => vm.CanAddTodo);
-            CreateTodo = ReactiveCommand.CreateAsyncTask(canCreateTodo, o => CreateTodoImpl());
-            DeleteTodo = ReactiveCommand.CreateAsyncTask(o => DeleteTodoImpl((int)o));
-            ToggleTodo = ReactiveCommand.CreateAsyncTask(o => ToggleTodoImpl((int)o));
-            ViewSettings = ReactiveCommand.CreateAsyncTask(o => ViewSettingsImpl());
+            CreateTodo = ReactiveCommand.CreateFromTask(o => CreateTodoImpl(), canCreateTodo);
+            DeleteTodo = ReactiveCommand.CreateFromTask<int>(DeleteTodoImpl);
+            ToggleTodo = ReactiveCommand.CreateFromTask<int>(ToggleTodoImpl);
+            ViewSettings = ReactiveCommand.CreateFromTask(o => ViewSettingsImpl());
         }
 
         private async Task ViewSettingsImpl()
