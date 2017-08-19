@@ -1,162 +1,78 @@
-# Proposal
+So now that I've had some time to think about this topic, I'm not 100% sure on a couple of the concepts that this library currently has:
 
-The current state of routing in ReactiveUI can be a little difficult to work with. 
-You have many options, but none of them are as straightforward as they could be, and have some pitfalls.
-The goal of this library is to provide a simple cross-platform solution for a couple "high importance" use cases:
+## Issues
+- The router is expected to be a single source of truth for managing the navigation stack. That is, you can call `ShowAsync()` and we're expecting more or less the same logic to run.
+- The router has a simplistic model of navigation. It assumes that an application will only ever have a single navigation stack and that most navigation is primarily vertical. What about scenarios where you want to manage multiple navigation stacks (like a web browser)? How would you determine which navigation stack gets affected?
+- The presenter framework is very simplistic. We're expecting presenters to effectively be factories for views. While that is definitely a useful abstraction to some extent, I think it might be a little too simplistic.  For example, it ignores the potentially complicated view state that presenters need to work around. Imagine the app startup phase. Presenters need to figure out how to get back to displaying the same content that was saved without simply replaying all of the actions.
 
-1. View-Model to View-Model routing. We want the ability to trigger routing state changes from within the view models themselves so that integration (and testing) between view models is nice and easy.
-2. Parameter passing. You should be able to pass whatever serializable parameter you want between view models.
-3. Suspend/Resume. Your app has gotta be able to save its state and get right back to where it was.
 
-## View-Model to View-Model routing
+## Potential Solutions
 
-Supporting View-Model to View-Model routing is a tricky task. In particular, Android makes this situation hard because of its disconnected nature.
+In reality, what we really want from a routing framework is to say "show this stuff to the user". When we're talking about stack-based navigation, we're really saying "show the user some of the stuff they were just viewing". From this perspective, we don't even need a navigation stack. Rather, we just need to track which information is currently being presented.
 
-Because of the situation, I think it is best to enable View-Model to View-Model navigation by driving the interactions through the views themselves. 
-We can provide common services for discovering, building, and passing parameters between View-Models, and let the view to view interaction be handled in the views themselves.
+In the end, I imagine we come up with a framework like this:
 
-For example in Android (psueduo C#):
-
-```csharp
-class MyViewModel
-{
-    private IRouter router;
-    // We inject the router into the view model.
-    // In this scenario, each injected router is unique to each View-ViewModel pair.
-    public MyViewModel(IRouter router)
-    {
-        this.router = router;
-    }
-
-    public void GoToOtherViewModel()
-    {
-        router.Navigate(typeof(MyOtherViewModel));
-    }
-}
-
-public class MyActivity : Activity, IActivatable
-{
-    private MyViewModel viewModel;
-
-    // The helper that this activity uses.
-    // Helpers have two primary purposes:
-    // 1. Create view models and provide parameters and state to them.
-    // 2. Provide an interface for view models to call back to their host views to request navigation.
-    private ViewModelRouterHelper router = new ViewModelRouterHelper();
-
-    public MyActivity()
-    {
-        this.WhenActivated(d =>
-        {
-            // Register the router to be disposed when the view is deactivated.
-            // This is used to trigger view model save state operations automatically.
-            d(router);
-
-            viewModel = (MyViewModel)router.CreateViewModel(typeof(MyViewModel), this);
-            
-            // Bind things...
-
-            // Listen for navigation requests
-            // The router helper automatically observes
-            // events on RxApp.MainThreadScheduler for you.
-            d(router.Navigate.FirstAsync(navArgs => 
-            {
-                var viewType = navArgs.ResolvedViewType;
-                var viewModelType = navArgs.RequestedViewModelType;
-                var parameters = navArgs.Parameters;
-                var intent = new Intent(Context, viewType);
-                // Put the parameters in the intent...
-                StartActivity(intent);
-            }));
-        });
-    }
-
-    public override void OnCreate(Bundle savedInstanceState)
-    {
-        // other stuff
-
-        // Grab the parameters that were passed from the previous view
-        // and get the previous state that the view model saved.
-        // Then tell the router (which is local to our view) to use them.
-        // (WhenActivated gets called after this)
-        var parameters = GetDataFromBundle(Intent.GetExtras());
-        var state = GetDataFromBundle(savedInstanceState);
-        router.SetParameters(typeof(MyViewModel), parameters);
-        router.SetState(typeof(MyViewModel), state);
-
-        // other stuff
-    }
-
-    public override void OnSaveInstanceState(Bundle savedInstanceState)
-    {
-        var viewModelState = router.GetViewModelState(viewModel);
-
-        // put it into the bundle...
-
-        base.OnSaveInstanceState(savedInstanceState);
-    }
-
-    private object GetDataFromBundle(Bundle parameters) 
-    {
-        // .. implementation ...
-    }
-}
-```  
-
-Or in iOS:
+- *Presenters* are in charge of constructing and managing views for view models. In this respect they act as decorators around the views, assisting with binding and lifecycle management. Because most applications don't control the construction of the first view, the root presenter is often also the root view.
+- *ViewModels* are in charge of all of the core application logic. They are able to use existing patterns for binding data and events to views. In addition, they are in charge of requesting presentation changes from presenters.
+- *Views* are in charge of displaying data to the user. In addition, they help bind events from the underlying system into the view models. For example, application lifecycle events are propagated from the system, into the views, and then into view models.
 
 ```csharp
-class MyViewModel
-{
-    private IRouter router;
-    public MyViewModel(IRouter router)
-    {
-        this.router = router;
-    }
 
-    public void GoToOtherViewModel()
-    {
-        router.Navigate(typeof(MyOtherViewModel));
-    }
+// Presenters can be put into two categories
+// 1. Imperative - these presenters build and bind specific views that you request.
+// 2. Declarative - these presenters figure out which view(s) to bind upon request.
+//
+// In order to facilitate dynamic re-creation of presenters after suspension
+// we take a request-response model. Presenters are retrieved via presenter
+// request, which are serializeable. This allows us to save the current state of 
+// presenters when the app is suspended. It also allows us to replay
+// the presenters in order, thereby preserving the determinism.
+//
+// Note that the presenters themselves _do not_ store this state themselves.
+// The presenters are just dumb boxes that do things for us. This state needs to be 
+// stored somewhere else. For most apps, we expect that this state will be stored by the router.
+
+// This is a type of imperative presenter that displays dialogs for the given view model.
+interface IDialogPresenter : IPresenter
+{
+  IObservable<DialogResult> Present(DialogViewModel viewModel);
 }
 
-interface IRoutableViewController
+// This is a type of declarative presenter that figures out which child presenter to use
+// for the view model you give it. 
+// Declarative routers like this generally take advantage of imperative routers internally.
+interface IPresenterResolver
 {
-    void SetParameters(object parameters);
+  IPresenter Resolve(PresenterRequest viewModel);
 }
 
-public class MyViewController : UIViewController, IActivatable, IRoutableViewController
+// Suspend/resume strategy
+// To handle app suspension, we need to provide an abstraction on top
+// of the platform-specific life cycles.
+//
+// XamForms: Start->Sleep->Resume
+// iOS:      Activated->ResignActivation->EnterBackground->Terminate
+//           Activated->ResignActivation->EnterBackground->EnterForeground
+// Android:  Create->Start->Resume->Pause->Stop->Destroy
+//           Create->Start->Resume->Pause->Stop->Restart->Start
+//
+// UWP:      Activated->LeavingBackground->EnteredBackground->Suspending->Resume
+//
+// WPF:      N/A -> App life cycle is controlled by user.
+//
+// In particular, we're talking about handling app suspension transparently.
+// Because most platforms force suspension on their respective apps, we need to provide
+// a simple, easy, and sane way to handle this.
+// Platforms such as WPF don't force suspension on their apps, but may need an easy way to save state.
+
+
+class App : Application, IViewFor<ApplicationViewModel>
 {
-    private MyViewModel viewModel;
-    private ViewModelRouterHelper router = new ViewModelRouterHelper();
+  
+}
 
-    public MyViewController(IntPtr handle) : base(handle)
-    {
-        this.WhenActivated(d =>
-        {
-            d(router);
-            viewModel = (MyViewModel)router.CreateViewModel(typeof(MyViewModel), this);
-
-            // Bind things...
-
-            // Listen for navigation requests
-            // The router helper automatically observes
-            // events on RxApp.MainThreadScheduler for you.
-            d(router.Navigate.FirstAsync(navArgs => 
-            {
-                var viewType = navArgs.ResolvedViewType;
-                var viewModelType = navArgs.RequestedViewModelType;
-                var parameters = navArgs.Parameters;
-                var nextController = CreateNewViewController(viewType);
-                nextController.SetParameters(parameters);
-                this.NavigationController.PushViewController(nextController, true);
-            }));
-        });
-    }
-
-    public void SetParameters(object parameters)
-    {
-        router.SetParameters(typeof(MyViewmodel), parameters);
-    }
+class Router : ReactiveObject
+{
+  
 }
 ```
