@@ -6,5 +6,6 @@ namespace ReactiveUI.Routing.Core.Presentation
 {
     public interface IPresenter
     {
+        IObservable<PresenterResponse> Present(object request);
     }
 }

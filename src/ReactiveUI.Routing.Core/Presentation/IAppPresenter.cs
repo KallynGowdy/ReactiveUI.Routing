@@ -5,9 +5,13 @@ using System.Text;
 namespace ReactiveUI.Routing.Core.Presentation
 {
     /// <summary>
-    /// Defines a class that is used to request presenters from a <see cref="IPresenterResolver"/>.
+    /// Represents a presenter that provides multiple different presentation types.
+    /// 
     /// </summary>
-    public class PresenterRequest
+    public interface IAppPresenter
     {
+
+
+
     }
 }

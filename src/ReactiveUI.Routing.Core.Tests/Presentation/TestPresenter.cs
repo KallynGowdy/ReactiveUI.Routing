@@ -7,7 +7,11 @@ using ReactiveUI.Routing.Core.Presentation;
 
 namespace ReactiveUI.Routing.Core.Tests.Presentation
 {
-    public class TestPresenter : IPresenter
+    public class TestPresenter : IPresenterFor<PresenterRequest>
     {
+        public IObservable<PresenterResponse> Present(object request)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
