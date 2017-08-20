@@ -121,5 +121,37 @@ namespace ReactiveUI.Routing.Core.Tests.Presentation
 
             presenter.Should().NotBeNull();
         }
+
+        [Fact]
+        public void Test_RegisterFor_Only_Calls_When_Request_Contains_Given_ViewModel_Type()
+        {
+            Subject.RegisterFor<TestViewModel>(request => new TestPresenter());
+
+            var presenter = Subject.Resolve(new PresenterRequest());
+
+            presenter.Should().BeNull();
+
+            presenter = Subject.Resolve(new PresenterRequest(new TestViewModel()));
+
+            presenter.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void Test_RegisterFor_Only_Calls_When_Request_Contains_Given_ViewModel_And_PresenterRequest_Types()
+        {
+            Subject.RegisterFor<TestPresenterRequest, TestViewModel>(request => new TestPresenter());
+
+            var presenter = Subject.Resolve(new PresenterRequest(new TestViewModel()));
+
+            presenter.Should().BeNull();
+
+            presenter = Subject.Resolve(new TestPresenterRequest());
+
+            presenter.Should().BeNull();
+
+            presenter = Subject.Resolve(new TestPresenterRequest(new TestViewModel()));
+
+            presenter.Should().NotBeNull();
+        }
     }
 }

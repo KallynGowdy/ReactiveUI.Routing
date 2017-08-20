@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Reactive;
 using System.Reactive.Disposables;
 using ReactiveUI.Routing.Presentation;
-using ReactiveUI.Routing.UseCases.WPF.Presenters;
 using Splat;
 
 namespace ReactiveUI.Routing.UseCases.WPF.ViewModels

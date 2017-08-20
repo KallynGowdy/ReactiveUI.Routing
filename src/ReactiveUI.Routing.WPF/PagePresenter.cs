@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using ReactiveUI.Routing.Presentation;
 using Splat;
 
-namespace ReactiveUI.Routing.UseCases.WPF.Presenters
+namespace ReactiveUI.Routing.WPF
 {
     public class PagePresenter : Presenter<PagePresenterRequest>
     {
@@ -45,8 +40,7 @@ namespace ReactiveUI.Routing.UseCases.WPF.Presenters
         public static IDisposable RegisterHostFor<TViewModel>(ContentControl host)
         {
             var resolver = Locator.Current.GetService<IMutablePresenterResolver>();
-            var presenter = new PagePresenter(host);
-            return resolver.Register<PagePresenterRequest>(request => request.ViewModel is TViewModel ? presenter : null);
+            return resolver.RegisterFor<PagePresenterRequest, TViewModel>(new PagePresenter(host));
         }
     }
 }

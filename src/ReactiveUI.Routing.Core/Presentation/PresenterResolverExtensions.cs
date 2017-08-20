@@ -28,6 +28,26 @@ namespace ReactiveUI.Routing.Presentation
             return resolver.Register<TRequest>(request => presenter);
         }
 
+        public static IDisposable RegisterFor<TViewModel>(this IMutablePresenterResolver resolver,
+            Func<PresenterRequest, IPresenter> predicate)
+        {
+            return resolver.Register(request => request.ViewModel is TViewModel ? predicate(request) : null);
+        }
+
+        public static IDisposable RegisterFor<TRequest, TViewModel>(this IMutablePresenterResolver resolver,
+            Func<TRequest, IPresenterFor<TRequest>> predicate)
+            where TRequest : PresenterRequest
+        {
+            return resolver.Register<TRequest>(request => request.ViewModel is TViewModel ? predicate(request) : null);
+        }
+
+        public static IDisposable RegisterFor<TRequest, TViewModel>(this IMutablePresenterResolver resolver,
+            IPresenterFor<TRequest> presenter)
+            where TRequest : PresenterRequest
+        {
+            return resolver.RegisterFor<TRequest, TViewModel>(request => presenter);
+        }
+
         private static IPresenterFor<T> HandleRequest<T>(PresenterRequest request, Func<T, IPresenterFor<T>> predicate)
             where T : PresenterRequest
         {

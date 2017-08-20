@@ -13,8 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ReactiveUI.Routing.UseCases.WPF.Presenters;
 using ReactiveUI.Routing.UseCases.WPF.ViewModels;
+using ReactiveUI.Routing.WPF;
 using Splat;
 
 namespace ReactiveUI.Routing.UseCases.WPF
