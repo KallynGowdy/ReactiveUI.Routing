@@ -60,16 +60,22 @@
     <Compile Include="ContentPage.xaml.cs">
       <DependentUpon>ContentPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DetailView.xaml.cs">
+      <DependentUpon>DetailView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Presenters\PagePresenter.cs" />
-    <Compile Include="Presenters\PagePresenterRequest.cs" />
     <Compile Include="ViewModels\ApplicationViewModel.cs" />
     <Compile Include="ViewModels\ContentViewModel.cs" />
+    <Compile Include="ViewModels\DetailViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Page Include="ContentPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -121,6 +127,10 @@
       <Project>{5d14c32e-c67e-4b77-b01b-f04fd63d2377}</Project>
       <Name>ReactiveUI.Routing.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ReactiveUI.Routing.WPF\ReactiveUI.Routing.WPF.csproj">
+      <Project>{e65be101-7fcf-4f4c-a091-1846fd854058}</Project>
+      <Name>ReactiveUI.Routing.WPF</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="reactiveui">
@@ -132,6 +142,9 @@
     <PackageReference Include="System.Reactive">
       <Version>3.1.1</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Presenters\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

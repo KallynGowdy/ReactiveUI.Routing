@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reactive;
-using System.Text;
-
-namespace ReactiveUI.Routing.Core.Presentation
+﻿namespace ReactiveUI.Routing.Presentation
 {
     /// <summary>
     /// Defines an interface for presenters that can handle requests for the given type.

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace ReactiveUI.Routing.Core.Presentation
+namespace ReactiveUI.Routing.Presentation
 {
     /// <summary>
     /// Extension methods for <see cref="IPresenterResolver"/> objects.

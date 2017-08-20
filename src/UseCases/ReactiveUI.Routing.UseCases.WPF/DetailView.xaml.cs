@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,35 +12,26 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ReactiveUI.Routing.UseCases.WPF.Presenters;
 using ReactiveUI.Routing.UseCases.WPF.ViewModels;
-using Splat;
 
 namespace ReactiveUI.Routing.UseCases.WPF
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for DetailView.xaml
     /// </summary>
-    public partial class MainWindow : Window, IViewFor<MainViewModel>
+    public partial class DetailView : UserControl, IViewFor<DetailViewModel>
     {
-        public MainWindow()
+        public DetailView()
         {
             InitializeComponent();
-            ViewModel = new MainViewModel();
-            var disposable = PagePresenter.RegisterHost(this);
-
-            this.WhenActivated(d =>
-            {
-                d(disposable);
-            });
         }
 
         object IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (MainViewModel)value;
+            set => ViewModel = (DetailViewModel) value;
         }
 
-        public MainViewModel ViewModel { get; set; }
+        public DetailViewModel ViewModel { get; set; }
     }
 }

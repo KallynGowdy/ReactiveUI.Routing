@@ -1,6 +1,6 @@
 using System.Reactive;
 
-namespace ReactiveUI.Routing.Core.Routing
+namespace ReactiveUI.Routing.Routing
 {
     public interface IRouter
     {

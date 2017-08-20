@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
+    <AssemblyName>ReactiveUI.Routing.Core</AssemblyName>
+    <RootNamespace>ReactiveUI.Routing</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

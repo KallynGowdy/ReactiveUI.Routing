@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ReactiveUI.Routing.Core.Presentation
+namespace ReactiveUI.Routing.Presentation
 {
     /// <summary>
     /// Defines an interface for objects that allow presenter resolvers to be dynamically registered and resolved.

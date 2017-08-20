@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace ReactiveUI.Routing.Core.Presentation
+namespace ReactiveUI.Routing.Presentation
 {
     public interface IPresenter
     {
-        IObservable<PresenterResponse> Present(object request);
+        IObservable<PresenterResponse> Present(PresenterRequest request);
     }
 }

@@ -1,13 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ReactiveUI.Routing.Core.Presentation
+﻿namespace ReactiveUI.Routing.Presentation
 {
     /// <summary>
     /// Defines a class that is used to request presenters from a <see cref="IPresenterResolver"/>.
     /// </summary>
     public class PresenterRequest
     {
+        public object ViewModel { get; set; }
+
+        public PresenterRequest(object viewModel)
+        {
+            this.ViewModel = viewModel;
+        }
+
+        public PresenterRequest()
+        {
+        }
+
     }
 }

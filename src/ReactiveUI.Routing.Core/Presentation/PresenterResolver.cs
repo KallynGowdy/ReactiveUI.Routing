@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
-using System.Text;
 
-namespace ReactiveUI.Routing.Core.Presentation
+namespace ReactiveUI.Routing.Presentation
 {
     public class PresenterResolver : IMutablePresenterResolver
     {

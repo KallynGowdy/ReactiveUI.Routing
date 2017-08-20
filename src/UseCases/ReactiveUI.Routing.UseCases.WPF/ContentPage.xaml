@@ -9,6 +9,26 @@
       Title="ContentPage">
 
     <Grid>
-        <TextBlock x:Name="Text"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock x:Name="Text"
+                   Grid.Row="0"
+                   Grid.Column="0"/>
+        <Button x:Name="DisplayDetail"
+                Grid.Row="1"
+                Grid.Column="0"
+                Content="Display Detail"/>
+
+        <ContentControl x:Name="Detail"
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Grid.RowSpan="2"/>
     </Grid>
 </Page>

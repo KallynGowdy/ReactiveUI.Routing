@@ -1,4 +1,4 @@
-﻿namespace ReactiveUI.Routing.Core.Presentation
+﻿namespace ReactiveUI.Routing.Presentation
 {
     /// <summary>
     /// Defines an interface that represents objects that can resolve presenters for different requests.

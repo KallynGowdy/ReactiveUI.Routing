@@ -1,4 +1,4 @@
-﻿namespace ReactiveUI.Routing.Core.Presentation
+﻿namespace ReactiveUI.Routing.Presentation
 {
     public class PresenterResponse
     {

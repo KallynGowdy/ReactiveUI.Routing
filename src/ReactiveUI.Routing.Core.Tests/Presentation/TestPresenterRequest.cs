@@ -1,4 +1,4 @@
-﻿using ReactiveUI.Routing.Core.Presentation;
+﻿using ReactiveUI.Routing.Presentation;
 
 namespace ReactiveUI.Routing.Core.Tests.Presentation
 {

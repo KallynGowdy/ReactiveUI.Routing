@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
-using ReactiveUI.Routing.Core.Presentation;
+using ReactiveUI.Routing.Presentation;
 using Xunit;
 
 namespace ReactiveUI.Routing.Core.Tests.Presentation

@@ -30,6 +30,7 @@ namespace ReactiveUI.Routing.UseCases.WPF
         {
             Locator.CurrentMutable.Register<IViewFor<LoginViewModel>>(() => new LoginPage());
             Locator.CurrentMutable.Register<IViewFor<ContentViewModel>>(() => new ContentPage());
+            Locator.CurrentMutable.Register<IViewFor<DetailViewModel>>(() => new DetailView());
         }
     }
 }
