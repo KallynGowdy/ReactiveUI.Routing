@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -26,7 +27,13 @@ namespace ReactiveUI.Routing.UseCases.WPF
             InitializeComponent();
             this.WhenActivated(d =>
             {
-                this.BindCommand(ViewModel, vm => vm.Login, view => view.Login);
+                this.BindCommand(ViewModel, vm => vm.Login, view => view.Login)
+                    .DisposeWith(d);
+
+                Disposable.Create(() =>
+                {
+                    Console.WriteLine("Disposed");
+                }).DisposeWith(d);
             });
         }
 

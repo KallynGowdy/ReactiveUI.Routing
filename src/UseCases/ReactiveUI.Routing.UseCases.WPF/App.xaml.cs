@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Runtime.Hosting;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,10 +18,18 @@ namespace ReactiveUI.Routing.UseCases.WPF
     public partial class App : Application
     {
         private readonly ApplicationViewModel application;
+        private readonly AutoSuspendHelper suspendHelper;
 
         public App()
         {
             application = new ApplicationViewModel();
+            suspendHelper = new AutoSuspendHelper(this);
+            RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
+                .Cast<AppState>()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Do(state => application.LoadState(state))
+                .Subscribe();
+            RxApp.SuspensionHost.SetupPersistence(() => application.BuildAppState(), new Store<AppState>());
             application.Initialize();
             RegisterViews();
             InitializeComponent();

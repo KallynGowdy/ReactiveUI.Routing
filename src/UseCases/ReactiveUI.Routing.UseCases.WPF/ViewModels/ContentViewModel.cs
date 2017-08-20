@@ -1,17 +1,22 @@
 ﻿using System.Reactive;
 using System.Reactive.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using ReactiveUI.Routing.Presentation;
 using Splat;
 
 namespace ReactiveUI.Routing.UseCases.WPF.ViewModels
 {
+    [DataContract]
     public class ContentViewModel
     {
+
         public string Text { get; set; } = "Hello, Presentation!";
 
+        [IgnoreDataMember]
         public ReactiveCommand<Unit, Unit> ShowDetail { get; }
 
+        [IgnoreDataMember]
         private IAppPresenter presenter;
 
         public ContentViewModel(IAppPresenter presenter = null)

@@ -22,10 +22,13 @@ namespace ReactiveUI.Routing.WPF
             return Observable.Create<PresenterResponse>(observer =>
             {
                 var view = viewLocator.ResolveView(request.ViewModel);
+                view.WhenActivated(d =>
+                {
+                    observer.OnNext(new PresenterResponse(view));
+                    observer.OnCompleted();
+                });
                 frame.Content = view;
                 view.ViewModel = request.ViewModel;
-                observer.OnNext(new PresenterResponse());
-                observer.OnCompleted();
 
                 return (() => { });
             });
