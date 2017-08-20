@@ -8,6 +8,13 @@
       d:DesignHeight="300" d:DesignWidth="300">
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <TextBlock Text="Detail!"/>
+        <Button x:Name="BackToLogin"
+                Grid.Row="1"
+                Content="Back to login"/>
     </Grid>
 </UserControl>

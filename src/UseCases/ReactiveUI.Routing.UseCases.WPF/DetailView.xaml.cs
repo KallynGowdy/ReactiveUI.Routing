@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,6 +25,11 @@ namespace ReactiveUI.Routing.UseCases.WPF
         public DetailView()
         {
             InitializeComponent();
+            this.WhenActivated(d =>
+            {
+                this.BindCommand(ViewModel, vm => vm.BackToLogin, view => view.BackToLogin)
+                    .DisposeWith(d);
+            });
         }
 
         object IViewFor.ViewModel
