@@ -55,16 +55,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
-    <Compile Include="MainActivity.cs" />
+    <Compile Include="ContentPage.cs" />
+    <Compile Include="DetailPage.cs" />
+    <Compile Include="LoginPage.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\ApplicationViewModel.cs" />
+    <Compile Include="Store.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GettingStarted.Xamarin" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Assets\AboutAssets.txt" />
+    <AndroidResource Include="Resources\layout\Content.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Login.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Detail.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Main.axml">
@@ -81,6 +92,10 @@
     <Folder Include="Resources\mipmap-xxxhdpi\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI.Routing.Android\ReactiveUI.Routing.Android.csproj">
+      <Project>{fe6e1025-b5bb-4990-865d-babdbc2d1b71}</Project>
+      <Name>ReactiveUI.Routing.Android</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ReactiveUI.Routing.Core\ReactiveUI.Routing.Core.csproj">
       <Project>{5d14c32e-c67e-4b77-b01b-f04fd63d2377}</Project>
       <Name>ReactiveUI.Routing.Core</Name>
@@ -91,6 +106,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>10.0.3</Version>
+    </PackageReference>
     <PackageReference Include="reactiveui">
       <Version>8.0.0-alpha0055</Version>
     </PackageReference>

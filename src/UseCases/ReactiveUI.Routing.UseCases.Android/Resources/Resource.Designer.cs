@@ -42,11 +42,45 @@ namespace ReactiveUI.Routing.UseCases.Android
 			}
 		}
 		
+		public partial class Id
+		{
+			
+			// aapt resource value: 0x7f040002
+			public const int BackToLoginButton = 2130968578;
+			
+			// aapt resource value: 0x7f040000
+			public const int Content = 2130968576;
+			
+			// aapt resource value: 0x7f040003
+			public const int LoginButton = 2130968579;
+			
+			// aapt resource value: 0x7f040001
+			public const int ShowDetailButton = 2130968577;
+			
+			static Id()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Id()
+			{
+			}
+		}
+		
 		public partial class Layout
 		{
 			
 			// aapt resource value: 0x7f020000
-			public const int Main = 2130837504;
+			public const int Content = 2130837504;
+			
+			// aapt resource value: 0x7f020001
+			public const int Detail = 2130837505;
+			
+			// aapt resource value: 0x7f020002
+			public const int Login = 2130837506;
+			
+			// aapt resource value: 0x7f020003
+			public const int Main = 2130837507;
 			
 			static Layout()
 			{

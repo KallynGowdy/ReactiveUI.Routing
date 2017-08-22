@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using ReactiveUI.Routing.Presentation;
 using Splat;
 
-namespace ReactiveUI.Routing.UseCases.WPF.ViewModels
+namespace ReactiveUI.Routing.UseCases.Common.ViewModels
 {
     [DataContract]
     public class ContentViewModel

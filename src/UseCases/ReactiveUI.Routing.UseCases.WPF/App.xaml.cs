@@ -7,7 +7,8 @@ using System.Reactive.Linq;
 using System.Runtime.Hosting;
 using System.Threading.Tasks;
 using System.Windows;
-using ReactiveUI.Routing.UseCases.WPF.ViewModels;
+using ReactiveUI.Routing.UseCases.Common;
+using ReactiveUI.Routing.UseCases.Common.ViewModels;
 using Splat;
 
 namespace ReactiveUI.Routing.UseCases.WPF
