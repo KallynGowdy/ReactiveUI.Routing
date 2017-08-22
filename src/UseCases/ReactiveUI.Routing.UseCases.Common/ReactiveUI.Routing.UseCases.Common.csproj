@@ -2,12 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
-    <AssemblyName>ReactiveUI.Routing.Core</AssemblyName>
-    <RootNamespace>ReactiveUI.Routing</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="reactiveui" Version="8.0.0-alpha0055" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI.Routing.Core\ReactiveUI.Routing.Core.csproj" />
   </ItemGroup>
 
 </Project>
