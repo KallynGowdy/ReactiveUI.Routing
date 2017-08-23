@@ -48,7 +48,9 @@
     <Compile Include="ActivityLifecycleCallbackHandler.cs" />
     <Compile Include="FragmentActivationForViewFetcher.cs" />
     <Compile Include="FragmentLifecycleCallbacksHandler.cs" />
+    <Compile Include="LocatorExtensions.cs" />
     <Compile Include="PagePresenter.cs" />
+    <Compile Include="Registrations.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

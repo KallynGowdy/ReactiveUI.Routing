@@ -20,7 +20,7 @@ namespace ReactiveUI.Routing.UseCases.Android
 {
     [Application(
         Debuggable = true,
-        Label="ReactiveUI.Routing.UseCases.Android")]
+        Label = "ReactiveUI.Routing.UseCases.Android")]
     public class Application : global::Android.App.Application, global::Android.App.Application.IActivityLifecycleCallbacks
     {
         private AutoSuspendHelper suspendHelper;
@@ -64,24 +64,18 @@ namespace ReactiveUI.Routing.UseCases.Android
         public override void OnCreate()
         {
             base.OnCreate();
-            
+            this.RegisterActivityLifecycleCallbacks(this);
             suspendHelper = new AutoSuspendHelper(this);
-            //RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
-            //    .Cast<AppState>()
-            //    .ObserveOn(RxApp.MainThreadScheduler)
-            //    .Do(state => app.LoadState(state))
-            //    .Subscribe();
+            RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
+                .Cast<AppState>()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Do(state => app.LoadState(state))
+                .Subscribe();
             RxApp.SuspensionHost.SetupPersistence(() => app.BuildAppState(), new Store<AppState>(this));
         }
 
         private void RegisterViews()
         {
-            ActivityLifecycleCallbackHandler handler = new ActivityLifecycleCallbackHandler();
-            this.RegisterActivityLifecycleCallbacks(handler);
-
-            Locator.CurrentMutable.RegisterConstant(handler, typeof(ActivityLifecycleCallbackHandler));
-            Locator.CurrentMutable.Register(() => new ActivityActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-
             Locator.CurrentMutable.Register(() => new LoginPage(), typeof(IViewFor<LoginViewModel>));
             Locator.CurrentMutable.Register(() => new DetailPage(), typeof(IViewFor<DetailViewModel>));
             Locator.CurrentMutable.Register(() => new ContentPage(), typeof(IViewFor<ContentViewModel>));

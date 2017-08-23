@@ -26,7 +26,7 @@ namespace ReactiveUI.Routing.UseCases.Common.ViewModels
 
         public void Initialize()
         {
-            Locator.CurrentMutable.RegisterRouting();
+            Locator.CurrentMutable.InitializeRouting();
             Presenter = Locator.Current.GetService<IAppPresenter>();
         }
 

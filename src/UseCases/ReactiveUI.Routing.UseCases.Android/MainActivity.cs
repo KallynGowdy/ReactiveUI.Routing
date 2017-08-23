@@ -21,8 +21,9 @@ namespace ReactiveUI.Routing.UseCases.Android
     [Activity(Label = "ReactiveUI.Routing.UseCases.Android", MainLauncher = true)]
     public class MainActivity : FragmentActivity, IActivatable
     {
-        public MainActivity()
+        protected override void OnCreate(Bundle savedInstanceState)
         {
+            Locator.CurrentMutable.InitializeRoutingAndroid(this);
             this.WhenActivated(d =>
             {
                 PagePresenter.RegisterHost(SupportFragmentManager, Resource.Id.Container)
@@ -33,12 +34,8 @@ namespace ReactiveUI.Routing.UseCases.Android
                     .Subscribe()
                     .DisposeWith(d);
             });
-        }
 
-        protected override void OnCreate(Bundle savedInstanceState)
-        {
             base.OnCreate(savedInstanceState);
-            Locator.CurrentMutable.Register(() => new FragmentActivationForViewFetcher(SupportFragmentManager), typeof(IActivationForViewFetcher));
             SetContentView(Resource.Layout.Main);
         }
     }
