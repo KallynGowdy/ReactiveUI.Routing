@@ -48,6 +48,9 @@ namespace ReactiveUI.Routing.UseCases.Android
 			// aapt resource value: 0x7f040002
 			public const int BackToLoginButton = 2130968578;
 			
+			// aapt resource value: 0x7f040004
+			public const int Container = 2130968580;
+			
 			// aapt resource value: 0x7f040000
 			public const int Content = 2130968576;
 			

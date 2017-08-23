@@ -13,61 +13,65 @@ using Android.Views;
 using Android.Widget;
 using ReactiveUI.Routing.Presentation;
 using Splat;
+using Fragment = Android.Support.V4.App.Fragment;
+using FragmentManager = Android.Support.V4.App.FragmentManager;
 
 namespace ReactiveUI.Routing.Android
 {
     public class PagePresenter : Presenter<PagePresenterRequest>
     {
-        private static readonly Dictionary<Type, Type> viewModelToViewTypeMap = new Dictionary<Type, Type>();
-        private readonly Application application;
-        private readonly ActivityLifecycleCallbackHandler activityLifecycleCallbackHandler = new ActivityLifecycleCallbackHandler();
+        private readonly FragmentManager host;
+        private readonly int containerId;
+        private readonly IViewLocator viewLocator;
 
-        public PagePresenter(Application application, ActivityLifecycleCallbackHandler handler = null)
+        public PagePresenter(FragmentManager host, int containerId, IViewLocator viewLocator = null)
         {
-            this.application = application;
-            this.activityLifecycleCallbackHandler =
-                handler ?? Locator.Current.GetService<ActivityLifecycleCallbackHandler>();
+            this.host = host;
+            this.containerId = containerId;
+            this.viewLocator = viewLocator ?? Locator.Current.GetService<IViewLocator>();
         }
 
         protected override IObservable<PresenterResponse> PresentCore(PagePresenterRequest request)
         {
             return Observable.Create<PresenterResponse>(observer =>
             {
-                var vmType = request.ViewModel.GetType();
+                try
+                {
+                    var view = viewLocator.ResolveView(request.ViewModel);
+                    var fragment = (Fragment)view;
 
-                var viewType = viewModelToViewTypeMap[vmType];
+                    var disposable = view.WhenActivated(d =>
+                    {
+                        observer.OnNext(new PresenterResponse(view));
+                        observer.OnCompleted();
+                    });
 
-                var disposable = activityLifecycleCallbackHandler.ActivityStarted
-                    .FirstAsync(a => a.GetType() == viewType)
-                    .Select(a => (IViewFor)a)
-                    .Do(v => v.ViewModel = request.ViewModel)
-                    .Select(v => new PresenterResponse(v))
-                    .Subscribe(observer);
+                    var transaction = host.BeginTransaction();
+                    transaction.Replace(containerId, fragment);
+                    transaction.Commit();
 
-                Intent i = new Intent(application, viewType);
+                    view.ViewModel = request.ViewModel;
 
-                application.StartActivity(i);
-
-                return disposable;
+                    return disposable;
+                }
+                catch (Exception ex)
+                {
+                    observer.OnError(ex);
+                    throw;
+                }
             });
         }
 
-        public static IDisposable Register(Type viewModel, Type view)
+        public static IDisposable RegisterHost(FragmentManager host, int containerId)
         {
-            viewModelToViewTypeMap.Add(viewModel, view);
-            return Disposable.Create(() => viewModelToViewTypeMap.Remove(viewModel));
+            var resolver = Locator.Current.GetService<IMutablePresenterResolver>();
+            return resolver.Register(new PagePresenter(host, containerId));
         }
 
-        //public static IDisposable RegisterHost(ContentControl host)
-        //{
-        //    var resolver = Locator.Current.GetService<IMutablePresenterResolver>();
-        //    return resolver.Register(new PagePresenter(host));
-        //}
-
-        //public static IDisposable RegisterHostFor<TViewModel>(ContentControl host)
-        //{
-        //    var resolver = Locator.Current.GetService<IMutablePresenterResolver>();
-        //    return resolver.RegisterFor<PagePresenterRequest, TViewModel>(new PagePresenter(host));
-        //}
+        public static IDisposable RegisterHostFor<TViewModel>(FragmentManager host, int containerId)
+        {
+            var resolver = Locator.Current.GetService<IMutablePresenterResolver>();
+            return resolver.RegisterFor<PagePresenterRequest, TViewModel>(new PagePresenter(host, containerId));
+        }
     }
 }

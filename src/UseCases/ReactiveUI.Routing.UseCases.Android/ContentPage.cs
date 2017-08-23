@@ -10,11 +10,11 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using ReactiveUI.Routing.UseCases.Common.ViewModels;
+using Fragment = Android.Support.V4.App.Fragment;
 
 namespace ReactiveUI.Routing.UseCases.Android
 {
-    [Activity(Label = "ContentPage", NoHistory = true)]
-    public class ContentPage : Activity, IViewFor<ContentViewModel>
+    public class ContentPage : Fragment, IViewFor<ContentViewModel>
     {
         private Button showDetailButton;
         private TextView content;
@@ -39,15 +39,14 @@ namespace ReactiveUI.Routing.UseCases.Android
             });
         }
 
-        protected override void OnCreate(Bundle savedInstanceState)
+        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            base.OnCreate(savedInstanceState);
+            var root = inflater.Inflate(Resource.Layout.Content, container, false);
 
-            SetContentView(Resource.Layout.Content);
+            showDetailButton = root.FindViewById<Button>(Resource.Id.ShowDetailButton);
+            content = root.FindViewById<TextView>(Resource.Id.Content);
 
-            // Create your application here
-            showDetailButton = FindViewById<Button>(Resource.Id.ShowDetailButton);
-            content = FindViewById<TextView>(Resource.Id.Content);
+            return root;
         }
 
         object IViewFor.ViewModel

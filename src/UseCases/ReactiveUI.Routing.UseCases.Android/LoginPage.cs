@@ -10,11 +10,11 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using ReactiveUI.Routing.UseCases.Common.ViewModels;
+using Fragment = Android.Support.V4.App.Fragment;
 
 namespace ReactiveUI.Routing.UseCases.Android
 {
-    [Activity(Label = "ReactiveUI.Routing.UseCases.Android", MainLauncher = true, NoHistory = true)]
-    public class LoginPage : Activity, IViewFor<LoginViewModel>
+    public class LoginPage : Fragment, IViewFor<LoginViewModel>
     {
         private Button loginButton;
 
@@ -37,13 +37,11 @@ namespace ReactiveUI.Routing.UseCases.Android
             });
         }
 
-        protected override void OnCreate(Bundle savedInstanceState)
+        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            base.OnCreate(savedInstanceState);
-
-            SetContentView(Resource.Layout.Login);
-
-            loginButton = FindViewById<Button>(Resource.Id.LoginButton);
+            var view = inflater.Inflate(Resource.Layout.Login, container, false);
+            loginButton = view.FindViewById<Button>(Resource.Id.LoginButton);
+            return view;
         }
 
         object IViewFor.ViewModel
@@ -52,6 +50,6 @@ namespace ReactiveUI.Routing.UseCases.Android
             set => ViewModel = (LoginViewModel)value;
         }
 
-        public LoginViewModel ViewModel { get; set; } = new LoginViewModel();
+        public LoginViewModel ViewModel { get; set; }
     }
 }

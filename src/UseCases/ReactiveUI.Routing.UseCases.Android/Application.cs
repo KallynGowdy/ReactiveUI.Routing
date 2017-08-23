@@ -82,12 +82,9 @@ namespace ReactiveUI.Routing.UseCases.Android
             Locator.CurrentMutable.RegisterConstant(handler, typeof(ActivityLifecycleCallbackHandler));
             Locator.CurrentMutable.Register(() => new ActivityActivationForViewFetcher(), typeof(IActivationForViewFetcher));
 
-            var resolver = Locator.Current.GetService<IMutablePresenterResolver>();
-            resolver.Register(new PagePresenter(this));
-
-            PagePresenter.Register(typeof(LoginViewModel), typeof(LoginPage));
-            PagePresenter.Register(typeof(ContentViewModel), typeof(ContentPage));
-            PagePresenter.Register(typeof(DetailViewModel), typeof(DetailPage));
+            Locator.CurrentMutable.Register(() => new LoginPage(), typeof(IViewFor<LoginViewModel>));
+            Locator.CurrentMutable.Register(() => new DetailPage(), typeof(IViewFor<DetailViewModel>));
+            Locator.CurrentMutable.Register(() => new ContentPage(), typeof(IViewFor<ContentViewModel>));
         }
     }
 }

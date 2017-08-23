@@ -46,6 +46,8 @@
   <ItemGroup>
     <Compile Include="ActivityActivationForViewFetcher.cs" />
     <Compile Include="ActivityLifecycleCallbackHandler.cs" />
+    <Compile Include="FragmentActivationForViewFetcher.cs" />
+    <Compile Include="FragmentLifecycleCallbacksHandler.cs" />
     <Compile Include="PagePresenter.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -62,6 +64,9 @@
   <ItemGroup>
     <PackageReference Include="reactiveui">
       <Version>8.0.0-alpha0055</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Android.Support.v4">
+      <Version>25.4.0.1</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

@@ -2,6 +2,7 @@
 using System.Reactive.Subjects;
 using Android.App;
 using Android.OS;
+using FragmentManager = Android.Support.V4.App.FragmentManager;
 
 namespace ReactiveUI.Routing.Android
 {

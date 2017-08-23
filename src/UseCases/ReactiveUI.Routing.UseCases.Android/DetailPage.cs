@@ -10,11 +10,11 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using ReactiveUI.Routing.UseCases.Common.ViewModels;
+using Fragment = Android.Support.V4.App.Fragment;
 
 namespace ReactiveUI.Routing.UseCases.Android
 {
-    [Activity(Label = "DetailPage", NoHistory = true)]
-    public class DetailPage : Activity, IViewFor<DetailViewModel>
+    public class DetailPage : Fragment, IViewFor<DetailViewModel>
     {
         private Button backToLoginButton;
 
@@ -36,19 +36,19 @@ namespace ReactiveUI.Routing.UseCases.Android
             });
         }
 
-        protected override void OnCreate(Bundle savedInstanceState)
+        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            base.OnCreate(savedInstanceState);
+            var root = inflater.Inflate(Resource.Layout.Detail, container, false);
 
-            SetContentView(Resource.Layout.Detail);
-            
-            backToLoginButton = FindViewById<Button>(Resource.Id.BackToLoginButton);
+            backToLoginButton = root.FindViewById<Button>(Resource.Id.BackToLoginButton);
+
+            return root;
         }
 
         object IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (DetailViewModel) value;
+            set => ViewModel = (DetailViewModel)value;
         }
 
         public DetailViewModel ViewModel { get; set; }
