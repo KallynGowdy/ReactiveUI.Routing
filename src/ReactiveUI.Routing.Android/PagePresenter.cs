@@ -46,10 +46,6 @@ namespace ReactiveUI.Routing.Android
 
                 Intent i = new Intent(application, viewType);
 
-                // TODO: Find good solution for disabling the back stack
-                // This might mean just overriding the back button
-                i.AddFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask);
-
                 application.StartActivity(i);
 
                 return disposable;

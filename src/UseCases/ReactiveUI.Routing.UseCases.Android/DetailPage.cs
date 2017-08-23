@@ -13,7 +13,7 @@ using ReactiveUI.Routing.UseCases.Common.ViewModels;
 
 namespace ReactiveUI.Routing.UseCases.Android
 {
-    [Activity(Label = "DetailPage")]
+    [Activity(Label = "DetailPage", NoHistory = true)]
     public class DetailPage : Activity, IViewFor<DetailViewModel>
     {
         private Button backToLoginButton;

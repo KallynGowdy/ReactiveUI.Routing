@@ -13,7 +13,7 @@ using ReactiveUI.Routing.UseCases.Common.ViewModels;
 
 namespace ReactiveUI.Routing.UseCases.Android
 {
-    [Activity(Label = "ReactiveUI.Routing.UseCases.Android", MainLauncher = true)]
+    [Activity(Label = "ReactiveUI.Routing.UseCases.Android", MainLauncher = true, NoHistory = true)]
     public class LoginPage : Activity, IViewFor<LoginViewModel>
     {
         private Button loginButton;

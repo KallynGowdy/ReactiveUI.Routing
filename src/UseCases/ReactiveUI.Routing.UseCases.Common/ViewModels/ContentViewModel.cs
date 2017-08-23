@@ -10,7 +10,6 @@ namespace ReactiveUI.Routing.UseCases.Common.ViewModels
     [DataContract]
     public class ContentViewModel
     {
-
         public string Text { get; set; } = "Hello, Presentation!";
 
         [IgnoreDataMember]

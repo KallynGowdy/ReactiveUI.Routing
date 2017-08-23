@@ -13,7 +13,7 @@ using ReactiveUI.Routing.UseCases.Common.ViewModels;
 
 namespace ReactiveUI.Routing.UseCases.Android
 {
-    [Activity(Label = "ContentPage")]
+    [Activity(Label = "ContentPage", NoHistory = true)]
     public class ContentPage : Activity, IViewFor<ContentViewModel>
     {
         private Button showDetailButton;
