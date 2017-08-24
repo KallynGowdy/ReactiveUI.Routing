@@ -27,10 +27,12 @@ namespace ReactiveUI.Routing.Android
         {
             ActivityLifecycleCallbackHandler handler = new ActivityLifecycleCallbackHandler();
             mainActivity.Application.RegisterActivityLifecycleCallbacks(handler);
-
+            var fragmentActivationForViewFetcher = new FragmentActivationForViewFetcher(mainActivity.SupportFragmentManager);
+            
             Locator.CurrentMutable.RegisterConstant(handler, typeof(ActivityLifecycleCallbackHandler));
             Locator.CurrentMutable.Register(() => new ActivityActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-            Locator.CurrentMutable.Register(() => new FragmentActivationForViewFetcher(mainActivity.SupportFragmentManager), typeof(IActivationForViewFetcher));
+            Locator.CurrentMutable.RegisterConstant(fragmentActivationForViewFetcher, typeof(IActivationForViewFetcher));
+            Locator.CurrentMutable.RegisterConstant(fragmentActivationForViewFetcher, typeof(FragmentActivationForViewFetcher));
         }
     }
 }

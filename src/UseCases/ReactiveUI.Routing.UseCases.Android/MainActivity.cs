@@ -21,11 +21,13 @@ namespace ReactiveUI.Routing.UseCases.Android
     [Activity(Label = "ReactiveUI.Routing.UseCases.Android", MainLauncher = true)]
     public class MainActivity : FragmentActivity, IActivatable
     {
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             Locator.CurrentMutable.InitializeRoutingAndroid(this);
             this.WhenActivated(d =>
             {
+                Locator.Current.GetService<FragmentActivationForViewFetcher>().SetFragmentManager(SupportFragmentManager);
                 PagePresenter.RegisterHost(SupportFragmentManager, Resource.Id.Container)
                     .DisposeWith(d);
 

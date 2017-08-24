@@ -18,10 +18,21 @@ namespace ReactiveUI.Routing.Android
     public class FragmentActivationForViewFetcher : IActivationForViewFetcher
     {
         private readonly FragmentLifecycleCallbacksHandler handler = new FragmentLifecycleCallbacksHandler();
+        private FragmentManager manager;
 
         public FragmentActivationForViewFetcher(FragmentManager manager)
         {
-            manager.RegisterFragmentLifecycleCallbacks(handler, true);
+            SetFragmentManager(manager);
+        }
+
+        public void SetFragmentManager(FragmentManager manager)
+        {
+            if (manager != this.manager)
+            {
+                this.manager?.UnregisterFragmentLifecycleCallbacks(handler);
+                this.manager = manager;
+                this.manager.RegisterFragmentLifecycleCallbacks(handler, true);
+            }
         }
 
         public int GetAffinityForView(Type view)
