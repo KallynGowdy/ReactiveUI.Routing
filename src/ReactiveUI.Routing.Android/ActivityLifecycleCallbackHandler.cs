@@ -10,21 +10,27 @@ namespace ReactiveUI.Routing.Android
     {
         private Subject<Activity> activityStarted = new Subject<Activity>();
         private Subject<Activity> activityStopped = new Subject<Activity>();
+        private Subject<Activity> activityDestoyed = new Subject<Activity>();
+        private Subject<Activity> activityResumed = new Subject<Activity>();
+        private Subject<(Activity, Bundle)> activityCreated = new Subject<(Activity, Bundle)>();
+        private Subject<(Activity, Bundle)> activitySaveInstanceState = new Subject<(Activity, Bundle)>();
 
-        //public IObservable<(Activity activity, Bundle savedInstanceState)> ActivityCreated { get; }
-        //public IObservable<Activity> ActivityDestroyed { get; }
-        //public IObservable<Activity> ActivityResumed { get; }
+        public IObservable<(Activity activity, Bundle savedInstanceState)> ActivityCreated => activityCreated;
+        public IObservable<(Activity activity, Bundle outState)> ActivitySaveInstanceState => activitySaveInstanceState;
+
+        public IObservable<Activity> ActivityDestroyed => activityDestoyed;
         public IObservable<Activity> ActivityStarted => activityStarted;
-
         public IObservable<Activity> ActivityStopped => activityStopped;
+        public IObservable<Activity> ActivityResumed => activityResumed;
 
         public void OnActivityCreated(Activity activity, Bundle savedInstanceState)
         {
+            activityCreated.OnNext((activity, savedInstanceState));
         }
 
         public void OnActivityDestroyed(Activity activity)
         {
-
+            activityDestoyed.OnNext(activity);
         }
 
         public void OnActivityPaused(Activity activity)
@@ -33,10 +39,12 @@ namespace ReactiveUI.Routing.Android
 
         public void OnActivityResumed(Activity activity)
         {
+            activityResumed.OnNext(activity);
         }
 
         public void OnActivitySaveInstanceState(Activity activity, Bundle outState)
         {
+            activitySaveInstanceState.OnNext((activity, outState));
         }
 
         public void OnActivityStarted(Activity activity)

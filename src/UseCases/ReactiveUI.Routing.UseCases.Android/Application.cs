@@ -21,9 +21,8 @@ namespace ReactiveUI.Routing.UseCases.Android
     [Application(
         Debuggable = true,
         Label = "ReactiveUI.Routing.UseCases.Android")]
-    public class Application : global::Android.App.Application, global::Android.App.Application.IActivityLifecycleCallbacks
+    public class Application : global::Android.App.Application
     {
-        private AutoSuspendHelper suspendHelper;
         private ApplicationViewModel app;
 
         public Application(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
@@ -33,39 +32,10 @@ namespace ReactiveUI.Routing.UseCases.Android
             RegisterViews();
         }
 
-        public void OnActivityCreated(Activity activity, Bundle savedInstanceState)
-        {
-        }
-
-        public void OnActivityDestroyed(Activity activity)
-        {
-        }
-
-        public void OnActivityPaused(Activity activity)
-        {
-        }
-
-        public void OnActivityResumed(Activity activity)
-        {
-        }
-
-        public void OnActivitySaveInstanceState(Activity activity, Bundle outState)
-        {
-        }
-
-        public void OnActivityStarted(Activity activity)
-        {
-        }
-
-        public void OnActivityStopped(Activity activity)
-        {
-        }
-
         public override void OnCreate()
         {
+            RxApp.SuspensionHost.SetupSuspensionPattern(this);
             base.OnCreate();
-            this.RegisterActivityLifecycleCallbacks(this);
-            suspendHelper = new AutoSuspendHelper(this);
             RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
                 .Cast<AppState>()
                 .ObserveOn(RxApp.MainThreadScheduler)

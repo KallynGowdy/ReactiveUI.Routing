@@ -37,8 +37,8 @@ namespace ReactiveUI.Routing.Android
         {
             var activity = (Fragment)view;
             return Observable.Merge(
-                handler.FragmentResumed.Where(a => a.fragment == activity).Select(a => true),
-                handler.FragmentPaused.Where(a => a.fragment == activity).Select(a => false));
+                handler.FragmentActivityCreated.Where(a => a.fragment == activity).Select(a => true),
+                handler.FragmentDestroyed.Where(a => a.fragment == activity).Select(a => false));
         }
     }
 }

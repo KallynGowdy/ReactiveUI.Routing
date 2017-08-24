@@ -19,6 +19,11 @@ namespace ReactiveUI.Routing.UseCases.Android
     {
         private Button loginButton;
 
+        public LoginPage()
+        {
+            SetupBindings();
+        }
+
         private void SetupBindings()
         {
             this.WhenActivated(d =>
@@ -30,7 +35,6 @@ namespace ReactiveUI.Routing.UseCases.Android
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            SetupBindings();
             var view = inflater.Inflate(Resource.Layout.Login, container, false);
             loginButton = view.FindViewById<Button>(Resource.Id.LoginButton);
             return view;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Text;
 
 using Android.App;
@@ -9,6 +10,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using ReactiveUI.Routing.Android;
 using ReactiveUI.Routing.UseCases.Common.ViewModels;
 using Fragment = Android.Support.V4.App.Fragment;
 
@@ -18,6 +20,7 @@ namespace ReactiveUI.Routing.UseCases.Android
     {
         private Button showDetailButton;
         private TextView content;
+        private FrameLayout detailContainer;
 
         public ContentPage()
         {
@@ -34,8 +37,16 @@ namespace ReactiveUI.Routing.UseCases.Android
         {
             this.WhenActivated(d =>
             {
-                this.Bind(ViewModel, vm => vm.Text, view => view.content.Text);
-                this.BindCommand(ViewModel, vm => vm.ShowDetail, view => view.showDetailButton);
+                this.Bind(ViewModel, vm => vm.Text, view => view.content.Text)
+                    .DisposeWith(d);
+                this.BindCommand(ViewModel, vm => vm.ShowDetail, view => view.showDetailButton)
+                    .DisposeWith(d);
+
+                if (detailContainer != null)
+                {
+                    PagePresenter.RegisterHostFor<DetailViewModel>(FragmentManager, Resource.Id.DetailContainer)
+                        .DisposeWith(d);
+                }
             });
         }
 
@@ -45,6 +56,7 @@ namespace ReactiveUI.Routing.UseCases.Android
 
             showDetailButton = root.FindViewById<Button>(Resource.Id.ShowDetailButton);
             content = root.FindViewById<TextView>(Resource.Id.Content);
+            detailContainer = root.FindViewById<FrameLayout>(Resource.Id.DetailContainer);
 
             return root;
         }
