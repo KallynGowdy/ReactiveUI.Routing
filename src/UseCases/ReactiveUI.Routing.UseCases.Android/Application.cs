@@ -11,6 +11,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using ReactiveUI.Routing.Android;
+using ReactiveUI.Routing.Android.Utils;
 using ReactiveUI.Routing.Presentation;
 using ReactiveUI.Routing.UseCases.Common;
 using ReactiveUI.Routing.UseCases.Common.ViewModels;
@@ -30,6 +31,8 @@ namespace ReactiveUI.Routing.UseCases.Android
             app = new ApplicationViewModel();
             app.Initialize();
             RegisterViews();
+
+            Locator.CurrentMutable.RegisterConstant(new LogcatLogger("ReactiveUI.Routing.UseCases.Android"), typeof(ILogger));
         }
 
         public override void OnCreate()
