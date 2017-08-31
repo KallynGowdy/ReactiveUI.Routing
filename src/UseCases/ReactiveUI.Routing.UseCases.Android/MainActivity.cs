@@ -21,7 +21,6 @@ namespace ReactiveUI.Routing.UseCases.Android
     [Activity(Label = "ReactiveUI.Routing.UseCases.Android", MainLauncher = true)]
     public class MainActivity : FragmentActivity, IActivatable
     {
-
         protected override void OnCreate(Bundle savedInstanceState)
         {
             Locator.CurrentMutable.InitializeRoutingAndroid(this);
@@ -31,14 +30,8 @@ namespace ReactiveUI.Routing.UseCases.Android
                 PagePresenter.RegisterHost(SupportFragmentManager, Resource.Id.Container)
                     .DisposeWith(d);
 
-                var presenter = Locator.Current.GetService<IAppPresenter>();
-
-                if (!presenter.ActiveViews.Any())
-                {
-                    presenter.PresentPage(new LoginViewModel())
-                    .Subscribe()
-                    .DisposeWith(d);
-                }
+                Locator.Current.GetService<IAppPresenter>()
+                    .PresentPageAsDefault(() => new LoginViewModel());
             });
 
             base.OnCreate(savedInstanceState);

@@ -13,10 +13,13 @@ namespace ReactiveUI.Routing
         /// Gets an observable that resolves when the given view is deactivated.
         /// </summary>
         /// <param name="view">The view that the deactivation observable should be retrieved for.</param>
+        /// <param name="activationForViewFetcher">The activation fetcher that should be used.</param>
         /// <returns></returns>
-        public static IObservable<IViewFor> Deactivated(this IViewFor view)
+        public static IObservable<IViewFor> Deactivated(this IViewFor view, IActivationForViewFetcher activationForViewFetcher = null)
         {
-            var activationFetcher = Locator.Current.GetService<IActivationForViewFetcher>();
+            var activationFetcher = activationForViewFetcher
+                ?? Locator.Current.GetService<IActivationForViewFetcher>()
+                ?? throw new ArgumentNullException(nameof(activationForViewFetcher), "An IActivationForViewFetcher must be either provided by argument or registered in Locator.Current");
 
             return activationFetcher.GetActivationForView(view)
                 .FirstAsync(active => !active)

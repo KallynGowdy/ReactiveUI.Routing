@@ -9,19 +9,19 @@ namespace ReactiveUI.Routing.Presentation
 {
     public class AppPresenter : IAppPresenter
     {
-        private readonly IMutablePresenterResolver resolver;
+        private readonly IPresenterResolver resolver;
         private readonly Subject<PresentedView> presentationResponses = new Subject<PresentedView>();
 
         public ReactiveList<PresentedView> ActiveViews { get; }
 
-        public AppPresenter(IMutablePresenterResolver resolver = null)
+        public AppPresenter(IPresenterResolver resolver = null, IActivationForViewFetcher activationForViewFetcher = null)
         {
-            this.resolver = resolver ?? Locator.Current.GetService<IMutablePresenterResolver>();
+            this.resolver = resolver ?? Locator.Current.GetService<IPresenterResolver>();
             ActiveViews = new ReactiveList<PresentedView>();
 
             this.presentationResponses
                 .Do(presented => ActiveViews.Add(presented))
-                .SelectMany(presented => presented.Response.PresentedView.Deactivated().Select(v => presented))
+                .SelectMany(presented => presented.Response.PresentedView.Deactivated(activationForViewFetcher).Select(v => presented))
                 .Do(view => ActiveViews.Remove(view))
                 .Subscribe();
         }
