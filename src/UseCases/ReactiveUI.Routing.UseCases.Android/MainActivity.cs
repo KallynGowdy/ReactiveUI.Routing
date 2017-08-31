@@ -31,10 +31,14 @@ namespace ReactiveUI.Routing.UseCases.Android
                 PagePresenter.RegisterHost(SupportFragmentManager, Resource.Id.Container)
                     .DisposeWith(d);
 
-                Locator.Current.GetService<IAppPresenter>()
-                    .PresentPage(new LoginViewModel())
+                var presenter = Locator.Current.GetService<IAppPresenter>();
+
+                if (!presenter.ActiveViews.Any())
+                {
+                    presenter.PresentPage(new LoginViewModel())
                     .Subscribe()
                     .DisposeWith(d);
+                }
             });
 
             base.OnCreate(savedInstanceState);
