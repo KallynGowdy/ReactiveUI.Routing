@@ -67,7 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="reactiveui">
-      <Version>8.0.0-alpha0055</Version>
+      <Version>8.0.0-alpha0073</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.v4">
       <Version>25.4.0.1</Version>

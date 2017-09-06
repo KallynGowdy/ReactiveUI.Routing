@@ -20,12 +20,12 @@ namespace ReactiveUI.Routing.UseCases.Common.ViewModels
         {
             this.presenter = presenter ?? Locator.Current.GetService<IAppPresenter>();
 
-            this.WhenActivated(d =>
-            {
-                this.presenter.PresentPage(new LoginViewModel())
-                    .Subscribe()
-                    .DisposeWith(d);
-            });
+            //this.WhenActivated(d =>
+            //{
+            //    this.presenter.PresentPage(new LoginViewModel())
+            //        .Subscribe()
+            //        .DisposeWith(d);
+            //});
         }
 
     }
