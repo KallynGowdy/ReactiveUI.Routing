@@ -16,10 +16,10 @@ namespace ReactiveUI.Routing.UWP
 {
     public class PagePresenter : Presenter<PagePresenterRequest>
     {
-        private readonly Frame host;
+        private readonly ContentControl host;
         private readonly IViewLocator locator;
 
-        public PagePresenter(Frame host, IViewLocator locator = null)
+        public PagePresenter(ContentControl host, IViewLocator locator = null)
         {
             this.host = host ?? throw new ArgumentNullException(nameof(host));
             this.locator = locator ?? Locator.Current.GetService<IViewLocator>();
@@ -32,22 +32,27 @@ namespace ReactiveUI.Routing.UWP
                 try
                 {
                     var view = locator.ResolveView(request.ViewModel);
+
+                    var disposable = view.WhenActivated(d =>
+                    {
+                        o.OnNext(new PresenterResponse(view));
+                        o.OnCompleted();
+                    });
+
                     view.ViewModel = request.ViewModel;
-                    host.Navigate(view.GetType());
+                    host.Content = view;
 
-                    o.OnNext(new PresenterResponse(view));
-                    o.OnCompleted();
-
+                    return disposable;
                 }
                 catch (Exception ex)
                 {
                     o.OnError(ex);
+                    throw;
                 }
-                return new CompositeDisposable();
             });
         }
 
-        public static IDisposable RegisterHost(Frame control)
+        public static IDisposable RegisterHost(ContentControl control)
         {
             var resolver = Locator.Current.GetService<IMutablePresenterResolver>();
             return resolver.Register(new PagePresenter(control));
