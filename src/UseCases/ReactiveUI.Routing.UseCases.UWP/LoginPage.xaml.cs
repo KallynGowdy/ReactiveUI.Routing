@@ -23,7 +23,7 @@ namespace ReactiveUI.Routing.UseCases.UWP
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class LoginPage : UserControl, IViewFor<LoginViewModel>
+    public sealed partial class LoginPage : Page, IViewFor<LoginViewModel>
     {
         public LoginPage()
         {
@@ -33,10 +33,6 @@ namespace ReactiveUI.Routing.UseCases.UWP
                 this.BindCommand(ViewModel, vm => vm.Login, view => view.LoginButton)
                     .DisposeWith(d);
             });
-            this.Loaded += (sender, args) =>
-            {
-                Debug.Write("Loaded");
-            };
         }
         
         object IViewFor.ViewModel

@@ -48,18 +48,18 @@ namespace ReactiveUI.Routing.UseCases.UWP
             app.Initialize();
             RegisterViews();
 
-            ContentControl content = Window.Current.Content as ContentControl;
+            var content = Window.Current.Content as Frame;
             if (content == null)
             {
-                content = new ContentControl();
+                content = new Frame();
                 Window.Current.Content = content;
             }
 
-            PagePresenter.RegisterHost((ContentPresenter) VisualTreeHelper.GetChild(content, 0));
+            PagePresenter.RegisterHost(content);
 
             if (content.Content == null)
             {
-                content.Content = new MainPage();
+                content.Navigate(typeof(MainPage), e.Arguments);
             }
 
             Window.Current.Activate();
@@ -81,6 +81,7 @@ namespace ReactiveUI.Routing.UseCases.UWP
 
         private void RegisterViews()
         {
+            Locator.CurrentMutable.Register(() => new UwpPageActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             Locator.CurrentMutable.Register(() => new LoginPage(), typeof(IViewFor<LoginViewModel>));
         }
     }

@@ -108,6 +108,7 @@
   <ItemGroup>
     <Compile Include="PagePresenter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UwpPageActivationForViewFetcher.cs" />
     <EmbeddedResource Include="Properties\ReactiveUI.Routing.UWP.rd.xml" />
   </ItemGroup>
   <ItemGroup>
