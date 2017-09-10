@@ -57,5 +57,11 @@ namespace ReactiveUI.Routing.UWP
             var resolver = Locator.Current.GetService<IMutablePresenterResolver>();
             return resolver.Register(new PagePresenter(control));
         }
+
+        public static IDisposable RegisterHostFor<TViewModel>(ContentControl host)
+        {
+            var resolver = Locator.Current.GetService<IMutablePresenterResolver>();
+            return resolver.RegisterFor<PagePresenterRequest, TViewModel>(new PagePresenter(host));
+        }
     }
 }

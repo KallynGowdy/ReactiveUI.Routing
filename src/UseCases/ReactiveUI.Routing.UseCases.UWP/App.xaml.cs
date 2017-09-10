@@ -83,6 +83,8 @@ namespace ReactiveUI.Routing.UseCases.UWP
         {
             Locator.CurrentMutable.Register(() => new UwpPageActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             Locator.CurrentMutable.Register(() => new LoginPage(), typeof(IViewFor<LoginViewModel>));
+            Locator.CurrentMutable.Register(() => new ContentPage(), typeof(IViewFor<ContentViewModel>));
+            Locator.CurrentMutable.Register(() => new DetailPage(), typeof(IViewFor<DetailViewModel>));
         }
     }
 }
