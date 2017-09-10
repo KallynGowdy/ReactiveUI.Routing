@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -14,6 +15,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using ReactiveUI.Routing.UseCases.Common;
 using ReactiveUI.Routing.UseCases.Common.ViewModels;
 using ReactiveUI.Routing.UWP;
 using Splat;
@@ -26,6 +28,7 @@ namespace ReactiveUI.Routing.UseCases.UWP
     sealed partial class App : Application
     {
         private ApplicationViewModel app;
+        private AutoSuspendHelper autoSuspendHelper;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -45,8 +48,17 @@ namespace ReactiveUI.Routing.UseCases.UWP
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
+            autoSuspendHelper = new AutoSuspendHelper(this);
+            RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
+                .Cast<AppState>()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Do(state => app.LoadState(state))
+                .Subscribe();
+            RxApp.SuspensionHost.SetupPersistence(() => app.BuildAppState(), new Store<AppState>());
             app.Initialize();
             RegisterViews();
+
+            autoSuspendHelper.OnLaunched(e);
 
             var content = Window.Current.Content as Frame;
             if (content == null)
