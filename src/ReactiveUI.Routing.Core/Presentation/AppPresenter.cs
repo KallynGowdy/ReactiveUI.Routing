@@ -40,11 +40,6 @@ namespace ReactiveUI.Routing.Presentation
             }
         }
 
-        public IObservable<PresenterResponse> PresentPage(object viewModel)
-        {
-            return Present(new PagePresenterRequest(viewModel));
-        }
-
         public AppPresentationState GetPresentationState()
         {
             return new AppPresentationState(ActiveViews);

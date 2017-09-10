@@ -25,12 +25,14 @@ namespace ReactiveUI.Routing.Presentation
             IPresenterFor<TRequest> presenter)
             where TRequest : PresenterRequest
         {
+            if (presenter == null) throw new ArgumentNullException(nameof(presenter));
             return resolver.Register<TRequest>(request => presenter);
         }
 
         public static IDisposable RegisterFor<TViewModel>(this IMutablePresenterResolver resolver,
             Func<PresenterRequest, IPresenter> predicate)
         {
+            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
             return resolver.Register(request => request.ViewModel is TViewModel ? predicate(request) : null);
         }
 
@@ -38,6 +40,7 @@ namespace ReactiveUI.Routing.Presentation
             Func<TRequest, IPresenterFor<TRequest>> predicate)
             where TRequest : PresenterRequest
         {
+            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
             return resolver.Register<TRequest>(request => request.ViewModel is TViewModel ? predicate(request) : null);
         }
 
@@ -45,12 +48,14 @@ namespace ReactiveUI.Routing.Presentation
             IPresenterFor<TRequest> presenter)
             where TRequest : PresenterRequest
         {
+            if (presenter == null) throw new ArgumentNullException(nameof(presenter));
             return resolver.RegisterFor<TRequest, TViewModel>(request => presenter);
         }
 
         private static IPresenterFor<T> HandleRequest<T>(PresenterRequest request, Func<T, IPresenterFor<T>> predicate)
             where T : PresenterRequest
         {
+            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
             T req = request as T;
             return req != null ? predicate(req) : null;
         }

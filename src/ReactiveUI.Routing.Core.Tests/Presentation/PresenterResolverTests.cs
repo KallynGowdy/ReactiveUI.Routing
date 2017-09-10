@@ -123,6 +123,20 @@ namespace ReactiveUI.Routing.Core.Tests.Presentation
         }
 
         [Fact]
+        public void Test_Register_With_Type_Param_Returns_Given_Presenter_When_Resolving_Requests_Assignable_To_Type()
+        {
+            Subject.Register<TestPresenterRequest>(new TestPresenter());
+
+            var presenter = Subject.Resolve(new PresenterRequest());
+
+            presenter.Should().BeNull();
+
+            presenter = Subject.Resolve(new TestPresenterRequest());
+
+            presenter.Should().NotBeNull();
+        }
+
+        [Fact]
         public void Test_RegisterFor_Only_Calls_When_Request_Contains_Given_ViewModel_Type()
         {
             Subject.RegisterFor<TestViewModel>(request => new TestPresenter());

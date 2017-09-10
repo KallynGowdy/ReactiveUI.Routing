@@ -12,6 +12,26 @@ namespace ReactiveUI.Routing.Presentation
     public static class AppPresenterExtensions
     {
         /// <summary>
+        /// Presents the given view model inside a page.
+        /// </summary>
+        /// <remarks>
+        /// Essentially shorthand for:
+        /// <code>
+        /// presenter.Present(new PagePresenterRequest(viewModel));
+        /// </code>
+        /// </remarks>
+        /// <param name="appPresenter">the application presenter.</param>
+        /// <param name="viewModel">The view model that should be presented.</param>
+        /// <returns>
+        /// An observable that resolves with the presenter response.
+        /// If the given request is not presented, then the observable simply completes.
+        /// </returns>
+        public static IObservable<PresenterResponse> PresentPage(this IAppPresenter appPresenter, object viewModel)
+        {
+            return appPresenter.Present(new PagePresenterRequest(viewModel));
+        }
+
+        /// <summary>
         /// Presents the given request if no views are currently active.
         /// </summary>
         /// <param name="appPresenter">The application presenter.</param>

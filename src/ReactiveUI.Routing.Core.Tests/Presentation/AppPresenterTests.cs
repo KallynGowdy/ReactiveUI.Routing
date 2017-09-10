@@ -144,5 +144,38 @@ namespace ReactiveUI.Routing.Core.Tests.Presentation
             Assert.False(resolved, "Should not have resolved with a value.");
             Assert.True(completed, "Should have completed the returned observable.");
         }
+
+        [Fact]
+        public async Task Test_PresentPageAsDefault_Presents_Given_ViewModel_If_No_Views_Are_Active()
+        {
+            var viewModel = new object();
+
+            PresenterResolver.Resolve(Arg.Is<PagePresenterRequest>(r => r.ViewModel == viewModel)).Returns(presenter);
+            presenter.Present(Arg.Any<PagePresenterRequest>()).Returns(Observable.Return(response));
+
+            var result = await Subject.PresentPageAsDefault(viewModel);
+
+            Assert.Same(response, result);
+        }
+
+        [Fact]
+        public async Task Test_LoadState_Replays_The_Presentation_Requests_Contained_In_The_Given_State()
+        {
+            PresenterResolver.Resolve(request).Returns(presenter);
+            presenter.Present(request).Returns(Observable.Return(response));
+
+            await Subject.LoadState(new AppPresentationState()
+            {
+                PresentationRequests = new List<PresenterRequest>()
+                {
+                    request,
+                    request
+                }
+            });
+
+            Assert.Collection(Subject.ActiveViews,
+                v => Assert.Same(response, v.Response),
+                v => Assert.Same(response, v.Response));
+        }
     }
 }
