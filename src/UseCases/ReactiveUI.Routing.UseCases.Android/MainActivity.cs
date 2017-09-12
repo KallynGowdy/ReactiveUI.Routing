@@ -23,7 +23,10 @@ namespace ReactiveUI.Routing.UseCases.Android
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {
-            Locator.CurrentMutable.InitializeRoutingAndroid(this);
+            new ReactiveAppBuilder()
+                .AddReactiveRouting()
+                .Apply(Locator.CurrentMutable);
+            
             this.WhenActivated(d =>
             {
                 Locator.Current.GetService<FragmentActivationForViewFetcher>().SetFragmentManager(SupportFragmentManager);

@@ -7,6 +7,7 @@ namespace ReactiveUI.Routing.UseCases.Common.ViewModels
     public class ApplicationViewModel : ReactiveObject
     {
         public IAppPresenter Presenter { get; set; }
+        public IReactiveRouter Router { get; set; }
 
         private AppState state;
 
@@ -26,7 +27,7 @@ namespace ReactiveUI.Routing.UseCases.Common.ViewModels
 
         public void Initialize()
         {
-            Locator.CurrentMutable.InitializeRouting();
+            //Locator.CurrentMutable.InitializeRouting();
             Presenter = Locator.Current.GetService<IAppPresenter>();
         }
 
