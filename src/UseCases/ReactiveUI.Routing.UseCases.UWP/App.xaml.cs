@@ -27,16 +27,12 @@ namespace ReactiveUI.Routing.UseCases.UWP
     /// </summary>
     sealed partial class App : Application
     {
-        private ApplicationViewModel app;
-        private AutoSuspendHelper autoSuspendHelper;
-
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
         {
-            app = new ApplicationViewModel();
             this.InitializeComponent();
             this.Suspending += OnSuspending;
         }
@@ -48,17 +44,21 @@ namespace ReactiveUI.Routing.UseCases.UWP
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            autoSuspendHelper = new AutoSuspendHelper(this);
-            RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
-                .Cast<AppState>()
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Do(state => app.LoadState(state))
-                .Subscribe();
-            RxApp.SuspensionHost.SetupPersistence(() => app.BuildAppState(), new Store<AppState>());
-            app.Initialize();
-            RegisterViews();
+            var a = new ReactiveAppBuilder()
+                .AddReactiveRouting()
+                .Add(new CommonUseCaseDependencies())
+                .Add(new UwpViewDependencies())
+                .ConfigureUwp(this, e)
+                .Build();
 
-            autoSuspendHelper.OnLaunched(e);
+            //RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
+            //    .Cast<ReactiveAppState>()
+            //    .ObserveOn(RxApp.MainThreadScheduler)
+            //    .Do(state => app.LoadState(state))
+            //    .Subscribe();
+            //RxApp.SuspensionHost.SetupPersistence(() => app.BuildAppState(), new Store<ReactiveAppState>());
+            
+            RegisterViews();
 
             var content = Window.Current.Content as Frame;
             if (content == null)
@@ -93,10 +93,6 @@ namespace ReactiveUI.Routing.UseCases.UWP
 
         private void RegisterViews()
         {
-            Locator.CurrentMutable.Register(() => new UwpPageActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-            Locator.CurrentMutable.Register(() => new LoginPage(), typeof(IViewFor<LoginViewModel>));
-            Locator.CurrentMutable.Register(() => new ContentPage(), typeof(IViewFor<ContentViewModel>));
-            Locator.CurrentMutable.Register(() => new DetailPage(), typeof(IViewFor<DetailViewModel>));
         }
     }
 }

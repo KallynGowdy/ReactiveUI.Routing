@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ReactiveUI.Routing.Presentation;
 using Splat;
 
 namespace ReactiveUI.Routing
@@ -12,6 +13,7 @@ namespace ReactiveUI.Routing
     public class ReactiveAppBuilder : IReactiveAppBuilder
     {
         private readonly List<IReactiveAppDependency> dependencies = new List<IReactiveAppDependency>();
+        private readonly List<IReactiveAppConfiguration> configurations = new List<IReactiveAppConfiguration>();
 
         public void Apply(IMutableDependencyResolver resolver)
         {
@@ -28,6 +30,33 @@ namespace ReactiveUI.Routing
             dependencies.Add(dependency);
 
             return this;
+        }
+
+        public IReactiveAppBuilder Configure(IReactiveAppConfiguration configuration)
+        {
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+            configurations.Add(configuration);
+
+            return this;
+        }
+
+        public IReactiveApp Build()
+        {
+            Apply(Locator.CurrentMutable);
+
+            var app = new ReactiveApp(
+                router: Locator.Current.GetService<IReactiveRouter>(),
+                presenter: Locator.Current.GetService<IAppPresenter>(),
+                suspensionHost: Locator.Current.GetService<ISuspensionHost>(),
+                suspensionDriver: Locator.Current.GetService<ISuspensionDriver>(),
+                locator: Locator.CurrentMutable);
+
+            foreach (var config in configurations)
+            {
+                config.Configure(app);
+            }
+
+            return app;
         }
     }
 }

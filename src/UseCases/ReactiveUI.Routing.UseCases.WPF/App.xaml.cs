@@ -25,12 +25,14 @@ namespace ReactiveUI.Routing.UseCases.WPF
         {
             application = new ApplicationViewModel();
             suspendHelper = new AutoSuspendHelper(this);
-            RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
-                .Cast<AppState>()
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Do(state => application.LoadState(state))
-                .Subscribe();
-            RxApp.SuspensionHost.SetupPersistence(() => application.BuildAppState(), new Store<AppState>());
+
+            //RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
+            //    .Cast<ReactiveAppState>()
+            //    .ObserveOn(RxApp.MainThreadScheduler)
+            //    .Do(state => application.LoadState(state))
+            //    .Subscribe();
+            //RxApp.SuspensionHost.SetupPersistence(() => application.BuildAppState(), new Store<ReactiveAppState>());
+
             application.Initialize();
             RegisterViews();
             InitializeComponent();

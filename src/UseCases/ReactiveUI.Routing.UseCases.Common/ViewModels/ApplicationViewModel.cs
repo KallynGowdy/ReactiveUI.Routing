@@ -9,13 +9,13 @@ namespace ReactiveUI.Routing.UseCases.Common.ViewModels
         public IAppPresenter Presenter { get; set; }
         public IReactiveRouter Router { get; set; }
 
-        private AppState state;
+        private ReactiveAppState state;
 
         public ApplicationViewModel()
         {
         }
 
-        public void LoadState(AppState state)
+        public void LoadState(ReactiveAppState state)
         {
             this.state = state;
             if (state?.PresentationState != null)
@@ -27,22 +27,21 @@ namespace ReactiveUI.Routing.UseCases.Common.ViewModels
 
         public void Initialize()
         {
-            //Locator.CurrentMutable.InitializeRouting();
             Presenter = Locator.Current.GetService<IAppPresenter>();
         }
 
-        public AppState BuildAppState()
+        public ReactiveAppState BuildAppState()
         {
             if (Presenter != null)
             {
-                return new AppState()
+                return new ReactiveAppState()
                 {
                     PresentationState = Presenter.GetPresentationState()
                 };
             }
             else
             {
-                return new AppState();
+                return new ReactiveAppState();
             }
         }
     }

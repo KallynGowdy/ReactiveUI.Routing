@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NSubstitute;
+using ReactiveUI.Routing.Configuration;
 using Splat;
 using Xunit;
 
@@ -62,7 +63,39 @@ namespace ReactiveUI.Routing.Core.Tests
 
             Assert.Collection(list,
                 type => Assert.Equal("ReactiveUI.Routing.CoreRoutingDependencies, ReactiveUI.Routing.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", type),
-                type => Assert.Equal("ReactiveUI.Routing.Android.AndroidRoutingDependencies, ReactiveUI.Routing.Android, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", type));
+                type => Assert.Equal("ReactiveUI.Routing.Android.AndroidRoutingDependencies, ReactiveUI.Routing.Android, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", type),
+                type => Assert.Equal("ReactiveUI.Routing.UWP.UwpRoutingDependencies, ReactiveUI.Routing.UWP, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", type));
+        }
+
+        [Fact]
+        public void Test_Build_Returns_A_New_ReactiveApp()
+        {
+            var app = new ReactiveAppBuilder()
+                .AddReactiveUI()
+                .AddReactiveRouting()
+                .Build();
+
+            Assert.NotNull(app);
+            Assert.NotNull(app.Presenter);
+            Assert.NotNull(app.Router);
+            Assert.NotNull(app.SuspensionHost);
+            Assert.NotNull(app.SuspensionDriver);
+            Assert.NotNull(app.Locator);
+        }
+
+        [Fact]
+        public void Test_Configurations_Are_Called_On_App_After_It_Is_Built()
+        {
+            IReactiveApp hitApp = null;
+            var config = new ActionConfiguration(a => hitApp = a);
+
+            var app = new ReactiveAppBuilder()
+                .AddReactiveUI()
+                .AddReactiveRouting()
+                .Configure(config)
+                .Build();
+
+            Assert.Same(app, hitApp);
         }
     }
 }

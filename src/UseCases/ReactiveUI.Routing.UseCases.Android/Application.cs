@@ -39,12 +39,14 @@ namespace ReactiveUI.Routing.UseCases.Android
         {
             RxApp.SuspensionHost.SetupSuspensionPattern(this);
             base.OnCreate();
-            RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
-                .Cast<AppState>()
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Do(state => app.LoadState(state))
-                .Subscribe();
-            RxApp.SuspensionHost.SetupPersistence(() => app.BuildAppState(), new Store<AppState>(this));
+
+
+            //RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
+            //    .Cast<ReactiveAppState>()
+            //    .ObserveOn(RxApp.MainThreadScheduler)
+            //    .Do(state => app.LoadState(state))
+            //    .Subscribe();
+            //RxApp.SuspensionHost.SetupPersistence(() => app.BuildAppState(), new Store<ReactiveAppState>(this));
         }
 
         private void RegisterViews()

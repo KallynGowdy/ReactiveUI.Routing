@@ -36,12 +36,12 @@ namespace ReactiveUI.Routing
         /// Registers the given factory for the given type.
         /// </summary>
         /// <param name="builder">The app builder.</param>
-        /// <param name="constant">The factory that should be registered.</param>
+        /// <param name="factory">The factory that should be registered.</param>
         /// <param name="registration">The type that the value should be registered under.</param>
         /// <param name="contract">The contract that should be used when requesting the object.</param>
-        public static void Register(this IReactiveAppBuilder builder, Func<object> constant, Type registration, string contract = null)
+        public static void Register(this IReactiveAppBuilder builder, Func<object> factory, Type registration, string contract = null)
         {
-            builder.Add(new FactoryRegistration(constant, registration, contract));
+            builder.Add(new FactoryRegistration(factory, registration, contract));
         }
 
         /// <summary>
@@ -56,6 +56,11 @@ namespace ReactiveUI.Routing
             builder.Add(new ConstantRegistration(constant, registration, contract));
         }
 
+        internal static IReactiveAppBuilder AddReactiveUI(this IReactiveAppBuilder builder)
+        {
+            return builder.Add(new ReactiveUIDependencies());
+        }
+
         internal static List<string> BuildTypesToLoadList()
         {
             var typeInfo = typeof(ReactiveAppBuilderExtensions).GetTypeInfo();
@@ -63,7 +68,8 @@ namespace ReactiveUI.Routing
             var assemblies = new[]
             {
                 "ReactiveUI.Routing.Core",
-                "ReactiveUI.Routing.Android"
+                "ReactiveUI.Routing.Android",
+                "ReactiveUI.Routing.UWP"
             };
 
             var fullAssemblyNames = assemblies.Select(a => assemblyName.FullName.Replace(assemblyName.Name, a));
@@ -71,7 +77,8 @@ namespace ReactiveUI.Routing
             var typesToLoad = new[]
             {
                 "ReactiveUI.Routing.CoreRoutingDependencies",
-                "ReactiveUI.Routing.Android.AndroidRoutingDependencies"
+                "ReactiveUI.Routing.Android.AndroidRoutingDependencies",
+                "ReactiveUI.Routing.UWP.UwpRoutingDependencies"
             };
 
             return fullAssemblyNames.Zip(typesToLoad, (a, t) => new { assembly = a, type = t })

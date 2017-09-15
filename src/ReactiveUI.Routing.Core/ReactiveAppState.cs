@@ -4,7 +4,7 @@ using ReactiveUI.Routing.Presentation;
 namespace ReactiveUI.Routing.UseCases.Common
 {
     [DataContract]
-    public class AppState
+    public class ReactiveAppState
     {
         [DataMember]
         public AppPresentationState PresentationState { get; set; }
