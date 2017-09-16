@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Routing.Core", "src\ReactiveUI.Routing.Core\ReactiveUI.Routing.Core.csproj", "{5D14C32E-C67E-4B77-B01B-F04FD63D2377}"
 EndProject
@@ -22,6 +22,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Routing.UseCases.UWP", "src\UseCases\ReactiveUI.Routing.UseCases.UWP\ReactiveUI.Routing.UseCases.UWP.csproj", "{CEBDF50A-2E25-46BF-A1B2-0E6DA0E559D9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Routing.UWP", "src\ReactiveUI.Routing.UWP\ReactiveUI.Routing.UWP.csproj", "{9BBD3C33-FD86-46CE-8A7C-8CA504BD901F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Routing.UWP.Tests", "src\ReactiveUI.Routing.UWP.Tests\ReactiveUI.Routing.UWP.Tests.csproj", "{EE28C139-C080-4528-9767-D52254366F40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -191,6 +193,26 @@ Global
 		{9BBD3C33-FD86-46CE-8A7C-8CA504BD901F}.Release|x64.Build.0 = Release|x64
 		{9BBD3C33-FD86-46CE-8A7C-8CA504BD901F}.Release|x86.ActiveCfg = Release|x86
 		{9BBD3C33-FD86-46CE-8A7C-8CA504BD901F}.Release|x86.Build.0 = Release|x86
+		{EE28C139-C080-4528-9767-D52254366F40}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{EE28C139-C080-4528-9767-D52254366F40}.Debug|ARM.ActiveCfg = Debug|ARM
+		{EE28C139-C080-4528-9767-D52254366F40}.Debug|ARM.Build.0 = Debug|ARM
+		{EE28C139-C080-4528-9767-D52254366F40}.Debug|ARM.Deploy.0 = Debug|ARM
+		{EE28C139-C080-4528-9767-D52254366F40}.Debug|x64.ActiveCfg = Debug|x64
+		{EE28C139-C080-4528-9767-D52254366F40}.Debug|x64.Build.0 = Debug|x64
+		{EE28C139-C080-4528-9767-D52254366F40}.Debug|x64.Deploy.0 = Debug|x64
+		{EE28C139-C080-4528-9767-D52254366F40}.Debug|x86.ActiveCfg = Debug|x86
+		{EE28C139-C080-4528-9767-D52254366F40}.Debug|x86.Build.0 = Debug|x86
+		{EE28C139-C080-4528-9767-D52254366F40}.Debug|x86.Deploy.0 = Debug|x86
+		{EE28C139-C080-4528-9767-D52254366F40}.Release|Any CPU.ActiveCfg = Release|x86
+		{EE28C139-C080-4528-9767-D52254366F40}.Release|ARM.ActiveCfg = Release|ARM
+		{EE28C139-C080-4528-9767-D52254366F40}.Release|ARM.Build.0 = Release|ARM
+		{EE28C139-C080-4528-9767-D52254366F40}.Release|ARM.Deploy.0 = Release|ARM
+		{EE28C139-C080-4528-9767-D52254366F40}.Release|x64.ActiveCfg = Release|x64
+		{EE28C139-C080-4528-9767-D52254366F40}.Release|x64.Build.0 = Release|x64
+		{EE28C139-C080-4528-9767-D52254366F40}.Release|x64.Deploy.0 = Release|x64
+		{EE28C139-C080-4528-9767-D52254366F40}.Release|x86.ActiveCfg = Release|x86
+		{EE28C139-C080-4528-9767-D52254366F40}.Release|x86.Build.0 = Release|x86
+		{EE28C139-C080-4528-9767-D52254366F40}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
