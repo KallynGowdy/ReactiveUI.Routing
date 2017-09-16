@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using ReactiveUI.Routing.Presentation;
 
-namespace ReactiveUI.Routing.UseCases.Common
+namespace ReactiveUI.Routing
 {
     [DataContract]
     public class ReactiveAppState

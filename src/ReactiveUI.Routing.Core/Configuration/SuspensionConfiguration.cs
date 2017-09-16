@@ -4,7 +4,6 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
-using ReactiveUI.Routing.UseCases.Common;
 using Splat;
 
 namespace ReactiveUI.Routing.Configuration

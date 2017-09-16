@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NSubstitute;
 using ReactiveUI.Routing.Configuration;
+using ReactiveUI.Routing.Presentation;
 using Splat;
 using Xunit;
 
@@ -50,7 +51,7 @@ namespace ReactiveUI.Routing.Core.Tests
             Subject.Add(dependency2);
 
             Subject.Apply(resolver);
-            
+
             dependency1.Received(1).Apply(resolver);
             dependency2.Received(1).Apply(resolver);
             dependency3.Received(1).Apply(resolver);
@@ -84,6 +85,26 @@ namespace ReactiveUI.Routing.Core.Tests
         }
 
         [Fact]
+        public void Test_Build_Without_ReactiveUI_Dependencies_Defaults_To_RxApp_SuspensionHost()
+        {
+            var before = RxApp.SuspensionHost;
+            try
+            {
+                var host = RxApp.SuspensionHost = new DefaultSuspensionHost();
+
+                var app = new ReactiveAppBuilder()
+                    .AddReactiveRouting()
+                    .Build();
+
+                Assert.Same(host, app.SuspensionHost);
+            }
+            finally
+            {
+                RxApp.SuspensionHost = before;
+            }
+        }
+
+        [Fact]
         public void Test_Configurations_Are_Called_On_App_After_It_Is_Built()
         {
             IReactiveApp hitApp = null;
@@ -96,6 +117,47 @@ namespace ReactiveUI.Routing.Core.Tests
                 .Build();
 
             Assert.Same(app, hitApp);
+        }
+
+        [Fact]
+        public void Test_Build_Adds_ReactiveApp_To_Locator()
+        {
+            var app = new ReactiveAppBuilder()
+                .AddReactiveUI()
+                .AddReactiveRouting()
+                .Build();
+
+            var located = Locator.CurrentMutable.GetService<IReactiveApp>();
+            var located2 = Locator.CurrentMutable.GetService<ReactiveApp>();
+
+            Assert.Same(app, located);
+            Assert.Same(app, located2);
+        }
+
+        [Fact]
+        public void Test_Build_Adds_Presenter_To_Locator()
+        {
+            var app = new ReactiveAppBuilder()
+                .AddReactiveUI()
+                .AddReactiveRouting()
+                .Build();
+
+            var located = Locator.CurrentMutable.GetService<IAppPresenter>();
+
+            Assert.Same(app.Presenter, located);
+        }
+
+        [Fact]
+        public void Test_Build_Adds_Router_To_Locator()
+        {
+            var app = new ReactiveAppBuilder()
+                .AddReactiveUI()
+                .AddReactiveRouting()
+                .Build();
+
+            var located = Locator.CurrentMutable.GetService<IReactiveRouter>();
+
+            Assert.Same(app.Router, located);
         }
     }
 }

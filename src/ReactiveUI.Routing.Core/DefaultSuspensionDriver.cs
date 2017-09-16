@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 
 namespace ReactiveUI.Routing
@@ -9,17 +10,17 @@ namespace ReactiveUI.Routing
     {
         public IObservable<object> LoadState()
         {
-            throw new NotImplementedException();
+            return Observable.Return(new ReactiveAppState());
         }
 
         public IObservable<Unit> SaveState(object state)
         {
-            throw new NotImplementedException();
+            return Observable.Return(Unit.Default);
         }
 
         public IObservable<Unit> InvalidateState()
         {
-            throw new NotImplementedException();
+            return Observable.Return(Unit.Default);
         }
     }
 }

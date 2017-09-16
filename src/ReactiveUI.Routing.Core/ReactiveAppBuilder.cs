@@ -47,7 +47,7 @@ namespace ReactiveUI.Routing
             var app = new ReactiveApp(
                 router: Locator.Current.GetService<IReactiveRouter>(),
                 presenter: Locator.Current.GetService<IAppPresenter>(),
-                suspensionHost: Locator.Current.GetService<ISuspensionHost>(),
+                suspensionHost: Locator.Current.GetService<ISuspensionHost>() ?? RxApp.SuspensionHost,
                 suspensionDriver: Locator.Current.GetService<ISuspensionDriver>(),
                 locator: Locator.CurrentMutable);
 
@@ -55,6 +55,9 @@ namespace ReactiveUI.Routing
             {
                 config.Configure(app);
             }
+
+            Locator.CurrentMutable.RegisterConstant(app, typeof(IReactiveApp));
+            Locator.CurrentMutable.RegisterConstant(app, typeof(ReactiveApp));
 
             return app;
         }

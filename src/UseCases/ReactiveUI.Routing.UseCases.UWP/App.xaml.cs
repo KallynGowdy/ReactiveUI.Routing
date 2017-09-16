@@ -51,15 +51,6 @@ namespace ReactiveUI.Routing.UseCases.UWP
                 .ConfigureUwp(this, e)
                 .Build();
 
-            //RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
-            //    .Cast<ReactiveAppState>()
-            //    .ObserveOn(RxApp.MainThreadScheduler)
-            //    .Do(state => app.LoadState(state))
-            //    .Subscribe();
-            //RxApp.SuspensionHost.SetupPersistence(() => app.BuildAppState(), new Store<ReactiveAppState>());
-            
-            RegisterViews();
-
             var content = Window.Current.Content as Frame;
             if (content == null)
             {
@@ -89,10 +80,6 @@ namespace ReactiveUI.Routing.UseCases.UWP
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
-        }
-
-        private void RegisterViews()
-        {
         }
     }
 }

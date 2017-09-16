@@ -18,12 +18,12 @@ namespace ReactiveUI.Routing.UseCases.WPF
     /// </summary>
     public partial class App : Application
     {
-        private readonly ApplicationViewModel application;
+        //private readonly ApplicationViewModel application;
         private readonly AutoSuspendHelper suspendHelper;
 
         public App()
         {
-            application = new ApplicationViewModel();
+            //application = new ApplicationViewModel();
             suspendHelper = new AutoSuspendHelper(this);
 
             //RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
@@ -33,7 +33,7 @@ namespace ReactiveUI.Routing.UseCases.WPF
             //    .Subscribe();
             //RxApp.SuspensionHost.SetupPersistence(() => application.BuildAppState(), new Store<ReactiveAppState>());
 
-            application.Initialize();
+            //application.Initialize();
             RegisterViews();
             InitializeComponent();
         }

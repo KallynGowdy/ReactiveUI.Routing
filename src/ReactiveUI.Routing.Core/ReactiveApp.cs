@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reactive.Disposables;
 using ReactiveUI.Routing.Presentation;
-using ReactiveUI.Routing.UseCases.Common;
 using Splat;
 
 namespace ReactiveUI.Routing
@@ -32,12 +31,12 @@ namespace ReactiveUI.Routing
 
         public ReactiveAppState BuildAppState()
         {
-            throw new System.NotImplementedException();
+            return new ReactiveAppState();
         }
 
         public void LoadState(ReactiveAppState state)
         {
-            throw new NotImplementedException();
+
         }
 
         public void RegisterDisposable(IDisposable disposable)

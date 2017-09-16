@@ -1,6 +1,5 @@
 ﻿using System;
 using ReactiveUI.Routing.Presentation;
-using ReactiveUI.Routing.UseCases.Common;
 using Splat;
 
 namespace ReactiveUI.Routing

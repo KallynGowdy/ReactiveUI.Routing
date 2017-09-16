@@ -24,12 +24,12 @@ namespace ReactiveUI.Routing.UseCases.Android
         Label = "ReactiveUI.Routing.UseCases.Android")]
     public class Application : global::Android.App.Application
     {
-        private ApplicationViewModel app;
+        //private ApplicationViewModel app;
 
         public Application(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
         {
-            app = new ApplicationViewModel();
-            app.Initialize();
+            //app = new ApplicationViewModel();
+            //app.Initialize();
             RegisterViews();
 
             Locator.CurrentMutable.RegisterConstant(new LogcatLogger("ReactiveUI.Routing.UseCases.Android"), typeof(ILogger));

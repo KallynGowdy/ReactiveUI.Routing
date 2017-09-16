@@ -12,7 +12,6 @@ namespace ReactiveUI.Routing.UseCases.Common.ViewModels
     {
         [IgnoreDataMember]
         private readonly IAppPresenter presenter;
-        //private readonly IRouter router;
 
         [IgnoreDataMember]
         public ViewModelActivator Activator { get; } = new ViewModelActivator();
