@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using ReactiveUI.Routing.Presentation;
 using Splat;
 
@@ -31,12 +34,23 @@ namespace ReactiveUI.Routing
 
         public ReactiveAppState BuildAppState()
         {
-            return new ReactiveAppState();
+            return new ReactiveAppState()
+            {
+                PresentationState = Presenter.GetPresentationState()
+            };
         }
 
-        public void LoadState(ReactiveAppState state)
+        public IObservable<Unit> LoadState(ReactiveAppState state)
         {
+            if (state == null) throw new ArgumentNullException(nameof(state));
+            return new[]
+            {
+                state.PresentationState == null ? null : Presenter.LoadState(state.PresentationState),
 
+                Observable.Return(Unit.Default)
+            }.Where(observable => observable != null)
+             .Zip()
+             .Select(_ => Unit.Default);
         }
 
         public void RegisterDisposable(IDisposable disposable)

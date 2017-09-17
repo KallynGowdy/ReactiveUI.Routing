@@ -10,7 +10,7 @@ namespace ReactiveUI.Routing
     {
         public IObservable<object> LoadState()
         {
-            return Observable.Return(new ReactiveAppState());
+            return Observable.Return((object)null);
         }
 
         public IObservable<Unit> SaveState(object state)

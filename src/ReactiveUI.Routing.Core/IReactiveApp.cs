@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive;
 using ReactiveUI.Routing.Presentation;
 using Splat;
 
@@ -45,7 +46,7 @@ namespace ReactiveUI.Routing
         /// Loads the given state into the application.
         /// </summary>
         /// <param name="state">The state that should be loaded into the application.</param>
-        void LoadState(ReactiveAppState state);
+        IObservable<Unit> LoadState(ReactiveAppState state);
 
         /// <summary>
         /// Registers the given disposable to be disposed once the application closes.

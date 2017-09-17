@@ -43,7 +43,8 @@ namespace ReactiveUI.Routing.Configuration
                 .Where(state => state != null)
                 .Cast<ReactiveAppState>()
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Do(application.LoadState)
+                .Select(application.LoadState)
+                .Switch()
                 .Subscribe());
         }
 

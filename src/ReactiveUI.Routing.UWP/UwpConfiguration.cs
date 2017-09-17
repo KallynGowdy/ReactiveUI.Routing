@@ -28,9 +28,10 @@ namespace ReactiveUI.Routing.UWP
 
         public void Configure(IReactiveApp application)
         {
+            // TODO: Add tests to make sure this behaviour stays consistent.
             AutoSuspendHelper helper = new AutoSuspendHelper(UwpApplication);
             application.Locator.RegisterConstant(helper, typeof(AutoSuspendHelper));
-
+            
             Suspension.Configure(application);
 
             helper.OnLaunched(onLaunchedEventArgs);

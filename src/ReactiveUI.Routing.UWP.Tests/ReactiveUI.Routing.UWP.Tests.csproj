@@ -140,6 +140,16 @@
       <Version>2.2.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Routing.Core\ReactiveUI.Routing.Core.csproj">
+      <Project>{5d14c32e-c67e-4b77-b01b-f04fd63d2377}</Project>
+      <Name>ReactiveUI.Routing.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Routing.UWP\ReactiveUI.Routing.UWP.csproj">
+      <Project>{9bbd3c33-fd86-46ce-8a7c-8ca504bd901f}</Project>
+      <Name>ReactiveUI.Routing.UWP</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

@@ -11,6 +11,7 @@ namespace ReactiveUI.Routing.UWP
         public UwpRoutingDependencies()
         {
             this.Register(() => new UwpPageActivationForViewFetcher(), typeof(IActivationForViewFetcher));
+            this.Register(() => new DefaultUwpSuspensionDriver(), typeof(ISuspensionDriver));
         }
     }
 }
