@@ -46,10 +46,12 @@
   <ItemGroup>
     <Compile Include="ActivityActivationForViewFetcher.cs" />
     <Compile Include="ActivityLifecycleCallbackHandler.cs" />
+    <Compile Include="AndroidConfiguration.cs" />
     <Compile Include="AndroidRoutingDependencies.cs" />
     <Compile Include="FragmentActivationForViewFetcher.cs" />
     <Compile Include="FragmentLifecycleCallbacksHandler.cs" />
     <Compile Include="PagePresenter.cs" />
+    <Compile Include="ReactiveAppBuilderExtensions.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SuspensionHostExtensions.cs" />

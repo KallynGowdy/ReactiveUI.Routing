@@ -21,9 +21,13 @@ namespace ReactiveUI.Routing.Android
 
             var fragmentActivationForViewFetcher = new LazyRegistration(() => 
                 new FragmentActivationForViewFetcher(Locator.Current.GetService<FragmentManager>()));
+            var activityActivationForViewFetcher = new LazyRegistration(() => 
+                new ActivityActivationForViewFetcher(handler));
 
             this.Add(fragmentActivationForViewFetcher.CreateDependency(typeof(IActivationForViewFetcher)));
             this.Add(fragmentActivationForViewFetcher.CreateDependency(typeof(FragmentActivationForViewFetcher)));
+            this.Add(activityActivationForViewFetcher.CreateDependency(typeof(IActivationForViewFetcher)));
+            this.Add(activityActivationForViewFetcher.CreateDependency(typeof(ActivityActivationForViewFetcher)));
         }
     }
 }

@@ -6,6 +6,10 @@
     <RootNamespace>ReactiveUI.Routing</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="reactiveui" Version="8.0.0-alpha0073" />
   </ItemGroup>

@@ -13,6 +13,7 @@ using Android.Views;
 using Android.Widget;
 using ReactiveUI.Routing.Android;
 using ReactiveUI.Routing.Presentation;
+using ReactiveUI.Routing.UseCases.Common;
 using ReactiveUI.Routing.UseCases.Common.ViewModels;
 using Splat;
 
@@ -23,10 +24,6 @@ namespace ReactiveUI.Routing.UseCases.Android
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {
-            new ReactiveAppBuilder()
-                .AddReactiveRouting()
-                .Apply(Locator.CurrentMutable);
-            
             this.WhenActivated(d =>
             {
                 Locator.Current.GetService<FragmentActivationForViewFetcher>().SetFragmentManager(SupportFragmentManager);

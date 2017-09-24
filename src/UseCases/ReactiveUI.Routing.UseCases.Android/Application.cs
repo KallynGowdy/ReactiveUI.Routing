@@ -24,36 +24,20 @@ namespace ReactiveUI.Routing.UseCases.Android
         Label = "ReactiveUI.Routing.UseCases.Android")]
     public class Application : global::Android.App.Application
     {
-        //private ApplicationViewModel app;
-
         public Application(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
         {
-            //app = new ApplicationViewModel();
-            //app.Initialize();
-            RegisterViews();
-
-            Locator.CurrentMutable.RegisterConstant(new LogcatLogger("ReactiveUI.Routing.UseCases.Android"), typeof(ILogger));
         }
 
         public override void OnCreate()
         {
-            RxApp.SuspensionHost.SetupSuspensionPattern(this);
+            var app = new ReactiveAppBuilder()
+                .AddReactiveRouting()
+                .Add(new CommonUseCaseDependencies())
+                .Add(new AndroidViewDependencies())
+                .ConfigureAndroid(this)
+                .Build();
             base.OnCreate();
 
-
-            //RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
-            //    .Cast<ReactiveAppState>()
-            //    .ObserveOn(RxApp.MainThreadScheduler)
-            //    .Do(state => app.LoadState(state))
-            //    .Subscribe();
-            //RxApp.SuspensionHost.SetupPersistence(() => app.BuildAppState(), new Store<ReactiveAppState>(this));
-        }
-
-        private void RegisterViews()
-        {
-            Locator.CurrentMutable.Register(() => new LoginPage(), typeof(IViewFor<LoginViewModel>));
-            Locator.CurrentMutable.Register(() => new DetailPage(), typeof(IViewFor<DetailViewModel>));
-            Locator.CurrentMutable.Register(() => new ContentPage(), typeof(IViewFor<ContentViewModel>));
         }
     }
 }
