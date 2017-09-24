@@ -32,6 +32,9 @@
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="ReactiveUI.Wpf">
+      <HintPath>..\..\..\..\..\Users\Kal\.nuget\packages\reactiveui-wpf\8.0.0-alpha0073\lib\ReactiveUI.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,8 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultWpfSuspensionDriver.cs" />
     <Compile Include="PagePresenter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReactiveAppBuilderExtensions.cs" />
+    <Compile Include="UwpRoutingDependencies.cs" />
+    <Compile Include="WpfConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Routing.Core\ReactiveUI.Routing.Core.csproj">
@@ -52,7 +59,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>10.0.3</Version>
+    </PackageReference>
     <PackageReference Include="reactiveui">
+      <Version>8.0.0-alpha0073</Version>
+    </PackageReference>
+    <PackageReference Include="reactiveui-wpf">
       <Version>8.0.0-alpha0073</Version>
     </PackageReference>
   </ItemGroup>

@@ -69,7 +69,8 @@ namespace ReactiveUI.Routing
             {
                 "ReactiveUI.Routing.Core",
                 "ReactiveUI.Routing.Android",
-                "ReactiveUI.Routing.UWP"
+                "ReactiveUI.Routing.UWP",
+                "ReactiveUI.Routing.WPF",
             };
 
             var fullAssemblyNames = assemblies.Select(a => assemblyName.FullName.Replace(assemblyName.Name, a));
@@ -78,7 +79,8 @@ namespace ReactiveUI.Routing
             {
                 "ReactiveUI.Routing.CoreRoutingDependencies",
                 "ReactiveUI.Routing.Android.AndroidRoutingDependencies",
-                "ReactiveUI.Routing.UWP.UwpRoutingDependencies"
+                "ReactiveUI.Routing.UWP.UwpRoutingDependencies",
+                "ReactiveUI.Routing.WPF.WpfRoutingDependencies",
             };
 
             return fullAssemblyNames.Zip(typesToLoad, (a, t) => new { assembly = a, type = t })

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using ReactiveUI.Routing.UseCases.Common;
 using ReactiveUI.Routing.UseCases.Common.ViewModels;
+using ReactiveUI.Routing.Wpf;
 using Splat;
 
 namespace ReactiveUI.Routing.UseCases.WPF
@@ -18,31 +19,18 @@ namespace ReactiveUI.Routing.UseCases.WPF
     /// </summary>
     public partial class App : Application
     {
-        //private readonly ApplicationViewModel application;
         private readonly AutoSuspendHelper suspendHelper;
 
         public App()
         {
-            //application = new ApplicationViewModel();
-            suspendHelper = new AutoSuspendHelper(this);
-
-            //RxApp.SuspensionHost.WhenAnyValue(h => h.AppState)
-            //    .Cast<ReactiveAppState>()
-            //    .ObserveOn(RxApp.MainThreadScheduler)
-            //    .Do(state => application.LoadState(state))
-            //    .Subscribe();
-            //RxApp.SuspensionHost.SetupPersistence(() => application.BuildAppState(), new Store<ReactiveAppState>());
-
-            //application.Initialize();
-            RegisterViews();
+            var app = new ReactiveAppBuilder()
+                .AddReactiveRouting()
+                .Add(new CommonUseCaseDependencies())
+                .Add(new WpfViewDependencies())
+                .ConfigureWpf(this)
+                .Build();
+            
             InitializeComponent();
-        }
-
-        private void RegisterViews()
-        {
-            Locator.CurrentMutable.Register<IViewFor<LoginViewModel>>(() => new LoginPage());
-            Locator.CurrentMutable.Register<IViewFor<ContentViewModel>>(() => new ContentPage());
-            Locator.CurrentMutable.Register<IViewFor<DetailViewModel>>(() => new DetailView());
         }
     }
 }

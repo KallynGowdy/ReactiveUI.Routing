@@ -64,6 +64,7 @@
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Store.cs" />
+    <Compile Include="WpfViewDependencies.cs" />
     <Page Include="ContentPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
