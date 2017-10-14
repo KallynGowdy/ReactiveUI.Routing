@@ -20,6 +20,12 @@ In the end, I imagine we come up with a framework like this:
 
 Using this as a model, we end up with a fairly flexible architecture where presenters are used as conductors of the UI. If you want the `LoginViewModel` to be shown to the user, simply request it. If you want to know what view models are currently active and tied to a view, simply ask for the info. If you want to save your state, you can simply save and replay a list of presentation requests.
 
+Therefore, presenters need to be able to satisfy the following tasks:
+
+- Recording navigation through an application. That is, managing a stack + knowing what is currently active so we can jump right back into the application.
+- Extensible to work with any UI pattern. (i.e. dialogs, notifications, toasts, master-detail, control vs page, etc.)
+- The ability to choose where a view should be presented. That is, choosing the best "host" for a view based on the current state. (master-detail is a good example)
+
 ```csharp
 
 // Presenters can be put into two categories
