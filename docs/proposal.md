@@ -8,13 +8,23 @@ So now that I've had some time to think about this topic, I'm not 100% sure on a
 
 ## Potential Solutions
 
-In reality, what we really want from a routing framework is to say "show this stuff to the user". When we're talking about stack-based navigation, we're really saying "show the user some of the stuff they were just viewing". From this perspective, we don't even need a navigation stack. Rather, we just need to track which information is currently being presented.
+In reality, what we really want from a routing framework is to say "show this stuff to the user". When we're talking about stack-based navigation, we're really saying "show the user some of the stuff they were just viewing". From this perspective, we're talking about two different services. One service that handles navigation and another service that handles displaying things. 
+
+Unfortunately, all of the UI frameworks we deal with contain a fair amount of state that cannot be taken away or hidden easily. Therefore, we need an abstraction to manage this state and process requests from the application.
 
 In the end, I imagine we come up with a framework like this:
 
 - *Presenters* are in charge of constructing and managing views for view models. In this respect they act as decorators around the views, assisting with binding and lifecycle management. Because most applications don't control the construction of the first view, the root presenter is often also the root view.
-- *ViewModels* are in charge of all of the core application logic. They are able to use existing patterns for binding data and events to views. In addition, they are in charge of requesting presentation changes from presenters.
+- *ViewModels* are in charge of all of the core application logic. They are able to use existing patterns for binding data and events to views. In addition, they are in charge of requesting presentation changes from presenters. If you want a router, you're really just writing a high-order view model.
 - *Views* are in charge of displaying data to the user. In addition, they help bind events from the underlying system into the view models. For example, application lifecycle events are propagated from the system, into the views, and then into view models.
+
+Using this as a model, we end up with a fairly flexible architecture where presenters are used as conductors of the UI. If you want the `LoginViewModel` to be shown to the user, simply request it. If you want to know what view models are currently active and tied to a view, simply ask for the info. If you want to save your state, you can simply save and replay a list of presentation requests.
+
+Therefore, presenters need to be able to satisfy the following tasks:
+
+- Recording navigation through an application. That is, managing a stack + knowing what is currently active so we can jump right back into the application.
+- Extensible to work with any UI pattern. (i.e. dialogs, notifications, toasts, master-detail, control vs page, etc.)
+- The ability to choose where a view should be presented. That is, choosing the best "host" for a view based on the current state. (master-detail is a good example)
 
 ```csharp
 
@@ -40,7 +50,7 @@ interface IDialogPresenter : IPresenter
 
 // This is a type of declarative presenter that figures out which child presenter to use
 // for the view model you give it. 
-// Declarative routers like this generally take advantage of imperative routers internally.
+// Declarative routers like this generally take advantage of imperative presenters internally.
 interface IPresenterResolver
 {
   IPresenter Resolve(PresenterRequest viewModel);
@@ -64,15 +74,6 @@ interface IPresenterResolver
 // Because most platforms force suspension on their respective apps, we need to provide
 // a simple, easy, and sane way to handle this.
 // Platforms such as WPF don't force suspension on their apps, but may need an easy way to save state.
-
-
-class App : Application, IViewFor<ApplicationViewModel>
-{
-  
-}
-
-class Router : ReactiveObject
-{
-  
-}
 ```
+
+
