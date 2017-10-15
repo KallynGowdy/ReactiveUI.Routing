@@ -65,7 +65,8 @@ namespace ReactiveUI.Routing.Core.Tests
             Assert.Collection(list,
                 type => Assert.Equal("ReactiveUI.Routing.CoreRoutingDependencies, ReactiveUI.Routing.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", type),
                 type => Assert.Equal("ReactiveUI.Routing.Android.AndroidRoutingDependencies, ReactiveUI.Routing.Android, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", type),
-                type => Assert.Equal("ReactiveUI.Routing.UWP.UwpRoutingDependencies, ReactiveUI.Routing.UWP, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", type));
+                type => Assert.Equal("ReactiveUI.Routing.UWP.UwpRoutingDependencies, ReactiveUI.Routing.UWP, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", type),
+                type => Assert.Equal("ReactiveUI.Routing.WPF.WpfRoutingDependencies, ReactiveUI.Routing.WPF, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", type));
         }
 
         [Fact]
