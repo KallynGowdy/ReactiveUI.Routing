@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using ReactiveUI.Routing.Presentation;
 using ReactiveUI.Routing.UseCases.Common;
 using ReactiveUI.Routing.UseCases.Common.ViewModels;
 using ReactiveUI.Routing.UWP;
@@ -60,10 +61,7 @@ namespace ReactiveUI.Routing.UseCases.UWP
 
             PagePresenter.RegisterHost(content);
 
-            if (content.Content == null)
-            {
-                content.Navigate(typeof(MainPage), e.Arguments);
-            }
+            a.Presenter.PresentPage(new MainViewModel());
 
             Window.Current.Activate();
         }
