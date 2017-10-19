@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using ReactiveUI.Routing.Presentation;
 using Splat;
 
@@ -30,6 +31,18 @@ namespace ReactiveUI.Routing
             this.SuspensionHost = suspensionHost;
             this.SuspensionDriver = suspensionDriver;
             this.Locator = locator;
+
+            Router?.PresentationRequested?.RegisterHandler(HandlePresentationRequest)
+                .DisposeWith(disposable);
+        }
+
+        private async Task HandlePresentationRequest(InteractionContext<PresenterRequest, PresenterResponse> ctx)
+        {
+            if (!ctx.IsHandled)
+            {
+                var result = await Presenter.Present(ctx.Input);
+                ctx.SetOutput(result);
+            }
         }
 
         public ReactiveAppState BuildAppState()

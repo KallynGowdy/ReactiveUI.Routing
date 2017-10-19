@@ -16,18 +16,17 @@ namespace ReactiveUI.Routing.UseCases.Common.ViewModels
         public ReactiveCommand<Unit, Unit> ShowDetail { get; }
 
         [IgnoreDataMember]
-        private IAppPresenter presenter;
+        private IReactiveRouter router;
 
-        public ContentViewModel(IAppPresenter presenter = null)
+        public ContentViewModel(IReactiveRouter router = null)
         {
-            this.presenter = presenter ?? Locator.Current.GetService<IAppPresenter>();
+            this.router = router ?? Locator.Current.GetService<IReactiveRouter>();
             ShowDetail = ReactiveCommand.CreateFromTask(ShowDetailImpl);
         }
 
         public async Task ShowDetailImpl()
         {
-            await presenter.PresentPage(new DetailViewModel());
+            await router.Navigate(NavigationRequest.Forward(new DetailViewModel()));
         }
-
     }
 }

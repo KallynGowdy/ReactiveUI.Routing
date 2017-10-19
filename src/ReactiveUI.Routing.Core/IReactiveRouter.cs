@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reactive;
 using System.Text;
@@ -44,9 +45,14 @@ namespace ReactiveUI.Routing
         /// and communicate which view should be used.
         /// </summary>
         public PresenterRequest PresenterRequest { get; private set; }
-        
+
         protected NavigationRequest()
         {
+        }
+
+        public static CombinedNavigationRequest operator +(NavigationRequest first, NavigationRequest second)
+        {
+            return new CombinedNavigationRequest(first, second);
         }
 
         /// <summary>
@@ -72,6 +78,48 @@ namespace ReactiveUI.Routing
         {
             return new BackNavigationRequest();
         }
+
+        /// <summary>
+        /// Creates a new <see cref="NavigationRequest"/> that resets the navigation stack, leaving nothing.
+        /// </summary>
+        /// <returns></returns>
+        public static NavigationRequest Reset()
+        {
+            return new ResetNavigationRequest();
+        }
+    }
+
+    public class CombinedNavigationRequest : NavigationRequest, IEnumerable<NavigationRequest>
+    {
+        private List<NavigationRequest> requests = new List<NavigationRequest>(2);
+
+        public CombinedNavigationRequest(NavigationRequest first, NavigationRequest second)
+        {
+            if (first == null) throw new ArgumentNullException(nameof(first));
+            if (second == null) throw new ArgumentNullException(nameof(second));
+            Add(first);
+            Add(second);
+        }
+
+        public void Add(NavigationRequest request)
+        {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+            if (request is CombinedNavigationRequest combined)
+            {
+                requests.AddRange(combined.requests);
+            }
+            else
+            {
+                requests.Add(request);
+            }
+        }
+
+        public IEnumerator<NavigationRequest> GetEnumerator() => requests.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    public class ResetNavigationRequest : NavigationRequest
+    {
     }
 
     public class BackNavigationRequest : NavigationRequest

@@ -24,6 +24,17 @@ namespace ReactiveUI.Routing
                         navigationStack.Pop();
                         await PresentationRequested.Handle(navigationStack.Peek().PresenterRequest);
                     }
+                    else if (request is ResetNavigationRequest)
+                    {
+                        navigationStack.Clear();
+                    }
+                    else if (request is CombinedNavigationRequest combined)
+                    {
+                        foreach (var r in combined)
+                        {
+                            await Navigate(r);
+                        }
+                    }
                     else
                     {
                         var result = await PresentationRequested.Handle(request.PresenterRequest);

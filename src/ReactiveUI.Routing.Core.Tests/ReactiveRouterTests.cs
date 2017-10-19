@@ -105,6 +105,40 @@ namespace ReactiveUI.Routing.Core.Tests
             }
         }
 
+        [Fact]
+        public async Task Test_Reset_Clears_The_Stack()
+        {
+            var test = new TestViewModel();
+            var request = NavigationRequest.Reset();
+            using (Subject.PresentationRequested.RegisterHandler(x =>
+            {
+                x.SetOutput(new PresenterResponse(Substitute.For<IViewFor>()));
+            }))
+            {
+                await Subject.Navigate(NavigationRequest.Forward(test));
+                await Subject.Navigate(request);
+                Assert.Empty(Subject.NavigationStack);
+            }
+        }
+
+        [Fact]
+        public async Task Test_Navigate_And_Reset_Leaves_Only_The_New_Response_On_The_Stack()
+        {
+            var test = new TestViewModel();
+            var forward = NavigationRequest.Forward(test);
+            var request = NavigationRequest.Reset() + forward;
+            using (Subject.PresentationRequested.RegisterHandler(x =>
+            {
+                x.SetOutput(new PresenterResponse(Substitute.For<IViewFor>()));
+            }))
+            {
+                await Subject.Navigate(request);
+
+                Assert.Collection(Subject.NavigationStack,
+                    x => Assert.Same(forward, x));
+            }
+        }
+
         public void Dispose()
         {
             disposable.Dispose();

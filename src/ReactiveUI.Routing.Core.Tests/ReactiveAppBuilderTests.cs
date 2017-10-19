@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NSubstitute;
 using ReactiveUI.Routing.Configuration;
+using ReactiveUI.Routing.Core.Tests.Presentation;
 using ReactiveUI.Routing.Presentation;
 using Splat;
 using Xunit;
+
+#pragma warning disable CS4014 // because this call is not awaited...
 
 namespace ReactiveUI.Routing.Core.Tests
 {
@@ -160,5 +164,27 @@ namespace ReactiveUI.Routing.Core.Tests
 
             Assert.Same(app.Router, located);
         }
+
+        [Fact]
+        public async Task Test_Build_Links_App_Presenter_To_Router()
+        {
+            var appPresenter = Substitute.For<IAppPresenter>();
+            var navigationRequest = NavigationRequest.Forward(new TestViewModel());
+            var view = Substitute.For<IViewFor>();
+            appPresenter.Present(navigationRequest.PresenterRequest).Returns(Observable.Return(new PresenterResponse(view)));
+
+            var builder = new ReactiveAppBuilder()
+                .AddReactiveUI()
+                .AddReactiveRouting();
+            builder.RegisterConstant(appPresenter, typeof(IAppPresenter));
+
+            var app = builder
+                .Build();
+
+            await app.Router.Navigate(navigationRequest);
+
+            appPresenter.Received().Present(navigationRequest.PresenterRequest);
+        }
     }
 }
+#pragma warning restore CS4014

@@ -11,20 +11,20 @@ namespace ReactiveUI.Routing.UseCases.Common.ViewModels
     public class LoginViewModel : ReactiveObject
     {
         [IgnoreDataMember]
-        private readonly IAppPresenter presenter;
+        private readonly IReactiveRouter router;
 
         [IgnoreDataMember]
         public ReactiveCommand<Unit, Unit> Login { get; }
 
-        public LoginViewModel(IAppPresenter appPresenter = null)
+        public LoginViewModel(IReactiveRouter router = null)
         {
-            this.presenter = appPresenter ?? Locator.Current.GetService<IAppPresenter>();
+            this.router = router ?? Locator.Current.GetService<IReactiveRouter>();
             Login = ReactiveCommand.CreateFromTask(LoginImpl);
         }
 
         public async Task<Unit> LoginImpl()
         {
-            await presenter.PresentPage(new ContentViewModel());
+            await router.Navigate(NavigationRequest.Forward(new ContentViewModel()));
             return Unit.Default;
         }
     }

@@ -11,18 +11,18 @@ namespace ReactiveUI.Routing.UseCases.Common.ViewModels
     public class MainViewModel : ReactiveObject, ISupportsActivation
     {
         [IgnoreDataMember]
-        private readonly IAppPresenter presenter;
+        private readonly IReactiveRouter router;
 
         [IgnoreDataMember]
         public ViewModelActivator Activator { get; } = new ViewModelActivator();
 
-        public MainViewModel(IAppPresenter presenter = null)
+        public MainViewModel(IReactiveRouter router = null)
         {
-            this.presenter = presenter ?? Locator.Current.GetService<IAppPresenter>();
+            this.router = router ?? Locator.Current.GetService<IReactiveRouter>();
 
             this.WhenActivated(d =>
             {
-                this.presenter.PresentPage(new LoginViewModel())
+                this.router.Navigate(NavigationRequest.Forward(new LoginViewModel()))
                     .Subscribe()
                     .DisposeWith(d);
             });
