@@ -8,6 +8,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -64,6 +65,13 @@ namespace ReactiveUI.Routing.UseCases.UWP
             a.Presenter.PresentPage(new MainViewModel());
 
             Window.Current.Activate();
+
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                AppViewBackButtonVisibility.Visible;
+            SystemNavigationManager.GetForCurrentView().BackRequested += async (sender, args) =>
+            {
+                await a.Router.Navigate(NavigationRequest.Back());
+            };
         }
 
         /// <summary>
