@@ -43,5 +43,10 @@ namespace ReactiveUI.Routing
                 });
             });
         }
+
+        public IObservable<bool> CanNavigate(NavigationRequest request)
+        {
+            return Observable.Return(false);
+        }
     }
 }

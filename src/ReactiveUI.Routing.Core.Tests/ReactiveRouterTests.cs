@@ -139,6 +139,16 @@ namespace ReactiveUI.Routing.Core.Tests
             }
         }
 
+        [Fact]
+        public async Task Test_CanNavigate_Returns_False_When_NavigationStack_Is_Empty()
+        {
+            var back = NavigationRequest.Back();
+
+            bool canNavigate = await Subject.CanNavigate(back).FirstAsync();
+
+            Assert.False(canNavigate);
+        }
+
         public void Dispose()
         {
             disposable.Dispose();

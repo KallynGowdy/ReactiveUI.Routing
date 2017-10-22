@@ -31,6 +31,15 @@ namespace ReactiveUI.Routing
         /// <param name="request">The request that should be used to navigate.</param>
         /// <returns></returns>
         IObservable<Unit> Navigate(NavigationRequest request);
+        
+        /// <summary>
+        /// Calculates an observable that determines whether the given navigation request is executable.
+        /// The observable will immediately resolve with a value upon subscription,
+        /// but may also continue to live and update the value as the router state changes over time.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        IObservable<bool> CanNavigate(NavigationRequest request);
     }
 
     /// <summary>
