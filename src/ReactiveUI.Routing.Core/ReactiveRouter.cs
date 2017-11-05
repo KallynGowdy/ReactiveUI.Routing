@@ -4,10 +4,11 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using ReactiveUI.Routing.Presentation;
+using Splat;
 
 namespace ReactiveUI.Routing
 {
-    public class ReactiveRouter : IReactiveRouter
+    public class ReactiveRouter : IReactiveRouter, IEnableLogger
     {
         private readonly Stack<NavigationRequest> navigationStack = new Stack<NavigationRequest>();
         private readonly Subject<NavigationRequest> navigated = new Subject<NavigationRequest>();
@@ -54,9 +55,24 @@ namespace ReactiveUI.Routing
 
         public IObservable<bool> CanNavigate(NavigationRequest request)
         {
-            return navigated
-                .Select(req => CanNavigateToRequest(request))
-                .StartWith(CanNavigateToRequest(request));
+            if (CanObserveRequest(request))
+            {
+                return navigated
+                    .Select(req => CanNavigateToRequest(request))
+                    .StartWith(CanNavigateToRequest(request));
+            }
+            else
+            {
+                this.Log().Warn("Cannot calculate whether the given request will be navigatable. " +
+                                "This usually happens with complicated navigation requests such as " +
+                                "combined navigation requests.");
+                return Observable.Return(false);
+            }
+        }
+
+        private bool CanObserveRequest(NavigationRequest request)
+        {
+            return !(request is CombinedNavigationRequest);
         }
 
         private bool CanNavigateToRequest(NavigationRequest request)

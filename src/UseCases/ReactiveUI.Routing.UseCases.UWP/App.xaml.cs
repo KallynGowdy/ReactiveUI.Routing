@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
@@ -66,8 +67,14 @@ namespace ReactiveUI.Routing.UseCases.UWP
 
             Window.Current.Activate();
 
-            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
-                AppViewBackButtonVisibility.Visible;
+            a.Router.CanNavigate(NavigationRequest.Back())
+                .Select(canNavigateBack => canNavigateBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed)
+                .Do(visibility =>
+                {
+                    SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = visibility;
+                })
+                .Subscribe();
+            
             SystemNavigationManager.GetForCurrentView().BackRequested += async (sender, args) =>
             {
                 await a.Router.Navigate(NavigationRequest.Back());

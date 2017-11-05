@@ -10,6 +10,7 @@ using NSubstitute;
 using ReactiveUI.Routing.Core.Tests.Presentation;
 using ReactiveUI.Routing.Presentation;
 using ReactiveUI.Testing;
+using Splat;
 using Xunit;
 
 namespace ReactiveUI.Routing.Core.Tests
@@ -206,6 +207,32 @@ namespace ReactiveUI.Routing.Core.Tests
                     Assert.True,
                     Assert.False);
             }
+        }
+
+        [Fact]
+        public async Task Test_CanNavigate_Returns_True_For_Reset_Request()
+        {
+            var result = await Subject.CanNavigate(NavigationRequest.Reset()).FirstAsync();
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task Test_CanNavigate_Returns_True_For_Forward_Request()
+        {
+            var result = await Subject.CanNavigate(NavigationRequest.Forward(new TestViewModel())).FirstAsync();
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task Test_CanNavigate_With_Combined_Navigation_Request_Is_Always_False()
+        {
+            var combined = NavigationRequest.Reset() + NavigationRequest.Forward(new TestViewModel());
+
+            var result = await Subject.CanNavigate(combined).FirstAsync();
+
+            Assert.False(result);
         }
 
         public void Dispose()
