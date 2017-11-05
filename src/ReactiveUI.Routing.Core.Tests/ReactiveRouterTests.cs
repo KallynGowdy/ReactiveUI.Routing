@@ -5,9 +5,11 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Reactive.Testing;
 using NSubstitute;
 using ReactiveUI.Routing.Core.Tests.Presentation;
 using ReactiveUI.Routing.Presentation;
+using ReactiveUI.Testing;
 using Xunit;
 
 namespace ReactiveUI.Routing.Core.Tests
@@ -106,6 +108,25 @@ namespace ReactiveUI.Routing.Core.Tests
         }
 
         [Fact]
+        public async Task Test_Navigate_Throws_Exception_When_Navigation_Is_Not_Allowed()
+        {
+            var back = NavigationRequest.Back();
+            InvalidOperationException e = null;
+
+            try
+            {
+                await Subject.Navigate(back);
+            }
+            catch (InvalidOperationException ex)
+            {
+                e = ex;
+            }
+
+            Assert.NotNull(e);
+            Assert.Equal("Cannot perform the given navigation request because it would result in an invalid state.", e.Message);
+        }
+
+        [Fact]
         public async Task Test_Reset_Clears_The_Stack()
         {
             var test = new TestViewModel();
@@ -147,6 +168,44 @@ namespace ReactiveUI.Routing.Core.Tests
             bool canNavigate = await Subject.CanNavigate(back).FirstAsync();
 
             Assert.False(canNavigate);
+        }
+
+        [Fact]
+        public async Task Test_CanNavigate_Returns_False_When_NavigationStack_Only_Has_A_Single_ViewModel()
+        {
+            var back = NavigationRequest.Back();
+            var observable = Subject.CanNavigate(back);
+            var results = new List<bool>();
+
+            using (observable.Do(x => results.Add(x)).Subscribe())
+            {
+                await Subject.Navigate(NavigationRequest.Forward(new TestViewModel()));
+
+                Assert.Collection(results,
+                    Assert.False,
+                    Assert.False);
+            }
+        }
+
+        [Fact]
+        public async Task Test_CanNavigate_Returns_True_When_NavigationStack_Is_Not_Empty()
+        {
+            var back = NavigationRequest.Back();
+            var observable = Subject.CanNavigate(back);
+            var results = new List<bool>();
+
+            using (observable.Do(x => results.Add(x)).Subscribe())
+            {
+                await Subject.Navigate(NavigationRequest.Forward(new TestViewModel()));
+                await Subject.Navigate(NavigationRequest.Forward(new TestViewModel()));
+                await Subject.Navigate(back);
+
+                Assert.Collection(results,
+                    Assert.False,
+                    Assert.False,
+                    Assert.True,
+                    Assert.False);
+            }
         }
 
         public void Dispose()
