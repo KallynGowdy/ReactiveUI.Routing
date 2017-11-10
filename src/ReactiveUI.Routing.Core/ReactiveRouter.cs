@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -10,11 +11,22 @@ namespace ReactiveUI.Routing
 {
     public class ReactiveRouter : IReactiveRouter, IEnableLogger
     {
-        private readonly Stack<NavigationRequest> navigationStack = new Stack<NavigationRequest>();
+        private Stack<NavigationRequest> navigationStack = new Stack<NavigationRequest>();
         private readonly Subject<NavigationRequest> navigated = new Subject<NavigationRequest>();
+        private readonly Subject<Unit> stackUpdated = new Subject<Unit>();
 
         public Interaction<PresenterRequest, PresenterResponse> PresentationRequested { get; } = new Interaction<PresenterRequest, PresenterResponse>();
-        public IEnumerable<NavigationRequest> NavigationStack => navigationStack;
+
+        public IEnumerable<NavigationRequest> NavigationStack
+        {
+            get => navigationStack.Reverse();
+            set
+            {
+                if (value == null) throw new ArgumentNullException(nameof(value));
+                navigationStack = new Stack<NavigationRequest>(value);
+                stackUpdated.OnNext(Unit.Default);
+            }
+        }
 
         public IObservable<Unit> Navigate(NavigationRequest request)
         {
@@ -57,9 +69,10 @@ namespace ReactiveUI.Routing
         {
             if (CanObserveRequest(request))
             {
-                return navigated
+                return navigated.Select(a => Unit.Default).Merge(stackUpdated)
                     .Select(req => CanNavigateToRequest(request))
-                    .StartWith(CanNavigateToRequest(request));
+                    .StartWith(CanNavigateToRequest(request))
+                    .DistinctUntilChanged();
             }
             else
             {

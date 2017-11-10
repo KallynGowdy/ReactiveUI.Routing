@@ -14,13 +14,6 @@ namespace ReactiveUI.Routing.Presentation
         ReactiveList<PresentedView> ActiveViews { get; }
 
         /// <summary>
-        /// Gets a new <see cref="AppPresentationState"/> object that represents
-        /// a snapshot of the current presentation state.
-        /// </summary>
-        /// <returns></returns>
-        AppPresentationState GetPresentationState();
-
-        /// <summary>
         /// Loads the given presentation state into the app.
         /// </summary>
         /// <param name="state"></param>

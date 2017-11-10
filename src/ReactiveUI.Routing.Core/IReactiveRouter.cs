@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reactive;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI.Routing.Presentation;
@@ -46,6 +47,7 @@ namespace ReactiveUI.Routing
     /// Defines a navigation request that can be used
     /// to represent the act of displaying a new piece of content.
     /// </summary>
+    [DataContract]
     public class NavigationRequest
     {
         /// <summary>
@@ -53,6 +55,7 @@ namespace ReactiveUI.Routing
         /// This contains the view model that should be presented
         /// and communicate which view should be used.
         /// </summary>
+        [DataMember]
         public PresenterRequest PresenterRequest { get; private set; }
 
         protected NavigationRequest()

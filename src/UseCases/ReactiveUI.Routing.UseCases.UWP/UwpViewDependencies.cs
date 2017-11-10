@@ -12,6 +12,7 @@ namespace ReactiveUI.Routing.UseCases.UWP
     {
         public UwpViewDependencies()
         {
+            this.Register(() => new MainPage(), typeof(IViewFor<MainViewModel>));
             this.Register(() => new LoginPage(), typeof(IViewFor<LoginViewModel>));
             this.Register(() => new ContentPage(), typeof(IViewFor<ContentViewModel>));
             this.Register(() => new DetailPage(), typeof(IViewFor<DetailViewModel>));

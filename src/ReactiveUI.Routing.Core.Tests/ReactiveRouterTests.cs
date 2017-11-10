@@ -183,7 +183,6 @@ namespace ReactiveUI.Routing.Core.Tests
                 await Subject.Navigate(NavigationRequest.Forward(new TestViewModel()));
 
                 Assert.Collection(results,
-                    Assert.False,
                     Assert.False);
             }
         }
@@ -202,7 +201,6 @@ namespace ReactiveUI.Routing.Core.Tests
                 await Subject.Navigate(back);
 
                 Assert.Collection(results,
-                    Assert.False,
                     Assert.False,
                     Assert.True,
                     Assert.False);
@@ -245,17 +243,40 @@ namespace ReactiveUI.Routing.Core.Tests
 
             Assert.NotEmpty(Subject.NavigationStack);
 
-            Subject.NavigationStack = new []
+            Subject.NavigationStack = new[]
             {
-                NavigationRequest.Forward(vm2),
-                NavigationRequest.Forward(vm3)
+                NavigationRequest.Forward(vm3),
+                NavigationRequest.Forward(vm2)
             };
 
             Assert.Collection(Subject.NavigationStack,
-                r => Assert.Same(r.PresenterRequest.ViewModel, vm2),
-                r => Assert.Same(r.PresenterRequest.ViewModel, vm3));
+                r => Assert.Same(r.PresenterRequest.ViewModel, vm3),
+                r => Assert.Same(r.PresenterRequest.ViewModel, vm2));
         }
 
+        [Fact]
+        public void Test_SetNavigationStack_Updates_CanNavigate()
+        {
+            var back = NavigationRequest.Back();
+            var observable = Subject.CanNavigate(back);
+            var results = new List<bool>();
+
+            using (observable.Do(x => results.Add(x)).Subscribe())
+            {
+                var vm2 = new TestViewModel();
+                var vm3 = new TestViewModel();
+
+                Subject.NavigationStack = new[]
+                {
+                    NavigationRequest.Forward(vm3),
+                    NavigationRequest.Forward(vm2)
+                };
+
+                Assert.Collection(results,
+                    Assert.False,
+                    Assert.True);
+            }
+        }
 
         // Saving/Loading state is complicated...
         // We need to preserve the current presentation state while

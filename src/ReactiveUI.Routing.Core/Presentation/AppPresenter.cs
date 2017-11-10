@@ -40,18 +40,13 @@ namespace ReactiveUI.Routing.Presentation
             }
         }
 
-        public AppPresentationState GetPresentationState()
-        {
-            return new AppPresentationState(ActiveViews);
-        }
-
         public IObservable<Unit> LoadState(AppPresentationState state)
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
 
             return Observable.StartAsync(async () =>
             {
-                foreach (var observable in state.PresentationRequests.Select(Present))
+                foreach (var observable in state.PresentationRequests.Where(r => r.Presented).Select(r => Present(r.Request.PresenterRequest)))
                 {
                     await observable;
                 }

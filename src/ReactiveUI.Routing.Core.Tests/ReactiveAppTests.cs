@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NSubstitute;
+using ReactiveUI.Routing.Core.Tests.Presentation;
 using ReactiveUI.Routing.Presentation;
 using Splat;
 using Xunit;
@@ -29,13 +30,23 @@ namespace ReactiveUI.Routing.Core.Tests
         [Fact]
         public void Test_BuildAppState_Includes_Presenter_State()
         {
-            var presenterState = new AppPresentationState();
-            AppPresenter.GetPresentationState().Returns(presenterState);
+            var navigationStack = new[]
+            {
+                NavigationRequest.Forward(new TestViewModel()),
+            };
+            var activeViews = new ReactiveList<PresentedView>()
+            {
+                new PresentedView(new PresenterResponse(Substitute.For<IViewFor>()), navigationStack[0].PresenterRequest, Substitute.For<IPresenter>())
+            };
+
+            AppPresenter.ActiveViews.Returns(activeViews);
+            Router.NavigationStack.Returns(navigationStack);
 
             var state = Subject.BuildAppState();
 
             Assert.NotNull(state);
-            Assert.Same(presenterState, state.PresentationState);
+            Assert.Collection(state.PresentationState.PresentationRequests,
+                req => Assert.Same(req.Request, navigationStack[0]));
         }
 
         [Fact]

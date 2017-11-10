@@ -63,12 +63,14 @@ namespace ReactiveUI.Routing.UseCases.UWP
 
             PagePresenter.RegisterHost(content);
 
-            a.Presenter.PresentPage(new MainViewModel());
+            a.Presenter.PresentPage(new MainViewModel())
+                .Subscribe();
 
             Window.Current.Activate();
 
             a.Router.CanNavigate(NavigationRequest.Back())
                 .Select(canNavigateBack => canNavigateBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed)
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Do(visibility =>
                 {
                     SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = visibility;

@@ -49,7 +49,7 @@ namespace ReactiveUI.Routing
         {
             return new ReactiveAppState()
             {
-                PresentationState = Presenter.GetPresentationState()
+                PresentationState = new AppPresentationState(Presenter.ActiveViews, Router.NavigationStack)
             };
         }
 
@@ -58,12 +58,18 @@ namespace ReactiveUI.Routing
             if (state == null) throw new ArgumentNullException(nameof(state));
             return new[]
             {
-                state.PresentationState == null ? null : Presenter.LoadState(state.PresentationState),
+                state.PresentationState == null ? null : LoadStateImpl(state.PresentationState),
 
                 Observable.Return(Unit.Default)
             }.Where(observable => observable != null)
              .Zip()
              .Select(_ => Unit.Default);
+        }
+
+        private IObservable<Unit> LoadStateImpl(AppPresentationState presentationState)
+        {
+            return Presenter.LoadState(presentationState)
+                .Do(u => Router.NavigationStack = presentationState.PresentationRequests.Select(r => r.Request));
         }
 
         public void RegisterDisposable(IDisposable disposable)

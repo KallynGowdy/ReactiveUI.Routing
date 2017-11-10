@@ -98,15 +98,23 @@ namespace ReactiveUI.Routing.Core.Tests.Presentation
         [Fact]
         public void Test_GetPresentationState_Returns_The_Currently_Active_Views()
         {
-            var presentedView = new PresentedView(response, request, presenter);
+            var nav = NavigationRequest.Forward(new TestViewModel());
+            var presentedView = new PresentedView(response, nav.PresenterRequest, presenter);
 
             Subject.ActiveViews.Add(presentedView);
 
-            var state = Subject.GetPresentationState();
+            var state = new AppPresentationState(Subject.ActiveViews, new[]
+            {
+                nav
+            });
 
             Assert.NotNull(state);
             Assert.Collection(state.PresentationRequests,
-                r => Assert.Same(request, r));
+                r =>
+                {
+                    Assert.True(r.Presented);
+                    Assert.Same(nav, r.Request);
+                });
         }
 
         [Fact]
@@ -161,15 +169,25 @@ namespace ReactiveUI.Routing.Core.Tests.Presentation
         [Fact]
         public async Task Test_LoadState_Replays_The_Presentation_Requests_Contained_In_The_Given_State()
         {
+            var nav = NavigationRequest.Forward(new TestViewModel());
+            var request = nav.PresenterRequest;
             PresenterResolver.Resolve(request).Returns(presenter);
             presenter.Present(request).Returns(Observable.Return(response));
 
             await Subject.LoadState(new AppPresentationState()
             {
-                PresentationRequests = new List<PresenterRequest>()
+                PresentationRequests = new List<SavedNavigationRequest>()
                 {
-                    request,
-                    request
+                    new SavedNavigationRequest()
+                    {
+                        Presented = true,
+                        Request = nav
+                    },
+                    new SavedNavigationRequest()
+                    {
+                        Presented = true,
+                        Request = nav
+                    }
                 }
             });
 
