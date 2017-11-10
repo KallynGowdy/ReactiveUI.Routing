@@ -117,10 +117,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>5.4.0</Version>
+      <Version>6.0.1</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>6.0.8</Version>
+      <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="reactiveui">
       <Version>8.0.0-alpha0073</Version>
