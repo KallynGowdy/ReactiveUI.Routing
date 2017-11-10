@@ -21,9 +21,9 @@ namespace ReactiveUI.Routing
         Interaction<PresenterRequest, PresenterResponse> PresentationRequested { get; }
 
         /// <summary>
-        /// Gets the list of stack frames that the router currently posseses.
+        /// Gets or sets the list of stack frames that the router currently posseses.
         /// </summary>
-        IEnumerable<NavigationRequest> NavigationStack { get; }
+        IEnumerable<NavigationRequest> NavigationStack { get; set; }
 
         /// <summary>
         /// Attempts to navigate using the given navigation request.

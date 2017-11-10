@@ -235,6 +235,47 @@ namespace ReactiveUI.Routing.Core.Tests
             Assert.False(result);
         }
 
+        [Fact]
+        public async Task Test_SetNavigationStack_Forcibly_Sets_The_Current_Navigation_Stack()
+        {
+            var vm1 = new TestViewModel();
+            var vm2 = new TestViewModel();
+            var vm3 = new TestViewModel();
+            await Subject.Navigate(NavigationRequest.Forward(vm1));
+
+            Assert.NotEmpty(Subject.NavigationStack);
+
+            Subject.NavigationStack = new []
+            {
+                NavigationRequest.Forward(vm2),
+                NavigationRequest.Forward(vm3)
+            };
+
+            Assert.Collection(Subject.NavigationStack,
+                r => Assert.Same(r.PresenterRequest.ViewModel, vm2),
+                r => Assert.Same(r.PresenterRequest.ViewModel, vm3));
+        }
+
+
+        // Saving/Loading state is complicated...
+        // We need to preserve the current presentation state while
+        // also keeping a record of the navigation stack.
+        // In the future we will want to also re-evaluate the presentation state
+        // in case we have the ability to display things differently.
+        //
+        // In this scenario, we have a couple of options:
+        //
+        // 1. Replay current state
+        //    - This works well because it jumps us back to where we were when the state was saved.
+        //    - Downside is that we cannot get a different view state from when we left. (duh)
+        //    - We might want this though because of presentation choices made because of screen size, platform, etc.
+        //    - This is what we currently do.
+        // 2. Replay all state
+        //    - This would let presentation changes occur during load, but could cause issues with loading times and large navigation stacks.
+        //    - Also screen flashes would be pretty bad.
+        //    - In the end this isn't really an option.
+        // 
+
         public void Dispose()
         {
             disposable.Dispose();
