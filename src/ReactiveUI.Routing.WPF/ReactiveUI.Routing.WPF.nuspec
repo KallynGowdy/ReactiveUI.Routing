@@ -4,8 +4,8 @@
     <id>ReactiveUI.Routing.WPF</id>
     <version>$version$</version>
     <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <authors>kgowdy</authors>
+    <owners>kgowdy</owners>
     <licenseUrl>https://github.com/KallynGowdy/ReactiveUI.Routing/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/KallynGowdy/ReactiveUI.Routing</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
