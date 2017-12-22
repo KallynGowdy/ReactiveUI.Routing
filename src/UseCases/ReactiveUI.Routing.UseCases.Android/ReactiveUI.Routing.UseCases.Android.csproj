@@ -115,7 +115,7 @@
       <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="reactiveui">
-      <Version>8.0.0-alpha0117</Version>
+      <Version>8.0.0-alpha0109</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.v4">
       <Version>25.4.0.1</Version>
