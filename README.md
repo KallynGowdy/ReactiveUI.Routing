@@ -28,8 +28,8 @@ Project Feed: `https://ci.appveyor.com/nuget/reactiveui-routing-7x2h1i9nn69m`
     3. Call `Build()`.
 
 3. Call `PagePresenter.RegisterHost()` to configure view hosts for view models.
-4. Dependency inject `IAppPresenter` into your view models.
-5. Call `IAppPresenter.Present()` to present view models.
+4. Dependency inject `IReactiveRouter` into your view models.
+5. Call `IReactiveRouter.Navigate()` to present view models.
 6. Profit!
 
 UWP Example:
@@ -65,7 +65,8 @@ public class MyPlatformSpecificDependencies : IReactiveAppDependency
   public void Apply(IMutableDependencyResolver resolver)
   {
     // Register all of our views here as resolutions for the respective view models.
-    // When presenting MyViewModel, the IAppPresenter will attempt to resolve a dependency for 
+    // When navigating to MyViewModel, the IReactiveRouter will request presentation for it
+    // through the IAppPresenter, which in turn will attempt to resolve a dependency for 
     // IViewFor<MyViewModel>, which will return our view.
     resolver.Register(() => new MyView(), typeof(IViewFor<MyViewModel>));
     
@@ -76,16 +77,18 @@ public class MyPlatformSpecificDependencies : IReactiveAppDependency
 
 // ### MyViewModel.cs
 
-// Inject IAppPresenter into the constructor
-public MyViewModel(IAppPresenter presenter = null)
+// Inject IReactiveRouter into the constructor
+public MyViewModel(IReactiveRouter router = null)
 {
   // Or locate it using the service locator
-  var appPresenter = presenter ?? Locator.Current.GetService<IAppPresenter>();
+  var appRouter = router ?? Locator.Current.GetService<IReactiveRouter>();
   
   MyCommand = ReactiveCommand.CreateAsyncTask(async () => {
     
-    // Present OtherViewModel when MyCommand is executed
-    await appPresenter.PresentPage(new OtherViewModel());
+    // Navigate to OtherViewModel when MyCommand is executed.
+    // This will issue a presentation request for OtherViewModel
+    // as well as add it to the navigation stack, so that history can be saved.
+    await appRouter.Navigate(NavigationRequest.Forward(new OtherViewModel()));
   });
 }
 
