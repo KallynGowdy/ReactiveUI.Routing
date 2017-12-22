@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ReactiveUI.Routing.WPF</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/KallynGowdy/ReactiveUI.Routing/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/KallynGowdy/ReactiveUI.Routing</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Experiments with routing in ReactiveUI</description>
+    <releaseNotes>Alpha releases.</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>ReactiveUI</tags>
+  </metadata>
+</package>
