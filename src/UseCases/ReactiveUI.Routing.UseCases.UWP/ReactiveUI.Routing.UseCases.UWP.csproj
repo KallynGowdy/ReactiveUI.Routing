@@ -157,7 +157,7 @@
       <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="reactiveui">
-      <Version>8.0.0-alpha0073</Version>
+      <Version>8.0.0-alpha0117</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
