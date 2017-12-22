@@ -1,104 +1,79 @@
-# Proposal
+So now that I've had some time to think about this topic, I'm not 100% sure on a couple of the concepts that this library currently has:
 
-Note that this proposal is a work in progress, subject to change. The end goal is to create a solution that solves all of the potential issues that can then be implemented.
+## Issues
+- The router is expected to be a single source of truth for managing the navigation stack. That is, you can call `ShowAsync()` and we're expecting more or less the same logic to run.
+- The router has a simplistic model of navigation. It assumes that an application will only ever have a single navigation stack and that most navigation is primarily vertical. What about scenarios where you want to manage multiple navigation stacks (like a web browser)? How would you determine which navigation stack gets affected?
+- The presenter framework is very simplistic. We're expecting presenters to effectively be factories for views. While that is definitely a useful abstraction to some extent, I think it might be a little too simplistic.  For example, it ignores the potentially complicated view state that presenters need to work around. Imagine the app startup phase. Presenters need to figure out how to get back to displaying the same content that was saved without simply replaying all of the actions.
 
-## Overview
 
-In these improvements, we take inspiration from MvvmCross for presenter-based view composition while providing our own solution to navigation that does not conflate the two concepts. The solutions to each of the goals are presented below:
+## Potential Solutions
 
-- **G:** Cross platform logic. **S:** Utilize abstractions wherever possible, and limit platform specific logic to well defined extensibility points.
-- **G:** Strong support for page/fragment/modal navigation. **S:** Use the notion of a presenter, which is able to obtain and manage views for view models.
-- **G:** Async all the way. **S:** Use observables or tasks whenever a navigation or presentation opperation occurs.
-- **G:** Support suspend/resume. **S:** Introduce a simple view model lifecycle that allows view models to store and load their current state.
-- **G:** Minimize boilerplate code + Maximize readability. **S:** Encourage design that simplifies complex concepts and provide out of the box solutions for the most common usage patterns.
+In reality, what we really want from a routing framework is to say "show this stuff to the user". When we're talking about stack-based navigation, we're really saying "show the user some of the stuff they were just viewing". From this perspective, we're talking about two different services. One service that handles navigation and another service that handles displaying things. 
 
-## What is navigation?
+Unfortunately, all of the UI frameworks we deal with contain a fair amount of state that cannot be taken away or hidden easily. Therefore, we need an abstraction to manage this state and process requests from the application.
 
-From Google:
+In the end, I imagine we come up with a framework like this:
 
-**Navigation** is defined as:
+- *Presenters* are in charge of constructing and managing views for view models. In this respect they act as decorators around the views, assisting with binding and lifecycle management. Because most applications don't control the construction of the first view, the root presenter is often also the root view.
+- *ViewModels* are in charge of all of the core application logic. They are able to use existing patterns for binding data and events to views. In addition, they are in charge of requesting presentation changes from presenters. If you want a router, you're really just writing a high-order view model.
+- *Views* are in charge of displaying data to the user. In addition, they help bind events from the underlying system into the view models. For example, application lifecycle events are propagated from the system, into the views, and then into view models.
 
-1.  The process or activity of accurately ascertaining one's position and planning and following a route.
-2.  The passage of ships.
+Using this as a model, we end up with a fairly flexible architecture where presenters are used as conductors of the UI. If you want the `LoginViewModel` to be shown to the user, simply request it. If you want to know what view models are currently active and tied to a view, simply ask for the info. If you want to save your state, you can simply save and replay a list of presentation requests.
 
-So, when we talk about navigation, we are talking about "going" to something. This is important, because it helps us understand the behavior of navigation. 
+Therefore, presenters need to be able to satisfy the following tasks:
 
-*In particular, we know that when we navigate to something, we want to be able to navigate back.*
-
-## What is presentation?
-
-From Google:
-
-**Presentation** is defined as:
-
-1. The proffering or giving of something to someone, especially as part of a formal ceremony.
-	- The manner or style in which something is given, offered, or displayed.
-	- A formal introduction of someone, especially at court.
-	- The action or right of formally proposing a candidate for a church benefice or other position.
-	- A demonstration or display of a product or idea.
-
-So, when we talk about presentation, we are talking about "showing" something. 
-
-*When we present something, we want it to show up on screen.*
-
-## A Dilemma
-
-With the above definitions fresh in our minds, we can see that there are two different concepts at play. Navigation, which helps us get from place to place, and presentation, which helps us show things.
-
-Often, when a developer writes:
+- Recording navigation through an application. That is, managing a stack + knowing what is currently active so we can jump right back into the application.
+- Extensible to work with any UI pattern. (i.e. dialogs, notifications, toasts, master-detail, control vs page, etc.)
+- The ability to choose where a view should be presented. That is, choosing the best "host" for a view based on the current state. (master-detail is a good example)
 
 ```csharp
-router.Navigate.ExecuteAsync(new MyViewModel());
+
+// Presenters can be put into two categories
+// 1. Imperative - these presenters build and bind specific views that you request.
+// 2. Declarative - these presenters figure out which view(s) to bind upon request.
+//
+// In order to facilitate dynamic re-creation of presenters after suspension
+// we take a request-response model. Presenters are retrieved via presenter
+// request, which are serializeable. This allows us to save the current state of 
+// presenters when the app is suspended. It also allows us to replay
+// the presenters in order, thereby preserving the determinism.
+//
+// Note that the presenters themselves _do not_ store this state themselves.
+// The presenters are just dumb boxes that do things for us. This state needs to be 
+// stored somewhere else. For most apps, we expect that this state will be stored by the router.
+
+// This is a type of imperative presenter that displays dialogs for the given view model.
+interface IDialogPresenter : IPresenter
+{
+  IObservable<DialogResult> Present(DialogViewModel viewModel);
+}
+
+// This is a type of declarative presenter that figures out which child presenter to use
+// for the view model you give it. 
+// Declarative routers like this generally take advantage of imperative presenters internally.
+interface IPresenterResolver
+{
+  IPresenter Resolve(PresenterRequest viewModel);
+}
+
+// Suspend/resume strategy
+// To handle app suspension, we need to provide an abstraction on top
+// of the platform-specific life cycles.
+//
+// XamForms: Start->Sleep->Resume
+// iOS:      Activated->ResignActivation->EnterBackground->Terminate
+//           Activated->ResignActivation->EnterBackground->EnterForeground
+// Android:  Create->Start->Resume->Pause->Stop->Destroy
+//           Create->Start->Resume->Pause->Stop->Restart->Start
+//
+// UWP:      Activated->LeavingBackground->EnteredBackground->Suspending->Resume
+//
+// WPF:      N/A -> App life cycle is controlled by user.
+//
+// In particular, we're talking about handling app suspension transparently.
+// Because most platforms force suspension on their respective apps, we need to provide
+// a simple, easy, and sane way to handle this.
+// Platforms such as WPF don't force suspension on their apps, but may need an easy way to save state.
 ```
 
-they expect *both* things to happen.
 
-As such, we have a predicament. We want to give the developer both what they expect and the option to choose. Therefore, we have two options:
-
-1. Keep the existing API and work around it.
-2. Introduce a new API that separates the two concepts.
-
-I propose that we follow the 2nd option. We introduce a new API that resolves most, if not all, of the issues that exist with the current solution.
-
-With this new API, we need a good model of what is happening. This model is split into three major parts:
-
-1. `NavigationState`
-2. `PresentationState`
-3. `Router`
-
-## Navigation State - [Full Article](./navigation-state.md)
-
-The navigation state manages how view models are moved between and how the back button affects that movement. Quite simply, this object in in charge of two things:
-
-1. Recording transitions between view models.
-2. (Re)storing view model state.
-
-The `IActivateViewModels` interface is a simple interface that signifies that an object can kick off the view model activation process.
-
-## Presentation State - [Full Article](./presentation-state.md)
-
-The presentation state manages which view models are being presented and how they are being presented.
-It in turn also has three primary functions:
-
-1. Discovering views for presented view models.
-2. Creating and activating discovered views.
-3. Disposing views.
-
-The presentation state has no thing to do with storing view model state, only view state. 
-In this respect, whenever the app is suspended, the router will need to kick off the correct view.
-
-## Router - [Full Article](./router.md)
-The router is in charge of managing the tight dance between `NavigationState` and `PresentationState`. In particular, it is able to resolve requests for `Show(vm)` and pipe them to either `NavigationState`, `PresentationState`, or both. In most cases, the router should obey custom rules which can be defined by a `RouterBuilder`.
-
-
-## Platform Assumptions
-
-In order to simplify the abstractions as much as possible, ReactiveUI.Routing will have to make several assumptions about the type of platforms that it will run on.
-This relates mostly to how view models are constructed and how views are presented.
-
-- ReactiveUI.Routing controls the navigation scheme. This means that navigation only occurs when ReactiveUI.Routing says it should.
-- ReactiveUI.Routing controls the presentation scheme. This means that views are only shown when ReactiveUI.Routing says they should be.
-
-These assumptions can become difficult to enforce for some platforms, most notably on Android where each Activity is treated like it's own Application. 
-The solution is to provide bindings that replace/ignore the platform specific navigation/presentation code where it collides with ReactiveUI.Routing, and use the native ReactiveUI.Routing logic instead.
-For example, replacing the native Android back button navigation to hook into ReactiveUI.

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.1</TargetFramework>
+    <AssemblyName>ReactiveUI.Routing.Core</AssemblyName>
+    <RootNamespace>ReactiveUI.Routing</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="reactiveui" Version="8.0.0-alpha0117" />
+  </ItemGroup>
+
+</Project>
