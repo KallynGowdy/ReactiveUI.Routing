@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="reactiveui" Version="8.0.0-alpha0109" />
+    <PackageReference Include="reactiveui" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

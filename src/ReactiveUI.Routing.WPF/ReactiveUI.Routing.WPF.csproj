@@ -32,9 +32,6 @@
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="ReactiveUI.Wpf">
-      <HintPath>..\..\..\..\..\Users\Kal\.nuget\packages\reactiveui-wpf\8.0.0-alpha0073\lib\ReactiveUI.Wpf.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -60,13 +57,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>10.0.3</Version>
+      <Version>11.0.2</Version>
     </PackageReference>
     <PackageReference Include="reactiveui">
-      <Version>8.0.0-alpha0109</Version>
+      <Version>8.0.0</Version>
     </PackageReference>
-    <PackageReference Include="reactiveui-wpf">
-      <Version>8.0.0-alpha0073</Version>
+    <PackageReference Include="ReactiveUI.WPF">
+      <Version>8.0.0</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
